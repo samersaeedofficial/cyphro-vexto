@@ -1,3 +1,5 @@
+import React from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { Link } from "wouter";
 import {
   Wifi,
@@ -305,8 +307,19 @@ const statusColors = {
 };
 
 export function Dashboard() {
+  const [activeArsenalTab, setActiveArsenalTab] = React.useState("Network");
+
+  const categories = React.useMemo(() => {
+    return ["All", ...new Set(MODULE_CARDS.map(m => m.cat))];
+  }, []);
+
+  const filteredModules = React.useMemo(() => {
+    if (activeArsenalTab === "All") return MODULE_CARDS;
+    return MODULE_CARDS.filter(m => m.cat === activeArsenalTab);
+  }, [activeArsenalTab]);
+
   return (
-    <div className="max-w-7xl mx-auto space-y-10">
+    <div className="max-w-7xl mx-auto px-6 lg:px-10 py-8 space-y-10">
       {/* Page Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
         <div>
@@ -451,74 +464,96 @@ export function Dashboard() {
         </div>
       </div>
 
-      {/* All Modules Quick Access - Categorized */}
-      <div className="pt-16 border-t border-white/5 space-y-16">
-        <div className="flex flex-col gap-2">
-          <h2 className="text-3xl font-black text-white tracking-tight">Available <span className="text-blue-500">Arsenal</span></h2>
-          <p className="text-slate-500 font-medium text-sm">Strategic security modules categorized for rapid deployment</p>
-        </div>
-
-        {Object.entries(
-          MODULE_CARDS.reduce((acc, mod) => {
-            if (!acc[mod.cat]) acc[mod.cat] = [];
-            acc[mod.cat].push(mod);
-            return acc;
-          }, {})
-        ).map(([category, mods]) => (
-          <div key={category} className="space-y-6">
-            <div className="flex items-center gap-4">
-              <div className="h-px flex-1 bg-gradient-to-r from-white/10 to-transparent" />
-              <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-500 whitespace-nowrap px-4 py-1.5 rounded-full border border-white/5 bg-white/2">
-                {category}
-              </h3>
-              <div className="h-px flex-1 bg-gradient-to-l from-white/10 to-transparent" />
+      {/* All Modules Quick Access - Modern Category Filtered View */}
+      <div className="pt-16 border-t border-white/5">
+        <div className="bg-slate-900/30 backdrop-blur-xl border border-white/5 rounded-[3rem] p-8 md:p-12 space-y-12 overflow-hidden relative">
+          {/* Decorative background glow */}
+          <div className="absolute top-0 right-0 w-[300px] h-[300px] bg-blue-500/5 blur-[100px] -z-10" />
+          
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 relative z-10">
+            <div className="space-y-2">
+              <h2 className="text-3xl font-black text-white tracking-tight">Available <span className="text-blue-500">Arsenal</span></h2>
+              <p className="text-slate-500 font-medium text-sm">Strategic security modules categorized for rapid deployment</p>
             </div>
 
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-              {mods.map((mod) => {
-                const Icon = mod.icon;
-                return (
-                  <Link
-                    key={mod.id}
-                    href={`/modules/${mod.id}`}
-                    className="group relative"
-                  >
-                    <div
-                      className="h-full p-6 rounded-[2rem] transition-all duration-300 hover:translate-y-[-4px] overflow-hidden"
-                      style={{
-                        background: "rgba(15, 23, 42, 0.3)",
-                        border: "1px solid rgba(255, 255, 255, 0.05)",
-                        backdropFilter: "blur(12px)",
-                      }}
-                      onMouseEnter={(e) => {
-                        e.currentTarget.style.borderColor = `${mod.color}30`;
-                        e.currentTarget.style.background = "rgba(15, 23, 42, 0.5)";
-                      }}
-                      onMouseLeave={(e) => {
-                        e.currentTarget.style.borderColor = "rgba(255, 255, 255, 0.05)";
-                        e.currentTarget.style.background = "rgba(15, 23, 42, 0.3)";
-                      }}
-                    >
-                      {/* Hover Glow */}
-                      <div
-                        className="absolute -bottom-10 -right-10 w-24 h-24 rounded-full opacity-0 group-hover:opacity-10 transition-opacity duration-500 blur-2xl pointer-events-none"
-                        style={{ background: mod.color }}
-                      />
-
-                      <Icon
-                        className="w-6 h-6 mb-4 transition-transform group-hover:scale-110 group-hover:rotate-3"
-                        style={{ color: mod.color }}
-                      />
-                      <div className="text-xs font-black text-white leading-tight uppercase tracking-widest truncate">
-                        {mod.label}
-                      </div>
-                    </div>
-                  </Link>
-                );
-              })}
+            {/* Category Tabs */}
+            <div className="flex items-center gap-2 p-1.5 rounded-2xl bg-white/5 border border-white/10 overflow-x-auto no-scrollbar max-w-full md:max-w-none">
+              {categories.map((cat) => (
+                <button
+                  key={cat}
+                  onClick={() => setActiveArsenalTab(cat)}
+                  className={`px-5 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all whitespace-nowrap ${activeArsenalTab === cat
+                    ? 'bg-blue-600 text-white shadow-[0_5px_15px_rgba(37,99,235,0.4)]'
+                    : 'text-slate-500 hover:text-slate-300 hover:bg-white/5'
+                    }`}
+                >
+                  {cat}
+                </button>
+              ))}
             </div>
           </div>
-        ))}
+
+          <motion.div
+            className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4 relative z-10"
+          >
+            <AnimatePresence mode="popLayout">
+              {filteredModules.map((mod) => {
+                const Icon = mod.icon;
+                return (
+                  <motion.div
+                    key={mod.id}
+                    layout
+                    initial={{ opacity: 0, scale: 0.9, y: 20 }}
+                    animate={{ opacity: 1, scale: 1, y: 0 }}
+                    exit={{ opacity: 0, scale: 0.9, y: 20 }}
+                    transition={{ 
+                      type: "spring",
+                      stiffness: 300,
+                      damping: 30
+                    }}
+                  >
+                    <Link href={`/modules/${mod.id}`} className="group relative block h-full">
+                      <div
+                        className="h-full p-6 rounded-[2rem] transition-all duration-300 hover:translate-y-[-4px] overflow-hidden flex flex-col justify-between"
+                        style={{
+                          background: "rgba(15, 23, 42, 0.4)",
+                          border: "1px solid rgba(255, 255, 255, 0.05)",
+                          minHeight: "140px"
+                        }}
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.borderColor = `${mod.color}30`;
+                          e.currentTarget.style.background = "rgba(15, 23, 42, 0.6)";
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.borderColor = "rgba(255, 255, 255, 0.05)";
+                          e.currentTarget.style.background = "rgba(15, 23, 42, 0.4)";
+                        }}
+                      >
+                        <div
+                          className="absolute -bottom-10 -right-10 w-24 h-24 rounded-full opacity-0 group-hover:opacity-10 transition-opacity duration-500 blur-2xl pointer-events-none"
+                          style={{ background: mod.color }}
+                        />
+
+                        <div>
+                          <Icon
+                            className="w-6 h-6 mb-4 transition-transform group-hover:scale-110 group-hover:rotate-3"
+                            style={{ color: mod.color }}
+                          />
+                          <div className="text-xs font-black text-white leading-tight uppercase tracking-widest truncate">
+                            {mod.label}
+                          </div>
+                        </div>
+                        <div className="text-[8px] font-black text-slate-600 uppercase tracking-tighter mt-3">
+                          {mod.cat}
+                        </div>
+                      </div>
+                    </Link>
+                  </motion.div>
+                );
+              })}
+            </AnimatePresence>
+          </motion.div>
+        </div>
       </div>
     </div>
   );

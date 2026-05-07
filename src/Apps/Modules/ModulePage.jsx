@@ -35,24 +35,6 @@ import {
 import { DashboardLayout } from "@/Apps/Dashboard/layout/DashboardLayout";
 
 const MODULE_META = {
-  "wifi-analyzer": {
-    label: "WiFi & Network Analyzer",
-    icon: Wifi,
-    color: "#00d4ff",
-    category: "Network & WiFi",
-    description:
-      "Scan and analyze WiFi networks in your vicinity. Identify connected devices, signal strength, channel utilization, encryption types, and potential vulnerabilities. Supports WEP/WPA/WPA2/WPA3 analysis.",
-    capabilities: [
-      "Scan all nearby WiFi networks with signal strength",
-      "Show connected clients and their MAC addresses",
-      "Detect the network you are currently connected to",
-      "WPS vulnerability detection",
-      "Handshake capture for authorized cracking",
-      "Channel interference analysis",
-    ],
-    tags: ["Network", "Wireless", "Reconnaissance"],
-    backendLang: "Python (Scapy + Aircrack-ng)",
-  },
   "port-scanner": {
     label: "Port Scanner & Network Mapper",
     icon: ScanLine,

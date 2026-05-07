@@ -2,7 +2,8 @@ import { Switch, Route, Router as WouterRouter, useLocation } from "wouter";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/shared/ui/feedback";
 import { useEffect, useRef, useState } from "react";
-
+import { allRoutes } from "@/routes";
+import { DashboardLayout } from "@/Apps/Dashboard/layout/DashboardLayout";
 import { PageLoader } from "@/components/PageLoader";
 
 
@@ -22,12 +23,12 @@ function usePageTransition() {
       const isAppSide = (path) => path.startsWith("/dashboard") || path.startsWith("/modules");
 
       // Only trigger loader when moving LandingSide <-> AppSide
-      const crossingBoundary = (isLandingSide(displayLocation) && isAppSide(location)) || 
-                                (isAppSide(displayLocation) && isLandingSide(location));
+      const crossingBoundary = (isLandingSide(displayLocation) && isAppSide(location)) ||
+        (isAppSide(displayLocation) && isLandingSide(location));
 
       if (crossingBoundary) {
         setLoading(true);
-        
+
         // Delay switch for smooth transition
         clearTimeout(switchTimerRef.current);
         switchTimerRef.current = setTimeout(() => {
@@ -48,9 +49,6 @@ function usePageTransition() {
 
   return { loading, displayLocation };
 }
-
-import { allRoutes } from "@/routes";
-import { DashboardLayout } from "@/Apps/Dashboard/layout/DashboardLayout";
 
 // ─── Router with transition ───────────────────────────────────────────────────
 function Router() {

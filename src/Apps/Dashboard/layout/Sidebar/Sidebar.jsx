@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Link, useLocation } from "wouter";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -137,6 +137,16 @@ const MODULES = [
 export function Sidebar({ collapsed, setCollapsed }) {
   const [location] = useLocation();
   const [openCategories, setOpenCategories] = useState({});
+  const [activePopup, setActivePopup] = useState(null);
+  const [popupPos, setPopupPos] = useState({ top: 0, left: 0 });
+  const [windowSize, setWindowSize] = useState({ h: window.innerHeight, w: window.innerWidth });
+  const sidebarRef = useRef(null);
+
+  useEffect(() => {
+    const handleResize = () => setWindowSize({ h: window.innerHeight, w: window.innerWidth });
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   const toggleCategory = (cat) => {
     setOpenCategories((prev) => ({
@@ -144,6 +154,66 @@ export function Sidebar({ collapsed, setCollapsed }) {
       [cat]: prev[cat] === false ? true : false
     }));
   };
+
+  const handleCategoryClick = (section, e) => {
+    if (collapsed) {
+      if (activePopup?.category === section.category) {
+        setActivePopup(null);
+      } else {
+        const rect = e.currentTarget.getBoundingClientRect();
+        
+        // High-fidelity dimensions
+        const headerHeight = 64; 
+        const paddingHeight = 16; 
+        const itemHeight = 56; 
+        const maxContentHeight = 400; 
+        const menuWidth = 256; 
+        
+        const estimatedContentHeight = Math.min(section.items.length * itemHeight, maxContentHeight);
+        const menuHeight = headerHeight + paddingHeight + estimatedContentHeight;
+        
+        const sidebarRect = sidebarRef.current.getBoundingClientRect();
+        
+        // Calculate the relative position inside the sidebar
+        let topPos = rect.top - sidebarRect.top;
+        
+        // If bottom overflows the viewport, flip it up
+        if (rect.top + menuHeight > windowSize.h - 20) {
+          topPos = (rect.bottom - sidebarRect.top) - menuHeight;
+        }
+
+        // Horizontal positioning (relative to sidebar)
+        let leftPos = rect.right - sidebarRect.left + 12;
+        if (rect.right + menuWidth > windowSize.w - 20) {
+          leftPos = (rect.left - sidebarRect.left) - menuWidth - 12;
+        }
+
+        // Safety check for top boundary
+        if (topPos + sidebarRect.top < 20) {
+          topPos = 20 - sidebarRect.top;
+        }
+        
+        setPopupPos({ top: topPos, left: leftPos });
+        setActivePopup(section);
+      }
+    } else {
+      toggleCategory(section.category);
+    }
+  };
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (sidebarRef.current && !sidebarRef.current.contains(event.target)) {
+        setActivePopup(null);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  useEffect(() => {
+    if (!collapsed) setActivePopup(null);
+  }, [collapsed]);
 
   const getActiveModule = () => {
     for (const section of MODULES) {
@@ -157,13 +227,13 @@ export function Sidebar({ collapsed, setCollapsed }) {
 
   return (
     <motion.aside
+      ref={sidebarRef}
       initial={false}
       animate={{
         width: collapsed ? 80 : 280,
-        x: 0,
         opacity: 1
       }}
-      className="fixed left-6 top-[5.5rem] h-[calc(100vh-7rem)] z-40 flex flex-col group/sidebar overflow-visible rounded-[1.5rem]"
+      className="fixed left-4 top-[4.5rem] bottom-4 z-40 flex flex-col group/sidebar overflow-visible rounded-[1.5rem] overscroll-behavior-none"
       style={{
         background: "rgba(10, 15, 30, 0.65)",
         backdropFilter: "blur(24px)",
@@ -177,7 +247,7 @@ export function Sidebar({ collapsed, setCollapsed }) {
         <div className="px-3 pt-6 pb-2">
           <Link
             href="/dashboard"
-            className={`flex items-center gap-3 px-4 py-3 rounded-2xl transition-all duration-300 group ${location === "/dashboard"
+            className={`flex items-center gap-3 py-3 rounded-2xl transition-all duration-300 group ${collapsed ? "justify-center px-0" : "px-4"} ${location === "/dashboard"
               ? "bg-blue-500/10 text-blue-400 border border-blue-500/20 shadow-[0_0_20px_rgba(59,130,246,0.1)]"
               : "text-slate-400 hover:text-white hover:bg-white/5 border border-transparent"
               }`}
@@ -199,24 +269,24 @@ export function Sidebar({ collapsed, setCollapsed }) {
         </div>
 
         {/* Scrollable content: Modules & Categories */}
-        <div className="flex-1 overflow-y-scroll overflow-x-hidden pb-6 custom-scrollbar px-3">
+        <div className={`flex-1 overflow-y-auto overflow-x-hidden pb-8 custom-sidebar overscroll-contain touch-pan-y ${collapsed ? "px-2" : "px-3"}`}>
           <div className="space-y-4">
             {MODULES.map((section) => {
               const SectionIcon = section.icon;
               const isOpen = openCategories[section.category] !== false;
 
               return (
-                <div key={section.category} className="space-y-1">
+                <div key={section.category} className="space-y-1 relative">
                   <button
-                    onClick={() => !collapsed && toggleCategory(section.category)}
-                    className={`w-full flex items-center gap-3 px-3 py-2 rounded-2xl transition-all duration-300 group ${collapsed ? "justify-center" : "justify-between hover:bg-white/10"
+                    onClick={(e) => handleCategoryClick(section, e)}
+                    className={`w-full flex items-center gap-3 py-2 rounded-2xl transition-all duration-300 group hover:bg-white/10 ${collapsed ? "justify-center px-0" : "justify-between px-3"} ${collapsed && activePopup?.category === section.category ? "bg-white/10 border-white/20" : ""
                       }`}
                     style={{
                       background: "rgba(255, 255, 255, 0.02)",
                       border: "1px solid rgba(255, 255, 255, 0.04)",
                     }}
                   >
-                    <div className="flex items-center gap-3 min-w-0">
+                    <div className={`flex items-center min-w-0 ${collapsed ? "" : "gap-3"}`}>
                       <div
                         className="w-8 h-8 rounded-xl flex items-center justify-center shrink-0 transition-all duration-300 group-hover:scale-105"
                         style={{
@@ -224,7 +294,7 @@ export function Sidebar({ collapsed, setCollapsed }) {
                           border: `1px solid ${section.color}15`
                         }}
                       >
-                        <SectionIcon className="w-4 h-4" style={{ color: section.color }} />
+                        <SectionIcon className="w-4 h-4 transition-transform group-hover:scale-110" style={{ color: section.color }} />
                       </div>
                       {!collapsed && (
                         <span className="text-[10px] font-black uppercase tracking-[0.1em] text-slate-400 truncate group-hover:text-white transition-colors">
@@ -298,10 +368,15 @@ export function Sidebar({ collapsed, setCollapsed }) {
                     )}
                   </AnimatePresence>
 
-                  {collapsed && (
-                    <div className="absolute left-full ml-4 px-3 py-2 rounded-lg bg-slate-900 border border-white/10 text-white text-[10px] font-black uppercase tracking-widest opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity z-50 whitespace-nowrap shadow-xl">
+                  {collapsed && !activePopup && (
+                    <motion.div
+                      initial={{ opacity: 0, x: -10 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      exit={{ opacity: 0, x: -10 }}
+                      className="absolute left-full ml-4 px-3 py-2 rounded-lg bg-slate-900 border border-white/10 text-white text-[10px] font-black uppercase tracking-widest opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity z-50 whitespace-nowrap shadow-xl"
+                    >
                       {section.category}
-                    </div>
+                    </motion.div>
                   )}
                 </div>
               );
@@ -327,28 +402,100 @@ export function Sidebar({ collapsed, setCollapsed }) {
         </button>
       </div>
 
+      {/* Floating Global Flyout (Rendered outside clipping container to prevent clipping) */}
+      <AnimatePresence>
+        {collapsed && activePopup && (
+          <motion.div
+            initial={{ opacity: 0, x: -20, scale: 0.95 }}
+            animate={{ opacity: 1, x: 0, scale: 1 }}
+            exit={{ opacity: 0, x: -20, scale: 0.95 }}
+            transition={{ type: "spring", damping: 20, stiffness: 300 }}
+            className="absolute w-64 rounded-3xl overflow-hidden z-[100] shadow-[0_20px_50px_rgba(0,0,0,0.5)] border border-white/10"
+            style={{
+              top: popupPos.top,
+              left: popupPos.left,
+              background: "rgba(10, 15, 30, 0.95)",
+              backdropFilter: "blur(40px)",
+            }}
+          >
+            <div className="p-4 border-b border-white/5 bg-white/2">
+              <div className="flex items-center gap-3">
+                <div
+                  className="w-8 h-8 rounded-xl flex items-center justify-center shrink-0"
+                  style={{
+                    background: `${activePopup.color}15`,
+                    border: `1px solid ${activePopup.color}20`
+                  }}
+                >
+                  <activePopup.icon className="w-4 h-4" style={{ color: activePopup.color }} />
+                </div>
+                <span className="text-[11px] font-black uppercase tracking-[0.1em] text-white">
+                  {activePopup.category}
+                </span>
+              </div>
+            </div>
+            <div 
+              className="p-2 overflow-y-auto custom-sidebar"
+              style={{ maxHeight: `min(400px, ${windowSize.h - popupPos.top - 100}px)` }}
+            >
+              {activePopup.items.map((item) => {
+                const ItemIcon = item.icon;
+                const active = location === `/modules/${item.id}`;
+                return (
+                  <Link
+                    key={item.id}
+                    href={`/modules/${item.id}`}
+                    onClick={() => setActivePopup(null)}
+                    className={`flex items-center gap-3 px-4 py-3 rounded-2xl transition-all duration-300 group/item ${active ? "bg-white/10" : "hover:bg-white/5"}`}
+                  >
+                    <div className="w-8 h-8 rounded-xl bg-white/2 flex items-center justify-center border border-white/5 group-hover/item:border-white/10 transition-colors">
+                      <ItemIcon className={`w-3.5 h-3.5 ${active ? "" : "text-slate-400"}`} style={{ color: active ? activePopup.color : undefined }} />
+                    </div>
+                    <span className={`text-[11px] font-bold ${active ? "text-white" : "text-slate-400 group-hover/item:text-slate-200"}`}>
+                      {item.label}
+                    </span>
+                    {active && (
+                      <div className="ml-auto w-1 h-1 rounded-full bg-white shadow-[0_0_8px_rgba(255,255,255,0.8)]" />
+                    )}
+                  </Link>
+                );
+              })}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       <style dangerouslySetInnerHTML={{
         __html: `
-        .custom-scrollbar {
-          scroll-behavior: smooth;
+        .custom-sidebar {
+          scrollbar-width: thin;
+          overscroll-behavior: contain;
         }
-        .custom-scrollbar::-webkit-scrollbar {
-          width: 5px;
+        .custom-sidebar::-webkit-scrollbar {
+          width: 4px;
         }
-        .custom-scrollbar::-webkit-scrollbar-track {
+        .custom-sidebar::-webkit-scrollbar-track {
           background: transparent;
           margin: 10px 0;
         }
-        .custom-scrollbar::-webkit-scrollbar-thumb {
+        .custom-sidebar::-webkit-scrollbar-thumb {
           background: rgba(255, 255, 255, 0.08);
           border-radius: 20px;
         }
-        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+        .custom-sidebar::-webkit-scrollbar-thumb:hover {
           background: rgba(255, 255, 255, 0.15);
         }
-        .custom-scrollbar::-webkit-scrollbar-button {
+        .custom-sidebar::-webkit-scrollbar-button {
           display: none;
         }
+        ${collapsed ? `
+        .custom-sidebar::-webkit-scrollbar {
+          display: none;
+        }
+        .custom-sidebar {
+          scrollbar-width: none;
+        }
+        ` : ""}
       `}} />
     </motion.aside>
   );

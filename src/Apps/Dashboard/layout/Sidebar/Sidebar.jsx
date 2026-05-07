@@ -2,137 +2,13 @@ import { useState, useRef, useEffect } from "react";
 import { Link, useLocation } from "wouter";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  Wifi,
-  ScanLine,
-  Globe,
-  ShieldAlert,
-  Mail,
-  Users,
-  Search,
-  Eye,
-  FileText,
-  Key,
-  Lock,
-  Code2,
-  Brain,
-  Bug,
-  Cpu,
-  Server,
-  VenetianMask,
-  FileSearch,
-  BarChart3,
   ChevronRight,
-  Network,
-  Zap,
-  Database,
-  AlertTriangle,
   Terminal,
-  Radio,
-  Shield,
   PanelLeftClose,
   PanelLeftOpen,
 } from "lucide-react";
+import { SIDEBAR_MENU } from "@/lib/SidebarMenu";
 
-const MODULES = [
-  {
-    category: "Network & WiFi",
-    icon: Wifi,
-    color: "#06b6d4",
-    items: [
-      { id: "wifi-analyzer", label: "WiFi Analyzer", icon: Wifi },
-      { id: "port-scanner", label: "Port Scanner", icon: ScanLine },
-      { id: "packet-sniffer", label: "Packet Sniffer", icon: Radio },
-      { id: "mitm", label: "MitM Attack", icon: Network },
-      { id: "dns-tools", label: "DNS Tools", icon: Globe },
-    ],
-  },
-  {
-    category: "Social Engineering",
-    icon: Users,
-    color: "#a855f7",
-    items: [
-      { id: "phishing", label: "Phishing Manager", icon: Mail },
-      { id: "social-engineering", label: "SE Toolkit", icon: Users },
-      { id: "email-spoofing", label: "Email Spoofing", icon: AlertTriangle },
-    ],
-  },
-  {
-    category: "OSINT",
-    icon: Eye,
-    color: "#eab308",
-    items: [
-      { id: "osint", label: "OSINT Framework", icon: Eye },
-      { id: "recon", label: "Reconnaissance", icon: Search },
-      { id: "metadata", label: "Metadata Extractor", icon: FileSearch },
-    ],
-  },
-  {
-    category: "Web Vulnerabilities",
-    icon: ShieldAlert,
-    color: "#f97316",
-    items: [
-      { id: "web-scanner", label: "Web Scanner", icon: ShieldAlert },
-      { id: "sql-injection", label: "SQL Injection", icon: Database },
-      { id: "xss", label: "XSS Suite", icon: Code2 },
-      { id: "dir-bruteforce", label: "Dir Bruteforcer", icon: Server },
-    ],
-  },
-  {
-    category: "Password & Auth",
-    icon: Key,
-    color: "#ef4444",
-    items: [
-      { id: "password-cracker", label: "Password Cracker", icon: Key },
-      { id: "password-generator", label: "Wordlist Gen", icon: FileText },
-      { id: "credential-stuffing", label: "Credential Stuffing", icon: Lock },
-    ],
-  },
-  {
-    category: "Exploitation",
-    icon: Zap,
-    color: "#f43f5e",
-    items: [
-      { id: "exploit-db", label: "Exploit Database", icon: Database },
-      { id: "payload-generator", label: "Payload Generator", icon: Terminal },
-      { id: "privilege-escalation", label: "Priv Escalation", icon: Shield },
-    ],
-  },
-  {
-    category: "Crypto & Stego",
-    icon: Lock,
-    color: "#22c55e",
-    items: [
-      { id: "crypto", label: "Cryptography", icon: Lock },
-      { id: "steganography", label: "Steganography", icon: FileText },
-    ],
-  },
-  {
-    category: "Forensics & Analysis",
-    icon: Brain,
-    color: "#3b82f6",
-    items: [
-      { id: "forensics", label: "Digital Forensics", icon: FileSearch },
-      { id: "malware-analysis", label: "Malware Analysis", icon: Bug },
-      { id: "reverse-engineering", label: "Reverse Engineering", icon: Cpu },
-      { id: "log-analyzer", label: "Log Analyzer", icon: BarChart3 },
-    ],
-  },
-  {
-    category: "Anonymous & Privacy",
-    icon: VenetianMask,
-    color: "#14b8a6",
-    items: [
-      { id: "anonymizer", label: "Anonymizer", icon: VenetianMask },
-      { id: "darkweb", label: "Dark Web Monitor", icon: Globe },
-    ],
-  },
-  {
-    category: "Reporting",
-    icon: FileText,
-    color: "#6366f1",
-    items: [{ id: "reporting", label: "Report Generator", icon: FileText }],
-  },
-];
 
 export function Sidebar({ collapsed, setCollapsed }) {
   const [location] = useLocation();
@@ -141,17 +17,45 @@ export function Sidebar({ collapsed, setCollapsed }) {
   const [popupPos, setPopupPos] = useState({ top: 0, left: 0 });
   const [windowSize, setWindowSize] = useState({ h: window.innerHeight, w: window.innerWidth });
   const sidebarRef = useRef(null);
+  const scrollContainerRef = useRef(null);
+  const activeItemRef = useRef(null);
 
   useEffect(() => {
     const handleResize = () => setWindowSize({ h: window.innerHeight, w: window.innerWidth });
     window.addEventListener("resize", handleResize);
+
+    // Smart Auto-Open logic: Only open the category that contains the active module
+    const activeSection = SIDEBAR_MENU.find(section =>
+      section.items.some(item => item.path === location)
+    );
+
+    if (activeSection) {
+      setOpenCategories({ [activeSection.category]: true });
+    } else {
+      setOpenCategories({});
+    }
+
     return () => window.removeEventListener("resize", handleResize);
-  }, []);
+  }, [location]);
+
+  // Handle auto-scrolling to active item
+  useEffect(() => {
+    if (!collapsed && activeItemRef.current) {
+      const timer = setTimeout(() => {
+        activeItemRef.current.scrollIntoView({
+          behavior: "smooth",
+          block: "center", 
+        });
+      }, 400); // Wait for the "height: auto" animation to finish
+      return () => clearTimeout(timer);
+    }
+  }, [location, collapsed, openCategories]);
 
   const toggleCategory = (cat) => {
     setOpenCategories((prev) => ({
-      ...prev,
-      [cat]: prev[cat] === false ? true : false
+      // If we want "sirf open rahay active wala", we can either toggle normally 
+      // or close others. Given "baqi sb close rahain", accordion behavior is best:
+      [cat]: !prev[cat]
     }));
   };
 
@@ -161,22 +65,22 @@ export function Sidebar({ collapsed, setCollapsed }) {
         setActivePopup(null);
       } else {
         const rect = e.currentTarget.getBoundingClientRect();
-        
+
         // High-fidelity dimensions
-        const headerHeight = 64; 
-        const paddingHeight = 16; 
-        const itemHeight = 56; 
-        const maxContentHeight = 400; 
-        const menuWidth = 256; 
-        
+        const headerHeight = 64;
+        const paddingHeight = 16;
+        const itemHeight = 56;
+        const maxContentHeight = 400;
+        const menuWidth = 256;
+
         const estimatedContentHeight = Math.min(section.items.length * itemHeight, maxContentHeight);
         const menuHeight = headerHeight + paddingHeight + estimatedContentHeight;
-        
+
         const sidebarRect = sidebarRef.current.getBoundingClientRect();
-        
+
         // Calculate the relative position inside the sidebar
         let topPos = rect.top - sidebarRect.top;
-        
+
         // If bottom overflows the viewport, flip it up
         if (rect.top + menuHeight > windowSize.h - 20) {
           topPos = (rect.bottom - sidebarRect.top) - menuHeight;
@@ -192,7 +96,7 @@ export function Sidebar({ collapsed, setCollapsed }) {
         if (topPos + sidebarRect.top < 20) {
           topPos = 20 - sidebarRect.top;
         }
-        
+
         setPopupPos({ top: topPos, left: leftPos });
         setActivePopup(section);
       }
@@ -216,8 +120,8 @@ export function Sidebar({ collapsed, setCollapsed }) {
   }, [collapsed]);
 
   const getActiveModule = () => {
-    for (const section of MODULES) {
-      const item = section.items.find(i => `/modules/${i.id}` === location);
+    for (const section of SIDEBAR_MENU) {
+      const item = section.items.find(i => i.path === location);
       if (item) return { ...item, sectionColor: section.color };
     }
     return null;
@@ -269,11 +173,15 @@ export function Sidebar({ collapsed, setCollapsed }) {
         </div>
 
         {/* Scrollable content: Modules & Categories */}
-        <div className={`flex-1 overflow-y-auto overflow-x-hidden pb-8 custom-sidebar overscroll-contain touch-pan-y ${collapsed ? "px-2" : "px-3"}`}>
+        <div 
+          ref={scrollContainerRef}
+          className={`flex-1 overflow-y-auto overflow-x-hidden pb-8 custom-sidebar overscroll-contain touch-pan-y ${collapsed ? "px-2" : "px-3"}`}
+        >
+
           <div className="space-y-4">
-            {MODULES.map((section) => {
+            {SIDEBAR_MENU.map((section) => {
               const SectionIcon = section.icon;
-              const isOpen = openCategories[section.category] !== false;
+              const isOpen = !!openCategories[section.category];
 
               return (
                 <div key={section.category} className="space-y-1 relative">
@@ -323,13 +231,14 @@ export function Sidebar({ collapsed, setCollapsed }) {
                       >
                         {section.items.map((item) => {
                           const ItemIcon = item.icon;
-                          const active = location === `/modules/${item.id}`;
+                          const active = location === item.path;
                           const themeColor = section.color;
 
                           return (
                             <Link
                               key={item.id}
-                              href={`/modules/${item.id}`}
+                              ref={active ? activeItemRef : null}
+                              href={item.path}
                               className="relative flex items-center gap-3 px-4 py-2.5 rounded-xl transition-all duration-300 group/item overflow-hidden"
                               style={{
                                 background: active ? `${themeColor}15` : "transparent",
@@ -434,17 +343,17 @@ export function Sidebar({ collapsed, setCollapsed }) {
                 </span>
               </div>
             </div>
-            <div 
+            <div
               className="p-2 overflow-y-auto custom-sidebar"
               style={{ maxHeight: `min(400px, ${windowSize.h - popupPos.top - 100}px)` }}
             >
               {activePopup.items.map((item) => {
                 const ItemIcon = item.icon;
-                const active = location === `/modules/${item.id}`;
+                const active = location === item.path;
                 return (
                   <Link
                     key={item.id}
-                    href={`/modules/${item.id}`}
+                    href={item.path}
                     onClick={() => setActivePopup(null)}
                     className={`flex items-center gap-3 px-4 py-3 rounded-2xl transition-all duration-300 group/item ${active ? "bg-white/10" : "hover:bg-white/5"}`}
                   >

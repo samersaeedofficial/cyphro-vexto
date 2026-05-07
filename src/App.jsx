@@ -3,12 +3,8 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/shared/ui/feedback";
 import { useEffect, useRef, useState } from "react";
 
-import { Landing } from "@/Apps/Home/Landing";
-import { Dashboard } from "@/Apps/Dashboard/Dashboard";
-import { ModulePage } from "@/Apps/Modules/ModulePage";
-import { ModuleInfo } from "@/Apps/Home/components/ModuleInfo";
-import NotFound from "@/pages/NotFound";
 import { PageLoader } from "@/components/PageLoader";
+
 
 const queryClient = new QueryClient();
 
@@ -53,6 +49,7 @@ function usePageTransition() {
   return { loading, displayLocation };
 }
 
+import { allRoutes } from "@/routes";
 import { DashboardLayout } from "@/Apps/Dashboard/layout/DashboardLayout";
 
 // ─── Router with transition ───────────────────────────────────────────────────
@@ -64,14 +61,9 @@ function Router() {
 
   const routes = (
     <Switch location={displayLocation}>
-      <Route path="/" component={Landing} />
-      <Route path="/info/:id" component={ModuleInfo} />
-      
-      {/* These routes will be wrapped by DashboardLayout if isDashboardArea is true */}
-      <Route path="/dashboard" component={Dashboard} />
-      <Route path="/modules/:id" component={ModulePage} />
-
-      <Route component={NotFound} />
+      {allRoutes.map((route, index) => (
+        <Route key={index} path={route.path} component={route.component} />
+      ))}
     </Switch>
   );
 

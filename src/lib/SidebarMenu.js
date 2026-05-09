@@ -77,7 +77,7 @@ export const SIDEBAR_MENU = [
     color: "#ef4444",
     items: [
       { id: "password-cracker", label: "Password Cracker", icon: Key, path: "/modules/password-cracker" },
-      { id: "password-generator", label: "Wordlist Gen", icon: FileText, path: "/modules/password-generator" },
+      { id: "wordlist-generator", label: "Wordlist Forge", icon: FileText, path: "/modules/wordlist-generator" },
       { id: "credential-stuffing", label: "Credential Stuffing", icon: Lock, path: "/modules/credential-stuffing" },
     ],
   },

@@ -34,7 +34,7 @@ const MODULES = [
   
   // Password
   { id: "password-cracker", title: "Password Cracker", type: "Password", path: "/modules/password-cracker", icon: Terminal, color: "#f87171", bg: "rgba(248,113,113,0.1)", accent: "#f87171" },
-  { id: "password-generator", title: "Wordlist Gen", type: "Password", path: "/modules/password-generator", icon: Terminal, color: "#f87171", bg: "rgba(248,113,113,0.1)", accent: "#f87171" },
+  { id: "wordlist-generator", title: "Wordlist Forge", type: "Password", path: "/modules/wordlist-generator", icon: Terminal, color: "#f87171", bg: "rgba(248,113,113,0.1)", accent: "#f87171" },
   
   // Exploit
   { id: "exploit-db", title: "Exploit Database", type: "Exploit", path: "/modules/exploit-db", icon: Terminal, color: "#f43f5e", bg: "rgba(244,63,94,0.1)", accent: "#f43f5e" },

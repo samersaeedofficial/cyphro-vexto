@@ -19,6 +19,20 @@ export function Sidebar({ collapsed, setCollapsed }) {
   const sidebarRef = useRef(null);
   const scrollContainerRef = useRef(null);
   const activeItemRef = useRef(null);
+  const [canAutoScroll, setCanAutoScroll] = useState(true);
+  const initialLocation = useRef(location);
+
+  // Disable auto-scroll if user navigates to a different page
+  useEffect(() => {
+    if (location !== initialLocation.current) {
+      setCanAutoScroll(false);
+    }
+  }, [location]);
+
+  // Stop auto-scroll on manual interaction
+  const handleInteraction = () => {
+    if (canAutoScroll) setCanAutoScroll(false);
+  };
 
   useEffect(() => {
     const handleResize = () => setWindowSize({ h: window.innerHeight, w: window.innerWidth });
@@ -38,18 +52,22 @@ export function Sidebar({ collapsed, setCollapsed }) {
     return () => window.removeEventListener("resize", handleResize);
   }, [location]);
 
-  // Handle auto-scrolling to active item
+  // Handle auto-scrolling to active item (First time only)
   useEffect(() => {
-    if (!collapsed && activeItemRef.current) {
+    if (canAutoScroll && !collapsed && activeItemRef.current) {
       const timer = setTimeout(() => {
-        activeItemRef.current.scrollIntoView({
-          behavior: "smooth",
-          block: "center", 
-        });
+        if (activeItemRef.current && canAutoScroll) {
+          activeItemRef.current.scrollIntoView({
+            behavior: "smooth",
+            block: "center", 
+          });
+          // After one successful scroll, we disable future auto-scrolls
+          setCanAutoScroll(false);
+        }
       }, 400); // Wait for the "height: auto" animation to finish
       return () => clearTimeout(timer);
     }
-  }, [location, collapsed, openCategories]);
+  }, [location, collapsed, openCategories, canAutoScroll]);
 
   const toggleCategory = (cat) => {
     setOpenCategories((prev) => ({
@@ -137,6 +155,9 @@ export function Sidebar({ collapsed, setCollapsed }) {
         width: collapsed ? 80 : 280,
         opacity: 1
       }}
+      onWheel={handleInteraction}
+      onClick={handleInteraction}
+      onTouchStart={handleInteraction}
       className="fixed left-4 top-[4.5rem] bottom-4 z-40 flex flex-col group/sidebar overflow-visible rounded-[1.5rem] overscroll-behavior-none"
       style={{
         background: "rgba(10, 15, 30, 0.65)",

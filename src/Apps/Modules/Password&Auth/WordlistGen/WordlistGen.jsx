@@ -56,6 +56,7 @@ const WordlistGen = () => {
     const [selectedWordlist, setSelectedWordlist] = useState(null);
     const [showPreviewModal, setShowPreviewModal] = useState(false);
     const [showImportModal, setShowImportModal] = useState(false);
+    const [showTemplateModal, setShowTemplateModal] = useState(false);
     const [activeGeneratorTab, setActiveGeneratorTab] = useState('profile');
 
     // Demo Data
@@ -79,7 +80,7 @@ const WordlistGen = () => {
         if (tab === 'import') {
             setShowImportModal(true);
         } else if (tab === 'templates') {
-            setCurrentPage('templates');
+            setShowTemplateModal(true);
         } else {
             setActiveGeneratorTab(tab);
             setCurrentPage('generator');
@@ -112,7 +113,7 @@ const WordlistGen = () => {
 
     const handleUseTemplate = (template) => {
         alert(`Deploying ${template.name} to active engine...`);
-        setCurrentPage('dashboard');
+        setShowTemplateModal(false);
     };
 
     if (currentPage === 'generator') {
@@ -126,23 +127,13 @@ const WordlistGen = () => {
         );
     }
 
-    if (currentPage === 'templates') {
-        return (
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="w-full min-h-screen bg-[#f8fafc] dark:bg-[#0b0f1a]">
-                <TemplateGallery
-                    onClose={() => setCurrentPage('dashboard')}
-                    onUseTemplate={handleUseTemplate}
-                />
-            </motion.div>
-        );
-    }
 
     return (
         <div className="w-full min-h-screen bg-[#f8fafc] dark:bg-[#0b0f1a] text-slate-900 dark:text-slate-200 font-sans transition-colors duration-500 p-4 md:p-8 transform-gpu overflow-x-hidden">
             <div className="max-w-[1600px] mx-auto space-y-8 will-change-transform">
 
                 {/* Modern Header */}
-                <header className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 bg-white dark:bg-slate-800/20 border border-slate-200/50 dark:border-slate-700/50 p-6 rounded-[32px] shadow-sm transform-gpu">
+                <header className="relative z-50 flex flex-col lg:flex-row lg:items-center justify-between gap-6 bg-white dark:bg-slate-800/20 border border-slate-200/50 dark:border-slate-700/50 p-6 rounded-[32px] shadow-sm transform-gpu">
                     <div className="flex items-center gap-5">
                         <div className="w-14 h-14 bg-red-600 rounded-2xl flex items-center justify-center text-white shadow-xl shadow-red-600/20 rotate-3 transition-transform hover:rotate-0 duration-500">
                             <Activity size={28} />
@@ -174,7 +165,7 @@ const WordlistGen = () => {
                                         initial={{ opacity: 0, y: 10, scale: 0.95 }}
                                         animate={{ opacity: 1, y: 0, scale: 1 }}
                                         exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                                        className="absolute right-0 mt-4 w-64 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-[24px] shadow-2xl z-50 p-3 overflow-hidden backdrop-blur-xl bg-opacity-90 transform-gpu"
+                                        className="absolute right-0 mt-4 w-64 bg-white dark:bg-[#0b0f1a] border-2 border-slate-200 dark:border-white/20 rounded-[24px] shadow-[0_20px_60px_rgba(0,0,0,0.5)] z-[100] p-3 overflow-hidden transform-gpu !bg-opacity-100"
                                     >
                                         <p className="px-4 py-2 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] border-b border-slate-100 dark:border-slate-800 mb-2">Select Vector Type</p>
                                         {['profile', 'spider', 'mutation', 'mask'].map((type) => (
@@ -253,20 +244,6 @@ const WordlistGen = () => {
                                     </div>
                                 ))}
                             </div>
-
-                            <div className="mt-10 p-6 bg-red-600 rounded-3xl text-white shadow-xl shadow-red-600/20 group cursor-pointer relative overflow-hidden transform-gpu">
-                                <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-16 -mt-16 group-hover:scale-110 transition-transform duration-700" />
-                                <div className="relative z-10 space-y-4">
-                                    <div className="w-12 h-12 bg-white/20 rounded-2xl flex items-center justify-center">
-                                        <Database size={24} />
-                                    </div>
-                                    <div>
-                                        <h4 className="text-lg font-black uppercase tracking-tight">Upgrade Storage</h4>
-                                        <p className="text-xs text-white/70 font-medium leading-relaxed">Unlock multi-terabyte cloud processing and advanced AI pattern recognition.</p>
-                                    </div>
-                                    <button className="w-full py-3 bg-white text-red-600 font-black rounded-xl text-xs uppercase tracking-[0.2em] shadow-lg transition-transform active:scale-95">GO PRO</button>
-                                </div>
-                            </div>
                         </section>
                     </div>
                 </div>
@@ -283,6 +260,12 @@ const WordlistGen = () => {
                 isOpen={showImportModal}
                 onClose={() => setShowImportModal(false)}
                 onImport={handleImport}
+            />
+
+            <TemplateGallery
+                isOpen={showTemplateModal}
+                onClose={() => setShowTemplateModal(false)}
+                onUseTemplate={handleUseTemplate}
             />
 
         </div>

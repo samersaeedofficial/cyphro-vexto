@@ -1,30 +1,53 @@
-import React, { useState } from 'react';
+import React, { useState, memo } from 'react';
 import {
+    Plus,
+    Database,
     Zap,
-    Globe,
-    Shuffle,
-    Hash,
-    Star,
-    User,
-    Download,
-    Eye,
-    Trash2,
     HardDrive,
     Target,
     Activity,
-    Lightbulb,
-    ChevronRight,
-    ArrowUpRight,
-    Plus,
-    FileText,
-    TrendingUp,
-    Shield,
-    Database,
-    Cpu,
-    Search
+    Search,
+    Menu,
+    Bell,
+    Settings,
+    FileText
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+
+// Component Imports
 import WordlistForge from './WordlistForge';
+import RecentWordlists from './components/RecentWordlists';
+import QuickActions from './components/QuickActions';
+import WordlistPreviewModal from './components/WordlistPreviewModal';
+import TemplateGallery from './components/TemplateGallery';
+import ImportWordlistModal from './components/ImportWordlistModal';
+
+// Memoized Stat Card for performance
+const StatCard = memo(({ stat, index }) => (
+    <motion.div
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: index * 0.05 }}
+        className="bg-white dark:bg-slate-800/30 border border-slate-200/50 dark:border-slate-700/30 p-7 rounded-[32px] shadow-sm hover:shadow-xl hover:border-red-500/20 transition-all group overflow-hidden relative transform-gpu"
+    >
+        <div className="absolute -right-4 -bottom-4 text-slate-100 dark:text-slate-800 opacity-20 group-hover:scale-110 transition-transform duration-500 pointer-events-none">
+            <stat.icon size={120} />
+        </div>
+
+        <div className="flex items-center justify-between mb-6 relative z-10">
+            <div className={`p-4 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200/50 dark:border-slate-700/50 shadow-sm ${stat.color}`}>
+                <stat.icon size={24} />
+            </div>
+            <span className="text-[11px] font-black text-emerald-500 bg-emerald-500/10 px-3 py-1.5 rounded-full border border-emerald-500/20 uppercase tracking-widest">
+                {stat.trend}
+            </span>
+        </div>
+        <div className="relative z-10">
+            <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-1">{stat.label}</p>
+            <h3 className="text-4xl font-black text-slate-900 dark:text-white tabular-nums tracking-tight">{stat.value}</h3>
+        </div>
+    </motion.div>
+));
 
 const WordlistGen = () => {
     // App State
@@ -32,6 +55,7 @@ const WordlistGen = () => {
     const [showGenerateMenu, setShowGenerateMenu] = useState(false);
     const [selectedWordlist, setSelectedWordlist] = useState(null);
     const [showPreviewModal, setShowPreviewModal] = useState(false);
+    const [showImportModal, setShowImportModal] = useState(false);
     const [activeGeneratorTab, setActiveGeneratorTab] = useState('profile');
 
     // Demo Data
@@ -40,36 +64,22 @@ const WordlistGen = () => {
         { id: 2, name: 'target1_mutated.txt', type: 'mutation', size: '890 KB', words: 45120, date: 'Yesterday' },
         { id: 3, name: 'companyA_profile.txt', type: 'profile', size: '156 KB', words: 8450, date: '2 days ago' },
         { id: 4, name: 'brute_8char_mask.txt', type: 'mask', size: '4.2 GB', words: 208000000, date: '5 days ago' },
-        { id: 5, name: 'client_web_crawl.txt', type: 'spider', size: '1.1 MB', words: 89000, date: '1 week ago' }
+        { id: 5, name: 'client_web_crawl.txt', type: 'spider', size: '1.1 MB', words: 89000, date: '1 week ago' },
+        { id: 6, name: 'custom_names_v2.txt', type: 'profile', size: '45 KB', words: 3200, date: '2 weeks ago' }
     ]);
-
-    const templates = [
-        { id: 1, name: 'Basic Mutation', type: 'mutation', description: 'Standard rule set for common passwords' },
-        { id: 2, name: 'Profile Quick Gen', type: 'profile', description: 'Generate from social media keywords' },
-        { id: 3, name: '8-Char Brute Force', type: 'mask', description: 'Full numeric/alpha range sequencer' }
-    ];
 
     const stats = [
         { label: 'Total Wordlists', value: '247', trend: '+12%', icon: Database, color: 'text-red-500' },
-        { label: 'Active Generations', value: '18', trend: '+3', icon: Zap, color: 'text-amber-500' },
-        { label: 'Cloud Storage', value: '1.2 GB', trend: '45% free', icon: HardDrive, color: 'text-blue-500' },
+        { label: 'Active Tasks', value: '18', trend: '+3', icon: Zap, color: 'text-amber-500' },
+        { label: 'Disk Usage', value: '1.2 GB', trend: '45% free', icon: HardDrive, color: 'text-blue-500' },
         { label: 'Success Rate', value: '98.2%', trend: 'Stable', icon: Target, color: 'text-emerald-500' },
-    ];
-
-    const quickActions = [
-        { icon: User, label: 'Profile Gen', tab: 'profile' },
-        { icon: Globe, label: 'New Spider', tab: 'spider' },
-        { icon: Shuffle, label: 'Mutate List', tab: 'mutation' },
-        { icon: Hash, label: 'Mask Attack', tab: 'mask' },
-        { icon: Star, label: 'Templates', tab: 'templates' },
-        { icon: Download, label: 'Import List', tab: 'import' }
     ];
 
     const handleQuickAction = (tab) => {
         if (tab === 'import') {
-            alert('Import functionality coming soon');
+            setShowImportModal(true);
         } else if (tab === 'templates') {
-            alert('Templates gallery coming soon');
+            setCurrentPage('templates');
         } else {
             setActiveGeneratorTab(tab);
             setCurrentPage('generator');
@@ -82,70 +92,80 @@ const WordlistGen = () => {
         setShowGenerateMenu(false);
     };
 
+    const handlePreview = (list) => {
+        setSelectedWordlist(list);
+        setShowPreviewModal(true);
+    };
+
+    const handleDelete = (list) => {
+        setWordlists(wordlists.filter(w => w.id !== list.id));
+    };
+
+    const handleDownload = (list) => {
+        alert(`Initializing secure download for ${list.name}...`);
+    };
+
+    const handleImport = (data) => {
+        alert(`Ingesting vector source: ${data.type === 'local' ? data.data.name : data.data}`);
+        setShowImportModal(false);
+    };
+
     const handleUseTemplate = (template) => {
-        setActiveGeneratorTab(template.type);
-        setCurrentPage('generator');
-    };
-
-    const handleWordlistAction = (action, wordlist) => {
-        switch (action) {
-            case 'preview':
-                setSelectedWordlist(wordlist);
-                setShowPreviewModal(true);
-                break;
-            case 'download':
-                alert(`Downloading ${wordlist.name}...`);
-                break;
-            case 'delete':
-                setWordlists(wordlists.filter(w => w.id !== wordlist.id));
-                break;
-        }
-    };
-
-    const getTypeIcon = (type) => {
-        switch (type) {
-            case 'spider': return <Globe size={16} />;
-            case 'mutation': return <Shuffle size={16} />;
-            case 'profile': return <User size={16} />;
-            case 'mask': return <Hash size={16} />;
-            default: return <FileText size={16} />;
-        }
+        alert(`Deploying ${template.name} to active engine...`);
+        setCurrentPage('dashboard');
     };
 
     if (currentPage === 'generator') {
         return (
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="w-full">
-                <WordlistForge 
-                    onBack={() => setCurrentPage('dashboard')} 
+                <WordlistForge
+                    onBack={() => setCurrentPage('dashboard')}
                     initialTab={activeGeneratorTab}
                 />
             </motion.div>
         );
     }
 
-    return (
-        <div className="w-full min-h-screen bg-[#f8fafc] dark:bg-[#0f172a] text-slate-900 dark:text-slate-200 font-sans p-6 md:p-10 transition-colors duration-500">
-            {/* Header Section */}
-            <div className="max-w-[1400px] mx-auto space-y-10">
+    if (currentPage === 'templates') {
+        return (
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="w-full min-h-screen bg-[#f8fafc] dark:bg-[#0b0f1a]">
+                <TemplateGallery
+                    onClose={() => setCurrentPage('dashboard')}
+                    onUseTemplate={handleUseTemplate}
+                />
+            </motion.div>
+        );
+    }
 
-                <header className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
-                    <div className="space-y-1">
-                        <h1 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-white">
-                            Wordlist <span className="text-red-600">Generator</span>
-                        </h1>
-                        <p className="text-slate-500 dark:text-slate-400 text-sm font-medium">
-                            Create and manage high-performance wordlists for security auditing.
-                        </p>
+    return (
+        <div className="w-full min-h-screen bg-[#f8fafc] dark:bg-[#0b0f1a] text-slate-900 dark:text-slate-200 font-sans transition-colors duration-500 p-4 md:p-8 transform-gpu overflow-x-hidden">
+            <div className="max-w-[1600px] mx-auto space-y-8 will-change-transform">
+
+                {/* Modern Header */}
+                <header className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 bg-white dark:bg-slate-800/20 border border-slate-200/50 dark:border-slate-700/50 p-6 rounded-[32px] shadow-sm transform-gpu">
+                    <div className="flex items-center gap-5">
+                        <div className="w-14 h-14 bg-red-600 rounded-2xl flex items-center justify-center text-white shadow-xl shadow-red-600/20 rotate-3 transition-transform hover:rotate-0 duration-500">
+                            <Activity size={28} />
+                        </div>
+                        <div className="space-y-0.5">
+                            <h1 className="text-2xl md:text-3xl font-black tracking-tight text-slate-900 dark:text-white uppercase italic">
+                                Wordlist<span className="text-red-600">Forge</span>
+                            </h1>
+                            <p className="text-slate-500 dark:text-slate-400 text-xs font-bold uppercase tracking-widest flex items-center gap-2">
+                                <span className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse" />
+                                Wordlist Intelligence Hub
+                            </p>
+                        </div>
                     </div>
 
                     <div className="flex items-center gap-3">
-                        <div className="relative">
+                        <div className="relative group">
                             <button
                                 onClick={() => setShowGenerateMenu(!showGenerateMenu)}
-                                className="flex items-center gap-2 px-6 py-3 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-xl shadow-lg shadow-red-600/10 transition-all active:scale-95"
+                                className="flex items-center gap-3 px-8 py-4 bg-red-600 hover:bg-red-700 text-white font-black rounded-2xl shadow-xl shadow-red-600/20 transition-all active:scale-95 uppercase text-xs tracking-widest"
                             >
                                 <Plus size={20} />
-                                <span>Create New</span>
+                                <span>Create Engine</span>
                             </button>
 
                             <AnimatePresence>
@@ -154,16 +174,17 @@ const WordlistGen = () => {
                                         initial={{ opacity: 0, y: 10, scale: 0.95 }}
                                         animate={{ opacity: 1, y: 0, scale: 1 }}
                                         exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                                        className="absolute right-0 mt-3 w-60 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl shadow-xl z-50 p-2 overflow-hidden"
+                                        className="absolute right-0 mt-4 w-64 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-[24px] shadow-2xl z-50 p-3 overflow-hidden backdrop-blur-xl bg-opacity-90 transform-gpu"
                                     >
+                                        <p className="px-4 py-2 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] border-b border-slate-100 dark:border-slate-800 mb-2">Select Vector Type</p>
                                         {['profile', 'spider', 'mutation', 'mask'].map((type) => (
                                             <button
                                                 key={type}
                                                 onClick={() => handleGenerateNew(type)}
-                                                className="w-full flex items-center gap-3 px-4 py-3 text-sm font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700/50 rounded-xl transition-all"
+                                                className="w-full flex items-center justify-between px-4 py-3 text-sm font-bold text-slate-600 dark:text-slate-300 hover:bg-red-600 hover:text-white rounded-xl transition-all group/item mb-1"
                                             >
-                                                <div className="text-red-500">{getTypeIcon(type)}</div>
-                                                <span className="capitalize">{type} Gen</span>
+                                                <span className="capitalize">{type} Engine</span>
+                                                <Plus size={16} className="opacity-0 group-hover/item:opacity-100 transition-opacity" />
                                             </button>
                                         ))}
                                     </motion.div>
@@ -174,176 +195,96 @@ const WordlistGen = () => {
                 </header>
 
                 {/* Stats Dashboard */}
-                <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 transform-gpu">
                     {stats.map((stat, i) => (
-                        <motion.div
-                            key={i}
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: i * 0.1 }}
-                            className="bg-white dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700/50 p-6 rounded-[24px] shadow-sm hover:shadow-md dark:hover:bg-slate-800 transition-all group"
-                        >
-                            <div className="flex items-center justify-between mb-4">
-                                <div className={`p-3 rounded-2xl bg-slate-100 dark:bg-slate-800 border border-slate-200/50 dark:border-slate-700 ${stat.color}`}>
-                                    <stat.icon size={22} />
-                                </div>
-                                <span className="text-[11px] font-bold text-emerald-500 bg-emerald-500/10 px-2 py-1 rounded-lg">
-                                    {stat.trend}
-                                </span>
-                            </div>
-                            <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider">{stat.label}</p>
-                            <h3 className="text-3xl font-bold text-slate-900 dark:text-white mt-1">{stat.value}</h3>
-                        </motion.div>
+                        <StatCard key={i} stat={stat} index={i} />
                     ))}
                 </section>
 
-                {/* Quick Actions Grid */}
-                <section>
-                    <h2 className="text-lg font-bold text-slate-900 dark:text-white mb-6 px-1">Quick Tools</h2>
-                    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
-                        {quickActions.map((action, i) => (
-                            <button
-                                key={i}
-                                onClick={() => handleQuickAction(action.tab)}
-                                className="group flex flex-col items-center gap-4 p-6 bg-white dark:bg-slate-800/40 border border-slate-200 dark:border-slate-700/50 rounded-[24px] hover:border-red-500/50 hover:shadow-lg hover:shadow-red-500/5 transition-all duration-300"
-                            >
-                                <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800 text-slate-400 group-hover:text-red-500 transition-colors">
-                                    <action.icon size={24} />
-                                </div>
-                                <span className="text-xs font-bold text-slate-500 dark:text-slate-400 group-hover:text-slate-900 dark:group-hover:text-white transition-colors">{action.label}</span>
-                            </button>
-                        ))}
+                {/* Quick Actions */}
+                <QuickActions onAction={handleQuickAction} />
+
+                {/* Main Content Grid */}
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start transform-gpu">
+
+                    {/* Recent Wordlists - Left Side (8 cols) */}
+                    <div className="lg:col-span-8 h-[600px] bg-white dark:bg-slate-800/20 border border-slate-200/50 dark:border-slate-700/50 rounded-[32px] p-8 shadow-sm overflow-hidden transform-gpu">
+                        <RecentWordlists
+                            wordlists={wordlists}
+                            onPreview={handlePreview}
+                            onDownload={handleDownload}
+                            onDelete={handleDelete}
+                        />
                     </div>
-                </section>
 
-                {/* Content Sections */}
-                <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
+                    {/* Active Intelligence - Right Side (4 cols) */}
+                    <div className="lg:col-span-4 space-y-8">
+                        <section className="bg-white dark:bg-slate-800/20 border border-slate-200/50 dark:border-slate-700/50 rounded-[32px] p-8 h-full transform-gpu">
+                            <div className="flex items-center justify-between mb-8">
+                                <h2 className="text-xl font-black text-slate-900 dark:text-white uppercase italic tracking-tight flex items-center gap-2">
+                                    <Search size={22} className="text-red-600" />
+                                    Active Scans
+                                </h2>
+                                <button className="p-2 bg-slate-100 dark:bg-slate-800 rounded-lg text-slate-400"><Menu size={16} /></button>
+                            </div>
 
-                    {/* Recent Files */}
-                    <section className="lg:col-span-8 space-y-6">
-                        <div className="flex items-center justify-between px-1">
-                            <h2 className="text-lg font-bold text-slate-900 dark:text-white italic">Recent Wordlists</h2>
-                            <button className="text-xs font-bold text-red-600 hover:underline">View All Files</button>
-                        </div>
-
-                        <div className="bg-white dark:bg-slate-800/40 border border-slate-200 dark:border-slate-700/50 rounded-[32px] overflow-hidden shadow-sm">
-                            <table className="w-full text-left">
-                                <thead className="bg-slate-50/50 dark:bg-slate-800/50 border-b border-slate-100 dark:border-slate-700/50">
-                                    <tr>
-                                        <th className="px-8 py-5 text-[11px] font-bold text-slate-400 uppercase tracking-widest">Name</th>
-                                        <th className="px-8 py-5 text-[11px] font-bold text-slate-400 uppercase tracking-widest text-center">Type</th>
-                                        <th className="px-8 py-5 text-[11px] font-bold text-slate-400 uppercase tracking-widest text-right">Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody className="divide-y divide-slate-100 dark:divide-slate-700/50">
-                                    {wordlists.map((list) => (
-                                        <tr key={list.id} className="hover:bg-slate-50/50 dark:hover:bg-slate-700/20 transition-colors group">
-                                            <td className="px-8 py-5">
-                                                <div className="flex items-center gap-4">
-                                                    <div className="w-10 h-10 bg-slate-100 dark:bg-slate-800 rounded-xl flex items-center justify-center text-slate-400 group-hover:text-red-500 transition-colors">
-                                                        <FileText size={18} />
-                                                    </div>
-                                                    <div>
-                                                        <p className="text-sm font-bold text-slate-900 dark:text-white">{list.name}</p>
-                                                        <p className="text-[11px] text-slate-400 font-medium">{list.words.toLocaleString()} words • {list.size}</p>
-                                                    </div>
-                                                </div>
-                                            </td>
-                                            <td className="px-8 py-5">
-                                                <div className="flex justify-center">
-                                                    <span className="px-3 py-1 bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 rounded-full text-[10px] font-bold uppercase tracking-wide border border-slate-200 dark:border-slate-700">
-                                                        {list.type}
-                                                    </span>
-                                                </div>
-                                            </td>
-                                            <td className="px-8 py-5">
-                                                <div className="flex items-center justify-end gap-2 opacity-60 group-hover:opacity-100 transition-opacity">
-                                                    <button onClick={() => handleWordlistAction('preview', list)} className="p-2 hover:bg-white dark:hover:bg-slate-700 rounded-lg shadow-sm transition-all text-slate-500 hover:text-red-500"><Eye size={16} /></button>
-                                                    <button onClick={() => handleWordlistAction('download', list)} className="p-2 hover:bg-white dark:hover:bg-slate-700 rounded-lg shadow-sm transition-all text-slate-500 hover:text-emerald-500"><Download size={16} /></button>
-                                                    <button onClick={() => handleWordlistAction('delete', list)} className="p-2 hover:bg-white dark:hover:bg-slate-700 rounded-lg shadow-sm transition-all text-slate-500 hover:text-rose-500"><Trash2 size={16} /></button>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    ))}
-                                </tbody>
-                            </table>
-                        </div>
-                    </section>
-
-                    {/* Templates / Modules */}
-                    <section className="lg:col-span-4 space-y-6">
-                        <h2 className="text-lg font-bold text-slate-900 dark:text-white px-1">Active Modules</h2>
-                        <div className="space-y-4">
-                            {templates.map((template) => (
-                                <div key={template.id} className="p-6 bg-white dark:bg-slate-800/40 border border-slate-200 dark:border-slate-700/50 rounded-[28px] shadow-sm hover:border-red-500/30 transition-all group">
-                                    <div className="flex items-start gap-4">
-                                        <div className="p-3 bg-slate-50 dark:bg-slate-800 rounded-2xl text-red-500 group-hover:scale-110 transition-transform">
-                                            {getTypeIcon(template.type)}
+                            <div className="space-y-6">
+                                {[
+                                    { name: 'Subdomain Crawler', progress: 75, status: 'Running', color: 'bg-blue-500' },
+                                    { name: 'Brute-Force Generator', progress: 42, status: 'Active', color: 'bg-red-500' },
+                                    { name: 'Mutation Engine v4', progress: 98, status: 'Optimizing', color: 'bg-emerald-500' },
+                                ].map((scan, i) => (
+                                    <div key={i} className="space-y-3">
+                                        <div className="flex justify-between items-center">
+                                            <p className="text-sm font-bold text-slate-700 dark:text-slate-300">{scan.name}</p>
+                                            <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{scan.status}</span>
                                         </div>
-                                        <div>
-                                            <h4 className="text-sm font-bold text-slate-900 dark:text-white">{template.name}</h4>
-                                            <p className="text-xs text-slate-500 mt-1 line-clamp-2">{template.description}</p>
-                                            <button
-                                                onClick={() => handleUseTemplate(template)}
-                                                className="mt-4 text-[11px] font-bold text-red-600 hover:text-red-700 flex items-center gap-1 group/btn"
-                                            >
-                                                Launch Module <ArrowUpRight size={14} className="group-hover/btn:translate-x-0.5 group-hover/btn:-translate-y-0.5 transition-transform" />
-                                            </button>
+                                        <div className="h-2.5 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden border border-slate-200/50 dark:border-slate-700/50 relative">
+                                            <motion.div
+                                                initial={false}
+                                                animate={{ width: `${scan.progress}%` }}
+                                                className={`h-full ${scan.color} shadow-[0_0_10px_rgba(0,0,0,0.1)] transform-gpu`}
+                                            />
+                                        </div>
+                                        <div className="flex justify-between text-[10px] font-bold text-slate-400">
+                                            <span>{scan.progress}% Complete</span>
+                                            <span>ETA: 12m 4s</span>
                                         </div>
                                     </div>
+                                ))}
+                            </div>
+
+                            <div className="mt-10 p-6 bg-red-600 rounded-3xl text-white shadow-xl shadow-red-600/20 group cursor-pointer relative overflow-hidden transform-gpu">
+                                <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-16 -mt-16 group-hover:scale-110 transition-transform duration-700" />
+                                <div className="relative z-10 space-y-4">
+                                    <div className="w-12 h-12 bg-white/20 rounded-2xl flex items-center justify-center">
+                                        <Database size={24} />
+                                    </div>
+                                    <div>
+                                        <h4 className="text-lg font-black uppercase tracking-tight">Upgrade Storage</h4>
+                                        <p className="text-xs text-white/70 font-medium leading-relaxed">Unlock multi-terabyte cloud processing and advanced AI pattern recognition.</p>
+                                    </div>
+                                    <button className="w-full py-3 bg-white text-red-600 font-black rounded-xl text-xs uppercase tracking-[0.2em] shadow-lg transition-transform active:scale-95">GO PRO</button>
                                 </div>
-                            ))}
-                        </div>
-                    </section>
+                            </div>
+                        </section>
+                    </div>
                 </div>
             </div>
 
-            {/* Preview Modal */}
-            <AnimatePresence>
-                {showPreviewModal && selectedWordlist && (
-                    <motion.div
-                        initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-                        className="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-slate-950/80 backdrop-blur-sm"
-                        onClick={() => setShowPreviewModal(false)}
-                    >
-                        <motion.div
-                            initial={{ scale: 0.9, y: 20 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.9, y: 20 }}
-                            className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 w-full max-w-xl rounded-[40px] overflow-hidden shadow-2xl relative p-10"
-                            onClick={e => e.stopPropagation()}
-                        >
-                            <div className="flex items-center justify-between mb-8">
-                                <h3 className="text-xl font-bold text-slate-900 dark:text-white uppercase italic">{selectedWordlist.name}</h3>
-                                <button onClick={() => setShowPreviewModal(false)} className="text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors"><Plus className="rotate-45" size={24} /></button>
-                            </div>
+            {/* Modals */}
+            <WordlistPreviewModal
+                isOpen={showPreviewModal}
+                onClose={() => setShowPreviewModal(false)}
+                wordlist={selectedWordlist}
+            />
 
-                            <div className="grid grid-cols-2 gap-6 mb-8">
-                                <div className="bg-slate-50 dark:bg-slate-800/50 p-6 rounded-3xl">
-                                    <span className="block text-[10px] text-slate-400 uppercase font-bold tracking-widest mb-1">Payload Size</span>
-                                    <span className="text-lg font-bold text-slate-900 dark:text-white">{selectedWordlist.size}</span>
-                                </div>
-                                <div className="bg-slate-50 dark:bg-slate-800/50 p-6 rounded-3xl">
-                                    <span className="block text-[10px] text-slate-400 uppercase font-bold tracking-widest mb-1">Vectors Found</span>
-                                    <span className="text-lg font-bold text-slate-900 dark:text-white">{selectedWordlist.words.toLocaleString()}</span>
-                                </div>
-                            </div>
+            <ImportWordlistModal
+                isOpen={showImportModal}
+                onClose={() => setShowImportModal(false)}
+                onImport={handleImport}
+            />
 
-                            <div className="space-y-4 mb-10">
-                                <h4 className="text-[11px] font-bold text-slate-400 uppercase tracking-widest">Data Stream Preview</h4>
-                                <div className="p-6 bg-slate-50 dark:bg-black rounded-3xl font-mono text-xs text-slate-600 dark:text-red-500 border border-slate-200 dark:border-red-900/20 max-h-40 overflow-y-auto">
-                                    {['admin', 'password', 'login', 'user', 'test', 'demo', 'guest', 'root', 'system', 'config'].map((w, i) => (
-                                        <div key={i} className="py-1 border-b border-slate-200/50 dark:border-white/5 last:border-0">{w}</div>
-                                    ))}
-                                </div>
-                            </div>
-
-                            <div className="flex justify-end gap-4">
-                                <button onClick={() => setShowPreviewModal(false)} className="px-6 py-3 rounded-xl text-sm font-bold text-slate-500 hover:text-slate-900 dark:hover:text-white transition-colors uppercase">Dismiss</button>
-                                <button className="px-8 py-3 bg-red-600 hover:bg-red-700 text-white font-bold rounded-2xl shadow-lg shadow-red-600/20 transition-all uppercase text-xs tracking-widest">Download Asset</button>
-                            </div>
-                        </motion.div>
-                    </motion.div>
-                )}
-            </AnimatePresence>
         </div>
     );
 };

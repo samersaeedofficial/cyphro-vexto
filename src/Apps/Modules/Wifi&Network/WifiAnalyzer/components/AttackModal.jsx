@@ -55,7 +55,7 @@ const SignalBars = ({ strength, active }) => {
    );
 };
 
-const AttackModal = ({ isOpen, onClose }) => {
+const AttackModal = ({ isOpen, onClose, onStartAttack }) => {
    const [isLoading, setIsLoading] = useState(true);
    const [view, setView] = useState("list"); // 'list' or 'manual'
    const [selectedWifi, setSelectedWifi] = useState(null);

@@ -14,6 +14,8 @@ import {
 import WifiHistory from "./components/WifiHistory";
 import AttackModal from "./components/AttackModal";
 import FullDiscovery from "./components/FullDiscovery";
+import WifiAttackPanel from "./components/WifiAttackPanel";
+import WifiDetailsPanel from "./components/WifiDetailsPanel";
 
 // ─── Constants ─────────────────────────────────────────────────────────────
 const CURRENT_WIFI = {
@@ -28,8 +30,15 @@ const CURRENT_WIFI = {
 };
 
 const WifiAnalyzer = () => {
-  const [activeView, setActiveView] = useState("dashboard"); // 'dashboard' or 'discovery'
+  const [activeView, setActiveView] = useState("dashboard"); // 'dashboard', 'discovery', 'attack', or 'details'
   const [isAttackModalOpen, setIsAttackModalOpen] = useState(false);
+  const [selectedTarget, setSelectedTarget] = useState(null);
+
+  const handleStartAttack = (network) => {
+    setSelectedTarget(network);
+    setActiveView("attack");
+    setIsAttackModalOpen(false);
+  };
 
   return (
     <div className="w-full min-h-screen bg-slate-950/20">
@@ -69,14 +78,14 @@ const WifiAnalyzer = () => {
                 transition={{ duration: 0.4 }}
                 className="flex items-center gap-3"
               >
-                <button 
+                <button
                   onClick={() => setActiveView("discovery")}
                   className="px-6 py-3 rounded-2xl bg-slate-900/60 border border-white/5 text-slate-400 font-bold hover:text-white hover:bg-white/5 transition-colors flex items-center gap-2 group"
                 >
                   <Search className="w-4 h-4 transition-transform group-hover:scale-105" />
                   Full Discovery
                 </button>
-                <button 
+                <button
                   onClick={() => setIsAttackModalOpen(true)}
                   className="px-6 py-3 rounded-2xl bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 font-bold hover:bg-cyan-500/20 transition-all flex items-center gap-2 shadow-[0_0_15px_rgba(6,182,212,0.1)] group"
                 >
@@ -92,10 +101,11 @@ const WifiAnalyzer = () => {
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.1 }}
-              className="relative group overflow-hidden rounded-[2.5rem]"
+              className="relative group overflow-hidden rounded-[2.5rem] cursor-pointer"
+              onClick={() => setActiveView("details")}
             >
               <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/5 via-transparent to-purple-500/5 pointer-events-none" />
-              <div className="relative bg-slate-900/40 backdrop-blur-xl border border-white/5 p-8 md:p-10">
+              <div className="relative bg-slate-900/40 backdrop-blur-xl border border-white/5 p-8 md:p-10 transition-all group-hover:bg-white/[0.03] group-hover:border-white/10">
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 items-center">
 
                   <div className="space-y-6">
@@ -113,14 +123,14 @@ const WifiAnalyzer = () => {
                   </div>
 
                   <div className="grid grid-cols-2 gap-4">
-                    <div className="p-5 rounded-3xl bg-white/[0.03] border border-white/5">
+                    <div className="p-5 rounded-3xl bg-white/[0.03] border border-white/5 group-hover:border-cyan-500/20 transition-colors">
                       <div className="text-[10px] font-mono text-slate-500 mb-2 uppercase tracking-widest">Active Clients</div>
                       <div className="text-2xl font-bold text-white flex items-center gap-2">
                         <Users className="w-5 h-5 text-cyan-500/50" />
                         {CURRENT_WIFI.clients}
                       </div>
                     </div>
-                    <div className="p-5 rounded-3xl bg-white/[0.03] border border-white/5">
+                    <div className="p-5 rounded-3xl bg-white/[0.03] border border-white/5 group-hover:border-cyan-500/20 transition-colors">
                       <div className="text-[10px] font-mono text-slate-500 mb-2 uppercase tracking-widest">Signal Health</div>
                       <div className="text-2xl font-bold text-white flex items-center gap-2">
                         <Signal className="w-5 h-5 text-cyan-500/50" />
@@ -130,7 +140,7 @@ const WifiAnalyzer = () => {
                   </div>
 
                   <div className="flex flex-col gap-3">
-                    <button className="w-full py-4 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 text-white font-bold transition-colors flex items-center justify-center gap-3 group">
+                    <button className="w-full py-4 rounded-2xl bg-white/5 border border-white/10 group-hover:bg-cyan-500/10 group-hover:border-cyan-500/20 text-white font-bold transition-all flex items-center justify-center gap-3 group">
                       Deep Traffic Analysis
                       <ChevronRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
                     </button>
@@ -146,7 +156,7 @@ const WifiAnalyzer = () => {
 
             <WifiHistory />
           </motion.div>
-        ) : (
+        ) : activeView === "discovery" ? (
           <motion.div
             key="discovery"
             initial={{ opacity: 0, x: 20 }}
@@ -156,16 +166,43 @@ const WifiAnalyzer = () => {
           >
             <FullDiscovery 
               onBack={() => setActiveView("dashboard")} 
-              onStartAttack={() => setIsAttackModalOpen(true)}
+              onStartAttack={handleStartAttack}
+            />
+          </motion.div>
+        ) : activeView === "details" ? (
+          <motion.div
+            key="details"
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -20 }}
+            className="w-full p-4 md:p-8 lg:p-12"
+          >
+            <WifiDetailsPanel 
+              network={CURRENT_WIFI}
+              onBack={() => setActiveView("dashboard")} 
+            />
+          </motion.div>
+        ) : (
+          <motion.div
+            key="attack"
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -20 }}
+            className="w-full p-4 md:p-8 lg:p-12"
+          >
+            <WifiAttackPanel 
+              network={selectedTarget} 
+              onBack={() => setActiveView("discovery")} 
             />
           </motion.div>
         )}
       </AnimatePresence>
 
       {/* Modals */}
-      <AttackModal 
-        isOpen={isAttackModalOpen} 
-        onClose={() => setIsAttackModalOpen(false)} 
+      <AttackModal
+        isOpen={isAttackModalOpen}
+        onClose={() => setIsAttackModalOpen(false)}
+        onStartAttack={handleStartAttack}
       />
     </div>
   );

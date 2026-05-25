@@ -4,8 +4,7 @@ import { Toaster } from "@/shared/ui/feedback";
 import { useEffect, useRef, useState } from "react";
 import { allRoutes } from "@/routes";
 import { DashboardLayout } from "@/Apps/Dashboard/layout/DashboardLayout";
-import { PageLoader } from "@/components/PageLoader";
-
+import CyproVextroReveal from "@/components/CyproVextroReveal";
 
 const queryClient = new QueryClient();
 
@@ -20,10 +19,12 @@ function usePageTransition() {
   useEffect(() => {
     if (location !== displayLocation) {
       const isLandingSide = (path) => path === "/" || path.startsWith("/info");
-      const isAppSide = (path) => path.startsWith("/dashboard") || path.startsWith("/modules");
+      const isAppSide = (path) =>
+        path.startsWith("/dashboard") || path.startsWith("/modules");
 
       // Only trigger loader when moving LandingSide <-> AppSide
-      const crossingBoundary = (isLandingSide(displayLocation) && isAppSide(location)) ||
+      const crossingBoundary =
+        (isLandingSide(displayLocation) && isAppSide(location)) ||
         (isAppSide(displayLocation) && isLandingSide(location));
 
       if (crossingBoundary) {
@@ -55,7 +56,9 @@ function Router() {
   const { loading, displayLocation } = usePageTransition();
 
   // Check if we are in the dashboard area
-  const isDashboardArea = displayLocation.startsWith("/dashboard") || displayLocation.startsWith("/modules");
+  const isDashboardArea =
+    displayLocation.startsWith("/dashboard") ||
+    displayLocation.startsWith("/modules");
 
   const routes = (
     <Switch location={displayLocation}>
@@ -67,12 +70,8 @@ function Router() {
 
   return (
     <>
-      <PageLoader isVisible={loading} />
-      {isDashboardArea ? (
-        <DashboardLayout>{routes}</DashboardLayout>
-      ) : (
-        routes
-      )}
+      <CyproVextroReveal isVisible={loading} />
+      {isDashboardArea ? <DashboardLayout>{routes}</DashboardLayout> : routes}
     </>
   );
 }

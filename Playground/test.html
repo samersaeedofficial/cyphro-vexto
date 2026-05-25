@@ -1,0 +1,351 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Cypro Vextro Ultra Cinematic Reveal</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&display=swap"
+      rel="stylesheet"
+    />
+
+    <style>
+      :root {
+        --bg-color: #000000;
+        --white-fill: #ffffff;
+        /* Premium Futuristic Font Setup */
+        --font-cyber: "Orbitron", sans-serif;
+      }
+
+      body {
+        margin: 0;
+        padding: 0;
+        background-color: var(--bg-color);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        overflow: hidden;
+        font-family: var(--font-cyber);
+      }
+
+      /* --- Layout Architecture --- */
+      .container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+      }
+
+      .canvas-container {
+        position: relative;
+        width: 320px;
+        height: 320px;
+        margin-bottom: -15px; /* Perfect spacing balance */
+      }
+
+      svg {
+        width: 100%;
+        height: 100%;
+        overflow: visible;
+      }
+
+      /* --- Laser Stroke Design --- */
+      .laser-track {
+        fill: transparent;
+        stroke: url(#laserGradient);
+        stroke-width: 1.6;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+        animation: megaGlowLoop 6s linear infinite;
+      }
+
+      /* Dynamic Outer Glow Loops */
+      @keyframes megaGlowLoop {
+        0%,
+        100% {
+          filter: drop-shadow(0 0 4px rgba(255, 255, 255, 0.9))
+            drop-shadow(0 0 10px #00ff66) drop-shadow(0 0 22px #ff0055);
+        }
+        25% {
+          filter: drop-shadow(0 0 4px rgba(255, 255, 255, 0.9))
+            drop-shadow(0 0 10px #ff7700) drop-shadow(0 0 22px #a000ff);
+        }
+        50% {
+          filter: drop-shadow(0 0 4px rgba(255, 255, 255, 0.9))
+            drop-shadow(0 0 10px #00d2ff) drop-shadow(0 0 22px #ff00aa);
+        }
+        75% {
+          filter: drop-shadow(0 0 4px rgba(255, 255, 255, 0.9))
+            drop-shadow(0 0 10px #ff0055) drop-shadow(0 0 22px #00ffcc);
+        }
+      }
+
+      /* --- Solid White V Fill --- */
+      .solid-fill {
+        fill: var(--white-fill);
+        clip-path: url(#wipeClip);
+        opacity: 0;
+      }
+
+      .show-fill {
+        animation:
+          fadeInFill 0.1s linear forwards,
+          wipeLeftToRight 1.2s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+      }
+
+      @keyframes fadeInFill {
+        to {
+          opacity: 1;
+        }
+      }
+      @keyframes wipeLeftToRight {
+        from {
+          width: 0;
+        }
+        to {
+          width: 100px;
+        }
+      }
+
+      /* --- 🌟 Ultra Modern Cinematic Text Layout & Advanced Reveal --- */
+      .brand-text {
+        font-size: 2.1rem;
+        font-weight: 900;
+        text-transform: uppercase;
+        text-align: center;
+        position: relative;
+
+        /* Advanced Ink Flow inside Font Surface */
+        background: linear-gradient(
+          135deg,
+          #00ff66,
+          #ff7700,
+          #ff0055,
+          #a000ff,
+          #00d2ff,
+          #00ff66
+        );
+        background-size: 300% 300%;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+
+        /* 🔑 Initial State: Completely cinematic ghost form */
+        opacity: 0;
+        letter-spacing: 28px; /* High cinematic spread */
+        transform: scale(0.9) translateY(20px);
+        filter: blur(15px) brightness(0);
+
+        /* Hyper smooth cubic transition for premium organic fluid reveal */
+        transition:
+          opacity 1.6s cubic-bezier(0.25, 1, 0.5, 1),
+          letter-spacing 1.8s cubic-bezier(0.34, 1.56, 0.64, 1),
+          transform 1.6s cubic-bezier(0.25, 1, 0.5, 1),
+          filter 1.4s ease-out;
+      }
+
+      /* 🌟 Triggered State via JavaScript */
+      .brand-text.reveal {
+        opacity: 1;
+        letter-spacing: 8px; /* Snaps beautifully into modern crisp tracking */
+        transform: scale(1) translateY(0);
+        filter: blur(0px) brightness(1.3)
+          drop-shadow(0 0 12px rgba(0, 210, 255, 0.4));
+
+        /* Starts continuous independent fluid ink rotation */
+        animation: textInkShift 4s linear infinite;
+      }
+
+      /* Infinite Unidirectional Text Liquid Loop */
+      @keyframes textInkShift {
+        0% {
+          background-position: 0% 50%;
+        }
+        50% {
+          background-position: 100% 50%;
+        }
+        100% {
+          background-position: 0% 50%;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="canvas-container">
+        <svg viewBox="0 0 100 100">
+          <defs>
+            <linearGradient
+              id="laserGradient"
+              x1="100%"
+              y1="0%"
+              x2="0%"
+              y2="100%"
+            >
+              <stop offset="0%" stop-color="#00ff66" />
+              <stop offset="20%" stop-color="#ff7700" />
+              <stop offset="40%" stop-color="#ff0055" />
+              <stop offset="60%" stop-color="#a000ff" />
+              <stop offset="80%" stop-color="#00d2ff" />
+              <stop offset="100%" stop-color="#00ff66" />
+
+              <animate
+                id="flowAnim"
+                attributeName="x1"
+                values="100%; 0%"
+                dur="2.5s"
+                repeatCount="indefinite"
+              />
+              <animate
+                id="flowAnimY"
+                attributeName="y1"
+                values="0%; 100%"
+                dur="2.5s"
+                repeatCount="indefinite"
+              />
+              <animate
+                id="flowAnimX2"
+                attributeName="x2"
+                values="0%; -100%"
+                dur="2.5s"
+                repeatCount="indefinite"
+              />
+              <animate
+                id="flowAnimY2"
+                attributeName="y2"
+                values="100%; 200%"
+                dur="2.5s"
+                repeatCount="indefinite"
+              />
+            </linearGradient>
+
+            <clipPath id="wipeClip">
+              <rect id="wipe-rect" x="0" y="0" width="0" height="100" />
+            </clipPath>
+          </defs>
+
+          <path
+            id="v-fill"
+            class="solid-fill"
+            d="M 10,20 H 36 V 26 H 30 L 46,74 L 62,26 H 56 V 20 H 82 V 26 H 76 L 53,82 H 39 L 16,26 H 10 Z"
+          />
+
+          <path
+            id="laser"
+            class="laser-track"
+            d="M 10,20 H 36 V 26 H 30 L 46,74 L 62,26 H 56 V 20 H 82 V 26 H 76 L 53,82 H 39 L 16,26 H 10 Z"
+          />
+        </svg>
+      </div>
+
+      <div id="text-reveal" class="brand-text">Cypro Vextro</div>
+    </div>
+
+    <script>
+      const laser = document.getElementById("laser");
+      const vFill = document.getElementById("v-fill");
+      const textReveal = document.getElementById("text-reveal");
+      const totalLength = laser.getTotalLength();
+
+      const maxCircles = 4;
+      const speedFactor = 5.8;
+
+      let currentOffset = 0;
+      let currentSegmentLength = 35;
+      let isFullVLocked = false;
+
+      // Initial ghost offset mapping
+      document.getElementById("flowAnim").setAttribute("values", "200%; 200%");
+      document
+        .getElementById("flowAnimY")
+        .setAttribute("values", "-100%; -100%");
+
+      function runSeamlessLaser() {
+        if (isFullVLocked) return;
+
+        currentOffset -= speedFactor;
+
+        if (currentSegmentLength < 190) {
+          currentSegmentLength += 0.18;
+        }
+
+        laser.style.strokeDasharray = `${currentSegmentLength} ${totalLength}`;
+        laser.style.strokeDashoffset = currentOffset;
+
+        if (Math.abs(currentOffset) < totalLength * maxCircles) {
+          requestAnimationFrame(runSeamlessLaser);
+        } else {
+          snapAndLiquidFlow();
+        }
+      }
+
+      function snapAndLiquidFlow() {
+        isFullVLocked = true;
+
+        laser.style.transition =
+          "stroke-dasharray 0.4s cubic-bezier(0.1, 0.8, 0.3, 1), stroke-dashoffset 0.4s cubic-bezier(0.1, 0.8, 0.3, 1)";
+        laser.style.strokeDasharray = `${totalLength} ${totalLength}`;
+        laser.style.strokeDashoffset = -totalLength * maxCircles;
+
+        // Top-Right se gate entry open karein
+        setTimeout(() => {
+          document
+            .getElementById("flowAnim")
+            .setAttribute("values", "200%; 0%");
+          document
+            .getElementById("flowAnimY")
+            .setAttribute("values", "-100%; 100%");
+          document
+            .getElementById("flowAnimX2")
+            .setAttribute("values", "100%; -100%");
+          document
+            .getElementById("flowAnimY2")
+            .setAttribute("values", "0%; 200%");
+
+          document.getElementById("flowAnim").beginElement();
+          document.getElementById("flowAnimY").beginElement();
+          document.getElementById("flowAnimX2").beginElement();
+          document.getElementById("flowAnimY2").beginElement();
+        }, 200);
+
+        // 🌟 ADVANCED TEXT REVEAL TRIGGER
+        setTimeout(() => {
+          textReveal.classList.add("reveal");
+        }, 850);
+
+        // Solid White Wipe Fill Execution
+        setTimeout(() => {
+          vFill.classList.add("show-fill");
+
+          // Auto loop sequence preview reset (7 seconds hold space for full cinematic view)
+          setTimeout(() => {
+            vFill.classList.remove("show-fill");
+            textReveal.classList.remove("reveal");
+            laser.style.transition = "none";
+
+            document
+              .getElementById("flowAnim")
+              .setAttribute("values", "200%; 200%");
+            document
+              .getElementById("flowAnimY")
+              .setAttribute("values", "-100%; -100%");
+
+            currentOffset = 0;
+            currentSegmentLength = 35;
+            isFullVLocked = false;
+            requestAnimationFrame(runSeamlessLaser);
+          }, 7000);
+        }, 2400);
+      }
+
+      window.onload = () => {
+        requestAnimationFrame(runSeamlessLaser);
+      };
+    </script>
+  </body>
+</html>

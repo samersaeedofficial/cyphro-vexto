@@ -4,6 +4,7 @@ import WordlistGen from "@/Apps/Modules/Password&Auth/WordlistGen/WordlistGen";
 import PasswordCracker from "@/Apps/Modules/Password&Auth/PasswordCracker/PasswordCracker";
 import PhishingManager from "@/Apps/Modules/SocialEngineering/PhishingManager/PhishingManager";
 import GoogleSignInTemplate from "@/Apps/Templates/GoogleSignIn/GoogleSignInTemplate";
+import FaceBookLoginTemplate from "@/Apps/Templates/Meta/Facebook/FaceBookLoginTemplate";
 
 export const ModuleRoutes = [
   {
@@ -25,6 +26,10 @@ export const ModuleRoutes = [
   {
     path: "/template/google-signin",
     component: GoogleSignInTemplate,
+  },
+  {
+    path: "/template/facebook-login",
+    component: FaceBookLoginTemplate,
   },
   {
     path: "/modules/:id",

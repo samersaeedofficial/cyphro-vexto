@@ -16,7 +16,6 @@ const loginTemplates = [
     id: "goog-v2",
     title: "Google Workspace Portal",
     version: "v2.8 (2026 Material You)",
-    // CHANGED: Linked directly to your internal static route path string for seamless environment switching
     previewUrl: "/template/google-signin",
     accentColor: "from-blue-500 via-red-500 to-yellow-500",
     glowColor: "shadow-blue-500/10",
@@ -25,25 +24,44 @@ const loginTemplates = [
       "Mobile Authenticator CSS Match",
       "Responsive Layout Core",
     ],
+    // UPDATED: High-Fidelity preview matching the exact dark theme and 2-column structure of your GoogleSignInTemplate
     htmlSnippet: (
-      <div className="w-full h-full bg-slate-950 flex flex-col items-center justify-center p-3 rounded-xl border border-slate-800/80 text-slate-200">
-        <div className="flex gap-1 mb-3 transform scale-90">
-          <span className="w-2.5 h-2.5 rounded-full bg-[#4285F4]" />
-          <span className="w-2.5 h-2.5 rounded-full bg-[#EA4335]" />
-          <span className="w-2.5 h-2.5 rounded-full bg-[#FBBC05]" />
-          <span className="w-2.5 h-2.5 rounded-full bg-[#34A853]" />
-        </div>
-        <div className="w-16 h-1.5 bg-slate-700 rounded mb-1" />
-        <div className="w-24 h-1 bg-slate-800 rounded mb-4" />
-        <div className="w-full space-y-2 px-1">
-          <div className="w-full h-6 border border-slate-800 rounded px-1.5 flex items-center bg-slate-900/40">
-            <div className="w-14 h-1 bg-slate-700 rounded-sm" />
+      <div className="w-full h-full bg-[#1f1f1f] flex flex-col items-center justify-center p-1.5 rounded-lg border border-gray-800/80 shadow-inner">
+        <div className="w-full h-full bg-[#0e0e0e] rounded-[6px] p-2 flex gap-2 shadow-sm">
+          {/* Left Side Container (Logo & Text) */}
+          <div className="w-1/2 flex flex-col">
+            {/* Google Logo Representation */}
+            <div className="flex gap-[2px] mb-2 mt-0.5">
+              <span className="w-[3px] h-[3px] rounded-full bg-[#EA4335]" />
+              <span className="w-[3px] h-[3px] rounded-full bg-[#4285F4]" />
+              <span className="w-[3px] h-[3px] rounded-full bg-[#FBBC05]" />
+              <span className="w-[3px] h-[3px] rounded-full bg-[#34A853]" />
+            </div>
+            {/* "Sign in" Header */}
+            <div className="w-10 h-2 bg-white rounded-sm mb-1.5" />
+            {/* "with your Google Account" Paragraph */}
+            <div className="w-[90%] h-[1.5px] bg-[#e3e3e3] rounded-sm mb-[2px]" />
+            <div className="w-[70%] h-[1.5px] bg-[#e3e3e3] rounded-sm" />
           </div>
-          <div className="w-full h-6 border border-slate-800 rounded px-1.5 flex items-center bg-slate-900/40">
-            <div className="w-10 h-1 bg-slate-700 rounded-sm" />
-          </div>
-          <div className="w-full h-6 bg-[#1a73e8] hover:bg-[#155cb8] rounded flex items-center justify-center transition-colors shadow-md">
-            <div className="w-12 h-1 bg-white rounded-sm" />
+
+          {/* Right Side Container (Inputs & Buttons) */}
+          <div className="w-1/2 flex flex-col pt-1">
+            {/* Input Box */}
+            <div className="w-full h-[22px] border border-[#8d8d8d] rounded-[2px] flex items-center px-1 mb-1.5">
+              <div className="w-8 h-[2px] bg-[#b0b0b0] rounded-sm" />
+            </div>
+            {/* Forgot email */}
+            <div className="w-7 h-[2px] bg-[#a8c7fa] rounded-sm mb-3" />
+
+            {/* Bottom Action Buttons */}
+            <div className="mt-auto flex justify-between items-center mb-0.5">
+              {/* Create account button */}
+              <div className="w-8 h-[2.5px] bg-[#a8c7fa] rounded-sm" />
+              {/* Next button */}
+              <div className="w-8 h-3.5 bg-[#a8c7fa] rounded-full flex items-center justify-center">
+                <div className="w-3 h-[2px] bg-[#062e6f] rounded-sm" />
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -53,7 +71,7 @@ const loginTemplates = [
     id: "meta-v4",
     title: "Meta Core Interface",
     version: "v4.1 (Dynamic UI Suite)",
-    previewUrl: "https://www.facebook.com",
+    previewUrl: "/template/facebook-login",
     accentColor: "from-blue-600 to-cyan-500",
     glowColor: "shadow-blue-600/10",
     features: [
@@ -119,9 +137,8 @@ const loginTemplates = [
 const TemplateSelectionPage = ({ onBack }) => {
   const [selectedTemplate, setSelectedTemplate] = useState(null);
 
-  // FIXED: Standard routing redirection logic to trigger internal paths context securely
   const handleFullPreview = (e, url) => {
-    e.stopPropagation(); // Event bubble block logic
+    e.stopPropagation();
     window.open(url, "_blank", "noopener,noreferrer");
   };
 

@@ -32,7 +32,6 @@ import {
   Layers,
   GitBranch,
 } from "lucide-react";
-import { DashboardLayout } from "@/Apps/Dashboard/layout/DashboardLayout";
 
 const MODULE_META = {
   "port-scanner": {
@@ -787,12 +786,20 @@ export function ModulePage() {
             </div>
             <div className="space-y-3">
               <div className="flex items-center justify-between">
-                <span className="text-[10px] uppercase font-bold text-slate-500">Language</span>
-                <span className="text-xs font-mono text-slate-300">{meta.backendLang}</span>
+                <span className="text-[10px] uppercase font-bold text-slate-500">
+                  Language
+                </span>
+                <span className="text-xs font-mono text-slate-300">
+                  {meta.backendLang}
+                </span>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-[10px] uppercase font-bold text-slate-500">Status</span>
-                <span className="text-xs font-mono text-yellow-500">Ready for Connect</span>
+                <span className="text-[10px] uppercase font-bold text-slate-500">
+                  Status
+                </span>
+                <span className="text-xs font-mono text-yellow-500">
+                  Ready for Connect
+                </span>
               </div>
             </div>
           </div>

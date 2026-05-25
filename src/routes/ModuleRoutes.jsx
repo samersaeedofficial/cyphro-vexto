@@ -2,6 +2,8 @@ import { ModulePage } from "@/Apps/Modules/ModulePage";
 import WifiAnalyzer from "@/Apps/Modules/Wifi&Network/WifiAnalyzer/WifiAnalyzer";
 import WordlistGen from "@/Apps/Modules/Password&Auth/WordlistGen/WordlistGen";
 import PasswordCracker from "@/Apps/Modules/Password&Auth/PasswordCracker/PasswordCracker";
+import PhishingManager from "@/Apps/Modules/SocialEngineering/PhishingManager/PhishingManager";
+import GoogleSignInTemplate from "@/Apps/Templates/GoogleSignIn/GoogleSignInTemplate";
 
 export const ModuleRoutes = [
   {
@@ -15,6 +17,14 @@ export const ModuleRoutes = [
   {
     path: "/modules/password-cracker",
     component: PasswordCracker,
+  },
+  {
+    path: "/modules/phishing",
+    component: PhishingManager,
+  },
+  {
+    path: "/template/google-signin",
+    component: GoogleSignInTemplate,
   },
   {
     path: "/modules/:id",

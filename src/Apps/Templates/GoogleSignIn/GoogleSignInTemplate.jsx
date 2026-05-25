@@ -1,9 +1,42 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
+
+const languages = [
+  "Afrikaans",
+  "azərbaycan",
+  "bosanski",
+  "català",
+  "Čeština",
+  "Cymraeg",
+  "Dansk",
+  "Deutsch",
+  "eesti",
+  "English (United Kingdom)",
+  "English (United States)",
+  "Español (España)",
+  "Español (Latinoamérica)",
+  "Français",
+];
 
 const GoogleSignInTemplate = () => {
   const [email, setEmail] = useState("");
   const [isFocused, setIsFocused] = useState(false);
   const [error, setError] = useState(false);
+
+  // Dropdown States
+  const [showDropdown, setShowDropdown] = useState(false);
+  const [selectedLang, setSelectedLang] = useState("English (United States)");
+  const dropdownRef = useRef(null);
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setShowDropdown(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -14,7 +47,7 @@ const GoogleSignInTemplate = () => {
     }
 
     setError(false);
-    console.log(email);
+    console.log("Submitted Email:", email);
   };
 
   return (
@@ -79,7 +112,6 @@ const GoogleSignInTemplate = () => {
                   <svg viewBox="0 0 24 24">
                     <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"></path>
                   </svg>
-
                   <span>Enter an email or phone number</span>
                 </div>
               )}
@@ -108,10 +140,40 @@ const GoogleSignInTemplate = () => {
 
         {/* FOOTER */}
         <div className="footer">
-          <div className="lang">
-            <select>
-              <option>English (United States)</option>
-            </select>
+          <div className="lang-dropdown-container" ref={dropdownRef}>
+            <div
+              className={`dropdown-trigger ${showDropdown ? "active" : ""}`}
+              onClick={() => setShowDropdown(!showDropdown)}
+            >
+              <span>{selectedLang}</span>
+              <svg
+                width="18"
+                height="18"
+                viewBox="0 0 24 24"
+                fill="currentColor"
+              >
+                <path d="M7 10l5 5 5-5z"></path>
+              </svg>
+            </div>
+
+            {showDropdown && (
+              <div className="custom-dropdown-menu">
+                <ul>
+                  {languages.map((lang) => (
+                    <li
+                      key={lang}
+                      className={selectedLang === lang ? "selected" : ""}
+                      onClick={() => {
+                        setSelectedLang(lang);
+                        setShowDropdown(false);
+                      }}
+                    >
+                      {lang}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
           </div>
 
           <div className="footer-links">
@@ -131,6 +193,7 @@ const GoogleSignInTemplate = () => {
 
         body{
           font-family: "Google Sans",Roboto,Arial,sans-serif;
+          background: #1f1f1f;
         }
 
         .google-page{
@@ -141,67 +204,73 @@ const GoogleSignInTemplate = () => {
           flex-direction:column;
           justify-content:center;
           align-items:center;
-          padding:32px;
+          padding:24px;
         }
 
         .signin-card{
           width:100%;
-          max-width:1340px;
-          min-height:630px;
+          max-width:1140px;
           background:#0e0e0e;
-          border-radius:32px;
+          border-radius:28px;
           display:flex;
           justify-content:space-between;
-          padding:64px 72px;
+          padding: 32px 40px; 
         }
 
         .left-side{
           width:50%;
           display:flex;
           flex-direction:column;
+          padding-right: 16px;
+        }
+
+        .google-logo {
+          margin-top: 10px; /* Added to move logo and left content down slightly */
         }
 
         .google-logo svg{
-          width:42px;
-          height:42px;
+          width:40px;
+          height:40px;
         }
 
         .left-side h1{
           color:#fff;
-          font-size:58px;
+          font-size:36px; 
           font-weight:400;
-          margin-top:32px;
-          letter-spacing:-1px;
+          margin-top:28px;
+          letter-spacing: -0.5px;
+          font-family: sans-serif; 
         }
 
         .left-side p{
           color:#e3e3e3;
-          font-size:26px;
-          line-height:38px;
-          margin-top:28px;
-          max-width:560px;
+          font-size:16px; 
+          line-height:26px;
+          margin-top:20px;
+          max-width:440px;
           font-weight:400;
+          font-family: "Google Sans", sans-serif; 
         }
 
         .right-side{
-          width:48%;
+          width:50%;
           display:flex;
           align-items:flex-start;
           justify-content:center;
-          padding-top:70px;
+          padding-top:56px; 
         }
 
         .right-side form{
           width:100%;
-          max-width:620px;
+          max-width:500px; 
           display:flex;
           flex-direction:column;
-          min-height:420px;
+          margin-top: 16px; /* Added to move input field and right content down without adding padding to container */
         }
 
         .input-box{
           width:100%;
-          height:78px;
+          height:56px; 
           position:relative;
         }
 
@@ -210,30 +279,40 @@ const GoogleSignInTemplate = () => {
           height:100%;
           background:transparent;
           border:1px solid #8d8d8d;
-          border-radius:6px;
+          border-radius:4px;
           outline:none;
           color:white;
-          font-size:24px;
-          padding:24px 18px;
-          transition:0.2s;
+          font-size:18px;
+          padding:16px;
+          transition:0.2s ease-in-out;
+        }
+
+        /* AUTOFILL FIX */
+        input:-webkit-autofill,
+        input:-webkit-autofill:hover, 
+        input:-webkit-autofill:focus, 
+        input:-webkit-autofill:active{
+            -webkit-box-shadow: 0 0 0 30px #0e0e0e inset !important;
+            -webkit-text-fill-color: white !important;
+            transition: background-color 5000s ease-in-out 0s;
         }
 
         .input-box label{
           position:absolute;
           top:50%;
-          left:18px;
+          left:16px;
           transform:translateY(-50%);
           color:#b0b0b0;
-          font-size:22px;
+          font-size:18px;
           background:#0e0e0e;
           padding:0 6px;
-          transition:0.2s;
+          transition:0.2s ease-in-out;
           pointer-events:none;
         }
 
         .input-box.focused label{
           top:0;
-          font-size:15px;
+          font-size:13px;
           color:#8ab4f8;
         }
 
@@ -254,8 +333,8 @@ const GoogleSignInTemplate = () => {
           align-items:center;
           gap:8px;
           color:#f28b82;
-          margin-top:12px;
-          font-size:15px;
+          margin-top:10px;
+          font-size:13px;
         }
 
         .error-text svg{
@@ -265,10 +344,10 @@ const GoogleSignInTemplate = () => {
         }
 
         .forgot-link{
-          margin-top:18px;
+          margin-top:14px;
           color:#8ab4f8;
           text-decoration:none;
-          font-size:18px;
+          font-size:15px;
           font-weight:500;
           width:fit-content;
         }
@@ -278,10 +357,11 @@ const GoogleSignInTemplate = () => {
         }
 
         .guest-text{
-          margin-top:90px;
+          margin-top:56px;
+          margin-left: 12px; 
           color:#c7c7c7;
-          font-size:18px;
-          line-height:30px;
+          font-size:15px;
+          line-height:24px;
         }
 
         .guest-text a{
@@ -290,23 +370,28 @@ const GoogleSignInTemplate = () => {
           font-weight:500;
         }
 
+        .guest-text a:hover {
+          text-decoration: underline;
+        }
+
         .bottom-buttons{
-          margin-top:auto;
+          margin-top: 36px; 
           display:flex;
           justify-content:flex-end;
           align-items:center;
-          gap:18px;
+          gap:16px;
         }
 
         .create-btn{
           background:transparent;
           border:none;
           color:#8ab4f8;
-          font-size:18px;
+          font-size:15px;
           font-weight:500;
           cursor:pointer;
-          padding:14px 18px;
+          padding:12px 18px;
           border-radius:50px;
+          transition: 0.2s;
         }
 
         .create-btn:hover{
@@ -317,122 +402,163 @@ const GoogleSignInTemplate = () => {
           background:#8ab4f8;
           border:none;
           color:#062e6f;
-          height:54px;
-          padding:0 34px;
+          height:44px;
+          padding:0 28px;
           border-radius:999px;
-          font-size:18px;
+          font-size:15px;
           font-weight:500;
           cursor:pointer;
+          transition: 0.2s;
+        }
+        
+        .next-btn:hover {
+          background: #a8c7fa;
         }
 
         .footer{
           width:100%;
-          max-width:1340px;
+          max-width:1140px;
           display:flex;
           justify-content:space-between;
           align-items:center;
-          margin-top:24px;
-          padding:0 10px;
+          margin-top:20px;
+          padding:0 8px;
         }
 
-        .lang select{
-          background:transparent;
-          border:none;
-          color:#c7c7c7;
-          font-size:16px;
-          outline:none;
+        /* CUSTOM DROPDOWN CSS */
+        .lang-dropdown-container {
+          position: relative;
+        }
+
+        .dropdown-trigger {
+          display: flex;
+          align-items: center;
+          gap: 6px;
+          color: #c7c7c7;
+          font-size: 13px;
+          cursor: pointer;
+          padding: 6px 10px;
+          border-radius: 4px;
+          transition: background 0.2s;
+          margin-left: -10px;
+        }
+
+        .dropdown-trigger:hover, .dropdown-trigger.active {
+          background: rgba(255, 255, 255, 0.05);
+        }
+
+        .custom-dropdown-menu {
+          position: absolute;
+          bottom: 100%;
+          left: 0;
+          background: #303134;
+          border-radius: 8px;
+          width: 250px;
+          max-height: 350px;
+          overflow-y: auto;
+          box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+          z-index: 10;
+          margin-bottom: 8px;
+          padding: 8px 0;
+        }
+
+        .custom-dropdown-menu::-webkit-scrollbar {
+          width: 8px;
+        }
+        .custom-dropdown-menu::-webkit-scrollbar-track {
+          background: transparent;
+        }
+        .custom-dropdown-menu::-webkit-scrollbar-thumb {
+          background: #5f6368;
+          border-radius: 10px;
+          border: 2px solid #303134;
+        }
+        .custom-dropdown-menu::-webkit-scrollbar-thumb:hover {
+          background: #9aa0a6;
+        }
+
+        .custom-dropdown-menu ul {
+          list-style: none;
+        }
+
+        .custom-dropdown-menu li {
+          padding: 12px 24px;
+          color: #e8eaed;
+          font-size: 14px;
+          cursor: pointer;
+          transition: background 0.2s;
+        }
+
+        .custom-dropdown-menu li:hover {
+          background: rgba(255, 255, 255, 0.04);
+        }
+
+        .custom-dropdown-menu li.selected {
+          background: #474a4d;
+          color: #fff;
         }
 
         .footer-links{
           display:flex;
-          gap:42px;
+          gap:12px; 
         }
 
         .footer-links a{
           color:#c7c7c7;
           text-decoration:none;
-          font-size:16px;
+          font-size:13px;
+          transition: 0.2s;
+          padding: 6px 10px;
+          border-radius: 4px;
         }
 
         .footer-links a:hover{
-          text-decoration:underline;
+          background: rgba(255, 255, 255, 0.05);
         }
 
-        @media(max-width:1100px){
-
+        @media(max-width:900px){
           .signin-card{
             flex-direction:column;
-            padding:40px;
-            min-height:auto;
+            padding:32px;
           }
 
           .left-side{
             width:100%;
+            padding-right: 0;
           }
 
           .right-side{
             width:100%;
-            padding-top:50px;
+            padding-top:40px;
+            justify-content: flex-start;
+          }
+
+          .right-side form {
+            max-width: 100%;
           }
 
           .left-side h1{
-            font-size:42px;
-          }
-
-          .left-side p{
-            font-size:20px;
-            line-height:30px;
-          }
-
-          .input-box{
-            height:64px;
-          }
-
-          .input-box input{
-            font-size:18px;
-          }
-
-          .input-box label{
-            font-size:18px;
-          }
-
-          .guest-text{
-            margin-top:60px;
+            font-size:32px;
           }
         }
 
-        @media(max-width:768px){
-
+        @media(max-width:600px){
           .google-page{
             padding:0;
             background:#0e0e0e;
+            justify-content: flex-start;
           }
 
           .signin-card{
             border-radius:0;
-            padding:28px;
-          }
-
-          .left-side h1{
-            font-size:36px;
-          }
-
-          .left-side p{
-            font-size:18px;
-            line-height:28px;
+            padding:24px;
           }
 
           .footer{
             padding:20px 24px;
-          }
-
-          .footer-links{
-            gap:20px;
-          }
-
-          .footer-links a,
-          .lang select{
-            font-size:13px;
+            flex-direction: column;
+            gap: 16px;
+            align-items: flex-start;
           }
         }
       `}</style>

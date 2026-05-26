@@ -15,7 +15,7 @@ import {
 import AttackCardsGrid from "./AttackCardsGrid/AttackCardsGrid";
 import CustomAttackBuilder from "./CustomAttackBuilder/CustomAttackBuilder";
 import RecentActivityLog from "./RecentActivityLog/RecentActivityLog";
-import TemplateSelectionPage from "./AttackCardsGrid/components/TemplateSelectionPage"; // Imported Separate Route View
+import TemplateSelectionPage from "../../../Templates/TempleteFlow/TemplateSelectionPage"; // Imported Separate Route View
 
 const PhishingManager = () => {
   // FIXED: State management handle for separate route page rendering view switching

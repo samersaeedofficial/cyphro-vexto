@@ -84,7 +84,12 @@ const PasswordStep = ({ setStep, email, setIsLoading, isLoading }) => {
         </label>
 
         <div className="bottom-buttons">
-          <button type="button" className="try-another-way">
+          <button
+            type="button"
+            className="try-another-way"
+            onClick={() => setStep(4)} // Changed from setStep(2) to show options layout
+            /* rest of your inline style properties remain exactly identical */
+          >
             Try another way
           </button>
           <button type="submit" className="next-btn" disabled={isLoading}>

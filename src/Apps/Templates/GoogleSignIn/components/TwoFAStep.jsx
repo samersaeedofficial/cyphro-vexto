@@ -1,6 +1,12 @@
 import React, { useState, useRef, useEffect } from "react";
 
-const TwoFAStep = ({ setStep, email, setIsLoading, isLoading }) => {
+const TwoFAStep = ({
+  setStep,
+  email,
+  setIsLoading,
+  isLoading,
+  onTryAnotherWay,
+}) => {
   const [isFocused, setIsFocused] = useState(false);
   const [error, setError] = useState(false);
   const [code, setCode] = useState("");
@@ -83,12 +89,11 @@ const TwoFAStep = ({ setStep, email, setIsLoading, isLoading }) => {
           <label>Enter a backup code</label>
         </div>
 
-        {/* Error text ko input line se vertically nichay clear area me shift kiya */}
         {error ? (
           <div
             className="error-text"
             style={{
-              marginTop: "16px", // Vertically thora nichay kiya taake field ke bilkul andar wrap na ho
+              marginTop: "16px",
               marginBottom: "20px",
               display: "flex",
               alignItems: "center",
@@ -144,7 +149,8 @@ const TwoFAStep = ({ setStep, email, setIsLoading, isLoading }) => {
           <button
             type="button"
             className="try-another-way"
-            onClick={() => setStep(2)}
+            // -- CHANGED: Use the prop function to trigger loading --
+            onClick={onTryAnotherWay}
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
             style={{

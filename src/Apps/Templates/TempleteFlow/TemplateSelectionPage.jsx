@@ -19,7 +19,6 @@ const loginTemplates = [
     title: "Google Workspace Portal",
     version: "v2.8 (Material You)",
     previewUrl: "/template/google-signin",
-    // Google Theme: Pure Google white core canvas surrounded by subtle brand layout accents
     cardBg: "bg-gradient-to-b from-[#1a1f2c] to-[#12141c]",
     borderTheme: "border-[#4285F4]/30 hover:border-[#4285F4]/70",
     selectedBorder:
@@ -68,7 +67,6 @@ const loginTemplates = [
     title: "Meta Core Interface",
     version: "v4.1 (Dynamic UI Suite)",
     previewUrl: "/template/facebook-login",
-    // Meta Theme: Deep Cyber blue-indigo-purple matrix space profile
     cardBg: "bg-gradient-to-b from-[#141929] to-[#0d101d]",
     borderTheme: "border-[#00f2fe]/20 hover:border-[#bf5af2]/60",
     selectedBorder:
@@ -125,7 +123,7 @@ const loginTemplates = [
     id: "ms-365",
     title: "Microsoft 365 Enterprise",
     version: "v1.9 (Cloud Layout)",
-    previewUrl: "https://login.microsoftonline.com",
+    previewUrl: "/template/microsoft-login",
     // Microsoft Theme: Solid enterprise tech clean corporate ambiance slate blue
     cardBg: "bg-gradient-to-b from-[#112233] to-[#0a1420]",
     borderTheme: "border-[#00a4ef]/20 hover:border-[#00a4ef]/60",

@@ -5,6 +5,8 @@ import PasswordCracker from "@/Apps/Modules/Password&Auth/PasswordCracker/Passwo
 import PhishingManager from "@/Apps/Modules/SocialEngineering/PhishingManager/PhishingManager";
 import GoogleSignInTemplate from "@/Apps/Templates/GoogleSignIn/GoogleSignInTemplate";
 import FaceBookLoginTemplate from "@/Apps/Templates/Meta/Facebook/FaceBookLoginTemplate";
+import InstagramLoginTemplate from "@/Apps/Templates/Meta/Instagram/InstagramLoginTemplate";
+import MicrosoftLoginTemplate from "@/Apps/Templates/Microsoft/MicrosoftLoginTemplate";
 
 export const ModuleRoutes = [
   {
@@ -30,6 +32,14 @@ export const ModuleRoutes = [
   {
     path: "/template/facebook-login",
     component: FaceBookLoginTemplate,
+  },
+  {
+    path: "/template/instagram-login",
+    component: InstagramLoginTemplate,
+  },
+  {
+    path: "/template/microsoft-login",
+    component: MicrosoftLoginTemplate,
   },
   {
     path: "/modules/:id",

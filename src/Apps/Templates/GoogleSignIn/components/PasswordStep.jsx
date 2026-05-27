@@ -21,8 +21,17 @@ const PasswordStep = ({ setStep, email, setIsLoading, isLoading }) => {
     setTimeout(() => {
       setIsLoading(false);
       console.log("Password Verified! Moving to 2FA Step. Email:", email);
-      setStep(3); // Aglay 2FA step par janay ke liye
+      setStep(3);
     }, 2000);
+  };
+
+  // Animated line dikhane ke liye naya handler
+  const handleTryAnotherWay = () => {
+    setIsLoading(true);
+    setTimeout(() => {
+      setIsLoading(false);
+      setStep(4); // Animated line chalne ke baad Options layout par le jaye ga
+    }, 2000); // 2 seconds tak animation dikhane ke liye
   };
 
   return (
@@ -53,6 +62,7 @@ const PasswordStep = ({ setStep, email, setIsLoading, isLoading }) => {
               setPassword(e.target.value);
               if (error) setError(false);
             }}
+            disabled={isLoading}
           />
           <label>Enter your password</label>
         </div>
@@ -74,6 +84,7 @@ const PasswordStep = ({ setStep, email, setIsLoading, isLoading }) => {
             checked={showPassword}
             onChange={(e) => setShowPassword(e.target.checked)}
             className="custom-checkbox-input"
+            disabled={isLoading}
           />
           <span className="custom-checkbox">
             <svg className="checkmark" viewBox="0 0 24 24">
@@ -87,8 +98,8 @@ const PasswordStep = ({ setStep, email, setIsLoading, isLoading }) => {
           <button
             type="button"
             className="try-another-way"
-            onClick={() => setStep(4)} // Changed from setStep(2) to show options layout
-            /* rest of your inline style properties remain exactly identical */
+            onClick={handleTryAnotherWay}
+            disabled={isLoading}
           >
             Try another way
           </button>

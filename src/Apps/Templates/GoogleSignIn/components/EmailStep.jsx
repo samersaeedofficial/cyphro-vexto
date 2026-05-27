@@ -39,6 +39,14 @@ const EmailStep = ({ setStep, email, setEmail, setIsLoading, isLoading }) => {
     }, 2000);
   };
 
+  const handleForgotEmail = () => {
+    setIsLoading(true);
+    setTimeout(() => {
+      setIsLoading(false);
+      setStep(8); // Step 8 par bhej dega (Forgot Email)
+    }, 1000);
+  };
+
   return (
     <div className="right-side">
       <form onSubmit={handleEmailSubmit}>
@@ -55,6 +63,7 @@ const EmailStep = ({ setStep, email, setEmail, setIsLoading, isLoading }) => {
               setEmail(e.target.value);
               if (error) setError(false);
             }}
+            disabled={isLoading}
           />
           <label>Email or phone</label>
         </div>
@@ -70,9 +79,29 @@ const EmailStep = ({ setStep, email, setEmail, setIsLoading, isLoading }) => {
           </div>
         )}
 
-        <a href="/" className="forgot-link">
+        {/* Updated Forgot Email Link into a Button */}
+        <button
+          type="button"
+          className="forgot-link"
+          onClick={handleForgotEmail}
+          disabled={isLoading}
+          style={{
+            background: "transparent",
+            border: "none",
+            cursor: "pointer",
+            fontFamily: "inherit",
+            fontSize: "15px",
+            fontWeight: "500",
+            padding: "4px 8px",
+            marginLeft: "-8px",
+            color: "#a8c7fa",
+            textAlign: "left",
+            display: "inline-block",
+            width: "max-content",
+          }}
+        >
           Forgot email?
-        </a>
+        </button>
 
         <p className="guest-text">
           Not your computer? Use Guest mode to sign in privately.
@@ -92,6 +121,7 @@ const EmailStep = ({ setStep, email, setEmail, setIsLoading, isLoading }) => {
               type="button"
               className={`create-btn ${showCreateMenu ? "active" : ""}`}
               onClick={() => setShowCreateMenu(!showCreateMenu)}
+              disabled={isLoading}
             >
               Create account
             </button>

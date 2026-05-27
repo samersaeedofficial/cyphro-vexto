@@ -222,6 +222,16 @@ const LeftSide = ({ step, email }) => {
             </svg>
           </div>
         </>
+      ) : step === 8 ? (
+        <>
+          <h1>Find your email</h1>
+          <p>Enter your phone number or recovery email</p>
+        </>
+      ) : step === 9 ? (
+        <>
+          <h1>What's your name?</h1>
+          <p>Enter the name on your Google Account</p>
+        </>
       ) : (
         <>
           <h1

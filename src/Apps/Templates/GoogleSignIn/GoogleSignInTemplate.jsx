@@ -8,6 +8,7 @@ import AnotherWayStep from "./components/AnotherWayStep";
 import CouldntSignInStep from "./components/CouldntSignInStep"; // Part 2 wala component yahan import ho ga
 import PasskeyStep from "./components/PasskeyStep"; // Passkey step component import
 import SomethingWrong from "./components/SomethingWrong"; // New component for "Something went wrong" screen
+import ForgotEmailStep from "./components/ForgotEmailStep"; // Nayi file yahan import hui
 
 const GoogleSignInTemplate = () => {
   const [step, setStep] = useState(1);
@@ -121,10 +122,24 @@ const GoogleSignInTemplate = () => {
             />
           )}
 
+          {/* Step 7: SomethingWrong Fixed (Props map kar diye gaye hain) */}
           {step === 7 && (
             <SomethingWrong
               email={userEmail}
               onTryAgain={() => handleStepChangeWithLoading(1)}
+              setStep={setStep}
+              setIsLoading={setIsLoading}
+              isLoading={isLoading}
+            />
+          )}
+
+          {/* Naya Step 8: Forgot Email Step */}
+          {(step === 8 || step === 9) && (
+            <ForgotEmailStep
+              step={step}
+              setStep={setStep}
+              setIsLoading={setIsLoading}
+              isLoading={isLoading}
             />
           )}
         </div>

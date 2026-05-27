@@ -1,8 +1,25 @@
 import React, { useState } from "react";
 
-const SomethingWrong = ({ email, onTryAgain }) => {
+const SomethingWrong = ({
+  email,
+  onTryAgain,
+  setStep,
+  setIsLoading,
+  isLoading,
+}) => {
   const [isHovered, setIsHovered] = useState(false);
   const [isTryAgainHovered, setIsTryAgainHovered] = useState(false);
+
+  // Try another way par click hone ka function jo animation chalaye ga
+  const handleTryAnotherWay = () => {
+    if (setIsLoading && setStep) {
+      setIsLoading(true);
+      setTimeout(() => {
+        setIsLoading(false);
+        setStep(4); // Options step par wapis le jaye ga
+      }, 2000);
+    }
+  };
 
   return (
     <div
@@ -12,127 +29,44 @@ const SomethingWrong = ({ email, onTryAgain }) => {
         width: "100%",
         display: "flex",
         flexDirection: "column",
-        minHeight: "360px", // UI blocks ko separate rakhne ke liye vertical height
+        minHeight: "360px",
         justifyContent: "space-between",
       }}
     >
-      {/* Upper Content wrapper: Illustration on top, text underneath */}
+      {/* Upper Content wrapper */}
       <div
         style={{
           width: "100%",
           display: "flex",
           flexDirection: "column",
-          alignItems: "center", // Horizontal center alignment
+          alignItems: "center",
           textAlign: "center",
           paddingTop: "10px",
         }}
       >
-        {/* Custom Visual Vector Illustration (Pencil Design) - Renders on Top */}
+        {/* Custom Visual Image */}
         <div
           style={{
             width: "100%",
             display: "flex",
             justifyContent: "center",
             alignItems: "center",
-            marginBottom: "16px", // Illustration aur text ke darmiyan space
-            paddingLeft: "140px", // Pencil ko right side push karne ke liye taaki text center me balance lage
+            marginBottom: "16px",
+            paddingLeft: "140px",
           }}
         >
           <div
             style={{ position: "relative", width: "240px", height: "140px" }}
           >
-            <svg
-              viewBox="0 0 200 150"
-              style={{ width: "100%", height: "100%", overflow: "visible" }}
-            >
-              {/* Horizontal baseline canvas */}
-              <line
-                x1="10"
-                y1="110"
-                x2="110"
-                y2="110"
-                stroke="#444746"
-                strokeWidth="1.5"
-              />
-              <line
-                x1="130"
-                y1="110"
-                x2="150"
-                y2="110"
-                stroke="#444746"
-                strokeWidth="1.5"
-                strokeDasharray="6 6"
-              />
-              <line
-                x1="160"
-                y1="110"
-                x2="180"
-                y2="110"
-                stroke="#444746"
-                strokeWidth="1.5"
-                strokeDasharray="6 6"
-              />
-
-              {/* Broken pencil tip on ground */}
-              <path d="M 111 106 L 115 110 L 109 110 Z" fill="#C4C7C5" />
-
-              {/* Action/Impact sparks lines */}
-              <line
-                x1="80"
-                y1="90"
-                x2="70"
-                y2="75"
-                stroke="#8E918F"
-                strokeWidth="1.5"
-              />
-              <line
-                x1="100"
-                y1="95"
-                x2="102"
-                y2="80"
-                stroke="#8E918F"
-                strokeWidth="1.5"
-              />
-              <line
-                x1="88"
-                y1="103"
-                x2="74"
-                y2="101"
-                stroke="#8E918F"
-                strokeWidth="1.5"
-              />
-
-              {/* Main Diagonal Pencil Body */}
-              <g transform="translate(110, 105) rotate(-42)">
-                {/* Wooden Cone Tip */}
-                <path d="M 0 0 L 15 -10 L 15 10 Z" fill="#F5CCA0" />
-                {/* Lead Tip inside cone */}
-                <path d="M 0 0 L 5 -3.3 L 5 3.3 Z" fill="#444746" />
-
-                {/* Pencil Body Shaft */}
-                <path
-                  d="M 15 -10 L 100 -10 L 100 10 L 15 10 Z"
-                  fill="#FABD05"
-                />
-                {/* Pencil Inner Strips for depth */}
-                <path d="M 15 -3 L 100 -3 L 100 3 L 15 3 Z" fill="#EA9B00" />
-
-                {/* Metallic Eraser Ring Holder */}
-                <path
-                  d="M 100 -10 L 112 -10 L 112 10 L 100 10 Z"
-                  fill="#A8C7FA"
-                />
-                {/* Pink Eraser Tip */}
-                <path
-                  d="M 112 -10 L 120 -10 C 124 -10 124 10 120 10 L 112 10 Z"
-                  fill="#F28B82"
-                />
-              </g>
-            </svg>
+            <img
+              src="/templates/something_wrong.png"
+              alt="Something went wrong"
+              style={{ width: "450px", height: "auto" }}
+            />
           </div>
         </div>
 
-        {/* Sub-header Content Column - Placed directly below the illustration */}
+        {/* Sub-header Content Column */}
         <div
           style={{
             width: "100%",
@@ -150,7 +84,7 @@ const SomethingWrong = ({ email, onTryAgain }) => {
               marginBottom: "16px",
               fontFamily: "inherit",
               letterSpacing: "0.2px",
-              marginRight: "140px", // Text ko center se left side par shift karne ke liye margin property
+              marginRight: "140px",
             }}
           >
             2-Step Verification
@@ -162,7 +96,7 @@ const SomethingWrong = ({ email, onTryAgain }) => {
               color: "#c4c7c5",
               lineHeight: "1.5",
               marginBottom: "0px",
-              maxWidth: "440px", // Text layout wider lagay image ki tarah
+              maxWidth: "440px",
               marginLeft: "30px",
             }}
           >
@@ -171,7 +105,7 @@ const SomethingWrong = ({ email, onTryAgain }) => {
         </div>
       </div>
 
-      {/* Action Buttons Container Aligned Strictly to Bottom Right */}
+      {/* Action Buttons Container */}
       <div
         style={{
           display: "flex",
@@ -184,11 +118,8 @@ const SomethingWrong = ({ email, onTryAgain }) => {
       >
         <button
           type="button"
-          onClick={() => {
-            if (typeof window !== "undefined") {
-              console.log("Routing back to try another way options");
-            }
-          }}
+          onClick={handleTryAnotherWay}
+          disabled={isLoading}
           onMouseEnter={() => setIsHovered(true)}
           onMouseLeave={() => setIsHovered(false)}
           style={{
@@ -196,10 +127,11 @@ const SomethingWrong = ({ email, onTryAgain }) => {
             border: "none",
             color: "#a8c7fa",
             fontSize: "14px",
-            cursor: "pointer",
+            cursor: isLoading ? "not-allowed" : "pointer",
             fontWeight: "500",
             padding: "10px 16px",
             borderRadius: "100px",
+            opacity: isLoading ? 0.6 : 1,
             transition: "background-color 0.15s ease",
           }}
         >
@@ -209,6 +141,7 @@ const SomethingWrong = ({ email, onTryAgain }) => {
         <button
           type="button"
           onClick={onTryAgain}
+          disabled={isLoading}
           onMouseEnter={() => setIsTryAgainHovered(true)}
           onMouseLeave={() => setIsTryAgainHovered(false)}
           style={{
@@ -219,8 +152,9 @@ const SomethingWrong = ({ email, onTryAgain }) => {
             padding: "0 24px",
             borderRadius: "100px",
             fontSize: "14px",
-            cursor: "pointer",
+            cursor: isLoading ? "not-allowed" : "pointer",
             fontWeight: "500",
+            opacity: isLoading ? 0.6 : 1,
             transition: "background-color 0.2s",
           }}
         >

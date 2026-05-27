@@ -67,7 +67,8 @@ const CouldntSignInStep = ({ onTryAgain }) => {
         </p>
 
         <a
-          href="#" // Account recovery link
+          href="https://support.google.com/accounts/answer/7299973?hl=en" // Account recovery link
+          target="_blank"
           style={{
             fontSize: "15px",
             color: "#a8c7fa", // Google's dark mode blue

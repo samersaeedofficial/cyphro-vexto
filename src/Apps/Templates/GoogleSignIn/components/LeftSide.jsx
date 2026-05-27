@@ -105,6 +105,123 @@ const LeftSide = ({ step, email }) => {
             </svg>
           </div>
         </>
+      ) : // ... step === 5 ke logic ke foran baad ye add karein ...
+      step === 6 ? (
+        <>
+          <h1
+            style={{
+              fontSize: "40px",
+              fontWeight: "400",
+              letterSpacing: "-0.5px",
+              marginBottom: "0px",
+              lineHeight: "1",
+            }}
+          >
+            Use your passkey to confirm it's really you
+          </h1>
+          <p
+            style={{
+              fontSize: "16px",
+              color: "#e3e3e3",
+              lineHeight: "1.5",
+              marginTop: "16px",
+              marginBottom: "0px",
+              maxWidth: "480px",
+            }}
+          >
+            To help keep your account safe, Google wants to make sure it’s
+            really you trying to sign in
+          </p>
+
+          <div
+            className="profile-pill"
+            style={{
+              marginBottom: "16px",
+              padding: "6px 14px",
+              minHeight: "36px",
+              display: "inline-flex",
+              alignItems: "center",
+              marginTop: "24px",
+            }}
+          >
+            <svg
+              className="profile-icon"
+              viewBox="0 0 24 24"
+              fill="currentColor"
+              style={{ width: "20px", height: "20px" }}
+            >
+              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 4c1.93 0 3.5 1.57 3.5 3.5S13.93 13 12 13s-3.5-1.57-3.5-3.5S10.07 6 12 6zm0 14c-2.03 0-4.43-.82-6.14-2.88C7.55 15.8 10 15 12 15s4.45.8 6.14 2.12C16.43 19.18 14.03 20 12 20z" />
+            </svg>
+            <span
+              className="profile-email"
+              style={{ fontSize: "15px", marginLeft: "8px" }}
+            >
+              {email}
+            </span>
+            <svg
+              className="profile-dropdown-arrow"
+              viewBox="0 0 24 24"
+              width="18"
+              height="18"
+              fill="currentColor"
+              style={{ marginLeft: "8px", color: "#c7c7c7" }}
+            >
+              <path d="M7 10l5 5 5-5H7z" />
+            </svg>
+          </div>
+        </>
+      ) : step === 7 ? (
+        /* Dynamic state handle for Step 7 to render precisely as the Google error screen */
+        <>
+          <h1
+            style={{
+              color: "#f2f2f2",
+              fontSize: "40px",
+              fontWeight: "400",
+              marginTop: "24px",
+              letterSpacing: "-0.5px",
+              marginBottom: "0px",
+              whiteSpace: "nowrap", // Text ko aik hi line me restrict karne ke liye
+            }}
+          >
+            Something went wrong
+          </h1>
+          <div
+            className="profile-pill"
+            style={{
+              padding: "6px 14px",
+              minHeight: "36px",
+              marginTop: "10px",
+              display: "inline-flex",
+              alignItems: "center",
+            }}
+          >
+            <svg
+              className="profile-icon"
+              viewBox="0 0 24 24"
+              fill="currentColor"
+              style={{ width: "20px", height: "20px" }}
+            >
+              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 4c1.93 0 3.5 1.57 3.5 3.5S13.93 13 12 13s-3.5-1.57-3.5-3.5S10.07 6 12 6zm0 14c-2.03 0-4.43-.82-6.14-2.88C7.55 15.8 10 15 12 15s4.45.8 6.14 2.12C16.43 19.18 14.03 20 12 20z" />
+            </svg>
+            <span
+              className="profile-email"
+              style={{ fontSize: "15px", marginLeft: "8px" }}
+            >
+              {email || "amnashaheen1988@gmail.com"}
+            </span>
+            <svg
+              className="profile-dropdown-arrow"
+              viewBox="0 0 24 24"
+              width="18"
+              height="18"
+              fill="currentColor"
+              style={{ marginLeft: "8px", color: "#c7c7c7" }}
+            >
+              <path d="M7 10l5 5 5-5H7z" />
+            </svg>
+          </div>
+        </>
       ) : (
         <>
           <h1

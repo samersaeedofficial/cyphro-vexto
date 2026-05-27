@@ -260,6 +260,7 @@ const RightSection = () => {
           <div className="flex items-center select-none">
             <img
               src="/templates/meta.png"
+              style={{ width: "60px", height: "auto" }}
               alt="Meta Logo"
               className="h-[18px] w-auto object-contain antialiased"
               draggable="false"

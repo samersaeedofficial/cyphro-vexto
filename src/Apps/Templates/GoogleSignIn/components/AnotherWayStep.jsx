@@ -1,8 +1,6 @@
 import React, { useState } from "react";
-import { User } from "lucide-react";
-import { CircleHelp } from "lucide-react";
+import { User, CircleHelp } from "lucide-react";
 
-// -- NEW: added onOptionClick prop --
 const AnotherWayStep = ({ setStep, email, onOptionClick }) => {
   const [hoveredOption, setHoveredOption] = useState(null);
 
@@ -10,6 +8,8 @@ const AnotherWayStep = ({ setStep, email, onOptionClick }) => {
     {
       id: "backup_code",
       title: "Enter one of your 8-digit backup codes",
+      subtitle: null,
+      isLarge: false,
       icon: (
         <svg viewBox="0 0 24 24" width="24" height="24">
           <path
@@ -18,21 +18,38 @@ const AnotherWayStep = ({ setStep, email, onOptionClick }) => {
           />
         </svg>
       ),
-      // -- CHANGED: Call onOptionClick function --
       action: onOptionClick,
     },
     {
       id: "passkey",
       title: "Use your passkey",
-      icon: <User />,
-      // -- CHANGED: Call onOptionClick function --
+      subtitle: null,
+      isLarge: false,
+      icon: <User size={24} />,
+      action: onOptionClick,
+    },
+    {
+      id: "security_code",
+      title: "Get a one-time security code",
+      subtitle:
+        "Sign in on another device with your security key to get a code",
+      isLarge: true, // Specific flag for higher height
+      icon: (
+        <svg viewBox="0 0 24 24" width="24" height="24">
+          <path
+            fill="currentColor"
+            d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V5h14v14zM7 10h2v2H7v-2zm0 4h2v2H7v-2zm4-4h2v2h-2v-2zm0 4h2v2h-2v-2zm4-4h2v2h-2v-2zm0 4h2v2h-2v-2z"
+          />
+        </svg>
+      ),
       action: onOptionClick,
     },
     {
       id: "try_another",
       title: "Try another way",
-      icon: <CircleHelp />,
-      // -- CHANGED: Call onOptionClick function --
+      subtitle: null,
+      isLarge: false,
+      icon: <CircleHelp size={24} />,
       action: onOptionClick,
     },
   ];
@@ -44,7 +61,7 @@ const AnotherWayStep = ({ setStep, email, onOptionClick }) => {
           width: "100%",
           maxWidth: "500px",
           position: "relative",
-          left: "20px",
+          paddingLeft: "20px",
         }}
       >
         <h2
@@ -56,6 +73,7 @@ const AnotherWayStep = ({ setStep, email, onOptionClick }) => {
             marginBottom: "24px",
             fontFamily: "'Google Sans', sans-serif",
             letterSpacing: "0.1px",
+            marginLeft: "20px",
           }}
         >
           Choose how you want to sign in:
@@ -65,7 +83,6 @@ const AnotherWayStep = ({ setStep, email, onOptionClick }) => {
           style={{
             display: "flex",
             flexDirection: "column",
-            gap: "0px",
           }}
         >
           {options.map((option) => {
@@ -77,43 +94,83 @@ const AnotherWayStep = ({ setStep, email, onOptionClick }) => {
                 onMouseEnter={() => setHoveredOption(option.id)}
                 onMouseLeave={() => setHoveredOption(null)}
                 style={{
+                  position: "relative",
                   display: "flex",
                   alignItems: "center",
                   gap: "16px",
-                  padding: "12px 12px",
+                  paddingTop: option.isLarge ? "20px" : "15px",
+                  paddingBottom: option.isLarge ? "20px" : "15px",
+                  paddingLeft: "16px",
+                  paddingRight: "16px",
                   cursor: "pointer",
-                  borderBottom: "1px solid #444746",
+                  userSelect: "none",
                   backgroundColor: isHovered
                     ? "rgba(227, 227, 227, 0.08)"
                     : "transparent",
                   borderRadius: "15px",
                   transition: "background-color 0.15s ease",
-                  marginLeft: "-12px",
-                  marginRight: "-12px",
-                  userSelect: "none",
+                  // Decreased margins to reduce vertical gap between hover area and lines
+                  marginBottom: "1px",
+                  marginTop: "1px",
                 }}
               >
+                {/* Icon Section */}
                 <div
                   style={{
                     color: "#a8c7fa",
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
+                    flexShrink: 0,
                   }}
                 >
                   {option.icon}
                 </div>
 
-                <span
+                {/* Text Content Section */}
+                <div
                   style={{
-                    fontSize: "15px",
-                    color: "#e3e3e3",
-                    fontWeight: "400",
-                    fontFamily: "'Google Sans', sans-serif",
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: "4px",
+                    flexGrow: 1,
                   }}
                 >
-                  {option.title}
-                </span>
+                  <span
+                    style={{
+                      fontSize: "16px",
+                      color: "#e3e3e3",
+                      fontWeight: "400",
+                      fontFamily: "'Google Sans', sans-serif",
+                    }}
+                  >
+                    {option.title}
+                  </span>
+                  {option.subtitle && (
+                    <span
+                      style={{
+                        fontSize: "14px",
+                        color: "#9aa0a6",
+                        fontWeight: "400",
+                        fontFamily: "'Google Sans', sans-serif",
+                      }}
+                    >
+                      {option.subtitle}
+                    </span>
+                  )}
+                </div>
+
+                {/* Pure Horizontal Border Line - Adjusted position to perfectly align with tight margins */}
+                <div
+                  style={{
+                    position: "absolute",
+                    bottom: "-1px",
+                    left: "16px",
+                    right: "16px",
+                    borderBottom: "1px solid #444746",
+                    pointerEvents: "none",
+                  }}
+                />
               </div>
             );
           })}

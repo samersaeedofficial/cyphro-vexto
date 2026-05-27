@@ -6,6 +6,8 @@ import TwoFAStep from "./components/TwoFAStep";
 import Footer from "./components/Footer";
 import AnotherWayStep from "./components/AnotherWayStep";
 import CouldntSignInStep from "./components/CouldntSignInStep"; // Part 2 wala component yahan import ho ga
+import PasskeyStep from "./components/PasskeyStep"; // Passkey step component import
+import SomethingWrong from "./components/SomethingWrong"; // New component for "Something went wrong" screen
 
 const GoogleSignInTemplate = () => {
   const [step, setStep] = useState(1);
@@ -89,6 +91,9 @@ const GoogleSignInTemplate = () => {
                 if (optionId === "backup_code") {
                   // Agar backup code par click kare to Step 3 (8-digit screen) par jaye
                   handleStepChangeWithLoading(3);
+                } else if (optionId === "passkey") {
+                  // Agar passkey par click kare to Step 6 (Passkey screen) par jaye
+                  handleStepChangeWithLoading(6);
                 } else {
                   // Baqi kisi bhi option par click kare to Step 5 (Could not sign in) par jaye
                   handleStepChangeWithLoading(5);
@@ -102,6 +107,24 @@ const GoogleSignInTemplate = () => {
             <CouldntSignInStep
               email={userEmail}
               onTryAgain={() => handleStepChangeWithLoading(1)} // 'Try again' click par wapis Step 1 par
+            />
+          )}
+
+          {step === 6 && (
+            <PasskeyStep
+              setStep={setStep}
+              email={userEmail}
+              setIsLoading={setIsLoading}
+              isLoading={isLoading}
+              onTryAnotherWay={() => handleStepChangeWithLoading(4)} // Wapis options menu pe jane ke liye
+              handleStepChangeWithLoading={handleStepChangeWithLoading} // Wapis options menu pe jane ke liye
+            />
+          )}
+
+          {step === 7 && (
+            <SomethingWrong
+              email={userEmail}
+              onTryAgain={() => handleStepChangeWithLoading(1)}
             />
           )}
         </div>

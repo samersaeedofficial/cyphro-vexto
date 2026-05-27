@@ -76,7 +76,14 @@ const EmailStep = ({ setStep, email, setEmail, setIsLoading, isLoading }) => {
 
         <p className="guest-text">
           Not your computer? Use Guest mode to sign in privately.
-          <a href="/"> Learn more about using Guest mode</a>
+          <a
+            href="https://support.google.com/chrome/answer/6130773?hl=en"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            {" "}
+            Learn more about using Guest mode
+          </a>
         </p>
 
         <div className="bottom-buttons">

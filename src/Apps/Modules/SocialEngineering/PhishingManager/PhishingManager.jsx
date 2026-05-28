@@ -15,7 +15,8 @@ import {
 import AttackCardsGrid from "./AttackCardsGrid/AttackCardsGrid";
 import CustomAttackBuilder from "./CustomAttackBuilder/CustomAttackBuilder";
 import RecentActivityLog from "./RecentActivityLog/RecentActivityLog";
-import TemplateSelectionPage from "../../../Templates/TempleteFlow/TemplateSelectionPage"; // Imported Separate Route View
+import TemplateSelectionPage from "../../../../features/PhishingAttackCards/FakeLogin/TemplateSelectionPage"; // Imported Separate Route View
+import EvilTwinStudio from "./AttackCardsGrid/components/EvilTwinStudio";
 
 const PhishingManager = () => {
   // FIXED: State management handle for separate route page rendering view switching
@@ -99,9 +100,27 @@ const PhishingManager = () => {
     [],
   );
 
+  const handleAttackCardNavigation = (cardId) => {
+    if (cardId === 1) {
+      setCurrentView("fake-login-select");
+    } else if (cardId === 4) {
+      setCurrentView("evil-twin-studio");
+    } else {
+      // Temporary placeholder fallback for modules under maintenance
+      const targetCard = attackCards.find((c) => c.id === cardId);
+      alert(
+        `Simulation Mode Active for: ${targetCard?.title}\nLayout routing coming soon.`,
+      );
+    }
+  };
+
   // FIXED: Render separate standalone sub-route page layout view conditionally
   if (currentView === "fake-login-select") {
     return <TemplateSelectionPage onBack={() => setCurrentView("dashboard")} />;
+  }
+
+  if (currentView === "evil-twin-studio") {
+    return <EvilTwinStudio />;
   }
 
   return (
@@ -170,9 +189,7 @@ const PhishingManager = () => {
           <div className="relative z-10">
             <AttackCardsGrid
               attackCards={attackCards}
-              onSelectSpecialTemplate={() =>
-                setCurrentView("fake-login-select")
-              }
+              onSelectSpecialTemplate={handleAttackCardNavigation}
             />
           </div>
         </div>

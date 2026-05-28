@@ -6,8 +6,9 @@ const AttackCardsGrid = React.memo(
   ({ attackCards, onSelectSpecialTemplate }) => {
     const handleCardClick = (card) => {
       // FIXED: Hook interceptor added to check if user clicked on 'Fake Login Page' (ID: 1)
-      if (card.id === 1 && onSelectSpecialTemplate) {
-        onSelectSpecialTemplate();
+      // AttackCardsGrid.jsx line tweak:
+      if (onSelectSpecialTemplate) {
+        onSelectSpecialTemplate(card.id);
         return;
       }
       alert(`You selected: ${card.title}\n${card.description}`);

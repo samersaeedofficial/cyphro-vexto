@@ -10,6 +10,7 @@ import {
   Shield,
 } from "lucide-react";
 import { Link, useLocation } from "wouter";
+import { useTheme } from "@/lib/theme";
 
 // ─── Module Search Data ───────────────────────────────────────────────────
 const MODULES = [
@@ -59,9 +60,11 @@ function HighlightText({ text, query }) {
   if (idx === -1) return <span>{text}</span>;
   return (
     <span>
-      {text.slice(0, idx)}
-      <mark className="bg-cyan-500/30 text-cyan-200 rounded px-0.5">{text.slice(idx, idx + query.length)}</mark>
-      {text.slice(idx + query.length)}
+      {text.substring(0, idx)}
+      <span className="text-cyan-400 font-black underline decoration-cyan-500/50">
+        {text.substring(idx, idx + query.length)}
+      </span>
+      {text.substring(idx + query.length)}
     </span>
   );
 }
@@ -73,6 +76,7 @@ export default function GlobalSearch() {
   const wrapperRef = useRef(null);
   const inputRef = useRef(null);
   const [, setLocation] = useLocation();
+  const { isDark } = useTheme();
 
   useEffect(() => {
     const handleKey = (e) => {
@@ -126,18 +130,24 @@ export default function GlobalSearch() {
   return (
     <div className="relative flex-1 max-w-md mx-4" ref={wrapperRef}>
       <div className="relative group">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 group-focus-within:text-cyan-400 transition-colors" />
+        <Search className={`absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 transition-colors ${
+          isDark ? "text-slate-500 group-focus-within:text-cyan-400" : "text-slate-400 group-focus-within:text-blue-600"
+        }`} />
         <input
           ref={inputRef}
           type="text"
           value={query}
           onChange={handleSearch}
           placeholder="Search arsenal modules..."
-          className="w-full h-10 pl-10 pr-12 rounded-xl bg-white/5 border border-white/10 text-sm text-slate-200 outline-none focus:border-cyan-500/50 focus:bg-white/10 transition-all font-medium"
+          className={`w-full h-10 pl-10 pr-12 rounded-xl text-sm outline-none transition-all font-medium ${
+            isDark
+              ? "bg-white/5 border border-white/10 text-slate-200 focus:border-cyan-500/50 focus:bg-white/10 placeholder:text-slate-500"
+              : "bg-black/[0.03] border border-black/10 text-slate-800 focus:border-blue-500 focus:bg-white placeholder:text-slate-400 shadow-sm"
+          }`}
         />
-        <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1 opacity-50 group-focus-within:opacity-0 transition-opacity">
-          <Command size={10} className="text-slate-500" />
-          <span className="text-[10px] font-bold text-slate-500">K</span>
+        <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1 opacity-50 group-focus-within:opacity-0 transition-opacity pointer-events-none">
+          <Command size={10} className={isDark ? "text-slate-500" : "text-slate-400"} />
+          <span className={`text-[10px] font-bold ${isDark ? "text-slate-500" : "text-slate-400"}`}>K</span>
         </div>
       </div>
 
@@ -147,39 +157,47 @@ export default function GlobalSearch() {
             initial={{ opacity: 0, y: 10, scale: 0.98 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 10, scale: 0.98 }}
-            className="absolute top-full left-0 right-0 mt-2 p-2 rounded-2xl bg-[#0f172a]/95 backdrop-blur-2xl border border-white/10 shadow-2xl z-[100] max-h-[400px] overflow-y-auto overflow-x-hidden"
+            className={`absolute top-full left-0 right-0 mt-2 p-2 rounded-2xl backdrop-blur-2xl shadow-2xl z-[100] max-h-[400px] overflow-y-auto overflow-x-hidden ${
+              isDark
+                ? "bg-[#0f172a]/95 border border-white/10 text-slate-200"
+                : "bg-white/95 border border-slate-200 text-slate-800 shadow-slate-300/40"
+            }`}
           >
             {results.length > 0 ? (
               Object.entries(grouped).map(([category, items]) => (
                 <div key={category} className="mb-4 last:mb-0">
                   <div className="px-3 py-1 flex items-center gap-2 mb-1">
-                    <span className="text-[10px] font-black uppercase tracking-widest text-slate-500">{category}</span>
-                    <div className="flex-1 h-px bg-white/5" />
+                    <span className={`text-[10px] font-black uppercase tracking-widest ${isDark ? "text-slate-500" : "text-slate-400"}`}>{category}</span>
+                    <div className={`flex-1 h-px ${isDark ? "bg-white/5" : "bg-slate-200"}`} />
                   </div>
                   {items.map((item, idx) => (
                     <button
                       key={item.id}
                       onClick={() => onSelect(item.path)}
-                      className="w-full flex items-center gap-3 p-3 rounded-xl hover:bg-white/5 transition-colors group text-left"
+                      className={`w-full flex items-center gap-3 p-3 rounded-xl transition-colors group text-left ${
+                        isDark ? "hover:bg-white/5" : "hover:bg-slate-100"
+                      }`}
                     >
-                      <div className="w-8 h-8 rounded-lg flex items-center justify-center bg-white/5 border border-white/10 group-hover:border-cyan-500/30 transition-colors">
+                      <div className={`w-8 h-8 rounded-lg flex items-center justify-center transition-colors ${
+                        isDark ? "bg-white/5 border border-white/10 group-hover:border-cyan-500/30" : "bg-slate-100 border border-slate-200 group-hover:border-blue-400"
+                      }`}>
                         <item.icon size={14} style={{ color: item.color }} />
                       </div>
                       <div className="flex-1 min-w-0">
-                        <div className="text-sm font-bold text-slate-200 truncate">
+                        <div className={`text-sm font-bold truncate ${isDark ? "text-slate-200" : "text-slate-800"}`}>
                           <HighlightText text={item.title} query={query} />
                         </div>
-                        <div className="text-[10px] font-medium text-slate-500 uppercase tracking-tighter">{item.type}</div>
+                        <div className={`text-[10px] font-medium uppercase tracking-tighter ${isDark ? "text-slate-500" : "text-slate-400"}`}>{item.type}</div>
                       </div>
-                      <ArrowRight size={14} className="text-slate-600 opacity-0 group-hover:opacity-100 -translate-x-2 group-hover:translate-x-0 transition-all" />
+                      <ArrowRight size={14} className={`${isDark ? "text-slate-600" : "text-slate-400"} opacity-0 group-hover:opacity-100 -translate-x-2 group-hover:translate-x-0 transition-all`} />
                     </button>
                   ))}
                 </div>
               ))
             ) : (
               <div className="p-8 text-center">
-                <Zap size={24} className="mx-auto mb-3 text-slate-700" />
-                <p className="text-sm font-bold text-slate-500 tracking-tight">No modules found matching "{query}"</p>
+                <Zap size={24} className={`mx-auto mb-3 ${isDark ? "text-slate-700" : "text-slate-300"}`} />
+                <p className={`text-sm font-bold tracking-tight ${isDark ? "text-slate-500" : "text-slate-400"}`}>No modules found matching "{query}"</p>
               </div>
             )}
           </motion.div>

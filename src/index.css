@@ -1,6 +1,9 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Manrope:wght@300;400;500;600;700;800&display=swap');
 @import "tailwindcss";
 
+/* Class-based Dark Mode for Tailwind v4 */
+@custom-variant dark (&:where(.dark, .dark *));
+
 /* --------- Tailwind v4 Theme Mapping --------- */
 @theme {
   --color-background: hsl(var(--background));
@@ -31,7 +34,7 @@
 }
 
 /* --------- Root / Theme variables --------- */
-:root {
+:root, .dark {
   --background: 224 71% 4%;
   --foreground: 213 31% 91%;
   --card: 224 71% 4%;
@@ -54,6 +57,29 @@
   --radius: 1rem;
 }
 
+html.light, .light {
+  --background: 210 40% 98%;
+  --foreground: 222 47% 11%;
+  --card: 0 0% 100%;
+  --card-foreground: 222 47% 11%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 222 47% 11%;
+  --primary: 221 83% 53%;
+  --primary-foreground: 210 40% 98%;
+  --secondary: 210 40% 96%;
+  --secondary-foreground: 222 47% 11%;
+  --muted: 210 40% 96%;
+  --muted-foreground: 215 16% 47%;
+  --accent: 210 40% 92%;
+  --accent-foreground: 222 47% 11%;
+  --destructive: 0 84% 60%;
+  --destructive-foreground: 210 40% 98%;
+  --border: 214 32% 91%;
+  --input: 214 32% 91%;
+  --ring: 221 83% 53%;
+  --radius: 1rem;
+}
+
 /* Borders are preserved here - Cleaned up and simplified to use only the mapped faint variable */
 * {
   box-sizing: border-box;
@@ -68,6 +94,19 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   overflow-x: hidden;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+html.light body, 
+body.light,
+html.light #root {
+  background-color: #f8fafc !important;
+  color: #0f172a !important;
+}
+
+html.light body {
+  background: #f8fafc;
+  color: #0f172a;
 }
 
 /* --------- Scrollbar --------- */
@@ -90,10 +129,22 @@ body {
   background-color: rgba(148, 163, 184, 0.5);
 }
 
+html.light ::-webkit-scrollbar-thumb {
+  background-color: rgba(100, 116, 139, 0.3);
+}
+
+html.light ::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(100, 116, 139, 0.5);
+}
+
 /* Firefox support */
 * {
   scrollbar-width: thin;
   scrollbar-color: rgba(148, 163, 184, 0.3) transparent;
+}
+
+html.light * {
+  scrollbar-color: rgba(100, 116, 139, 0.3) transparent;
 }
 
 /* Scroll Utility Classes */
@@ -116,9 +167,18 @@ body {
   border: 1px solid rgba(255, 255, 255, 0.05);
 }
 
+html.light .glass-effect {
+  background: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+}
+
 .glow-effect { 
   box-shadow: 0 0 15px 0px hsl(var(--primary) / 0.3), 0 0 40px 0px hsl(var(--primary) / 0.15); 
 }
+
 
 .page-glow { 
   position: fixed; 
@@ -197,6 +257,14 @@ body {
   border: 1px solid rgba(255,255,255,0.07);
 }
 
+html.light .glass-premium {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+}
+
 .animate-float { animation: float 6s ease-in-out infinite; }
 @keyframes float { 0%,100% { transform: translateY(0px); } 50% { transform: translateY(-10px); } }
 
@@ -240,12 +308,214 @@ select, .custom-select {
   backdrop-filter: blur(10px);
 }
 
+html.light select, html.light .custom-select {
+  background-color: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  color: #0f172a;
+}
+
+
 input:-webkit-autofill,
 textarea:-webkit-autofill,
 select:-webkit-autofill {
   -webkit-text-fill-color: #fff !important;
   caret-color: #fff !important;
   transition: background-color 9999s ease-out 0s;
+}
+
+/* =========================================================================
+   LIGHT MODE COMPREHENSIVE FIXES & POLISH
+   ========================================================================= */
+
+/* Background Containers */
+html.light .bg-slate-950,
+html.light .bg-slate-950\/20,
+html.light .bg-slate-950\/40,
+html.light .bg-slate-950\/60,
+html.light .bg-slate-950\/80,
+html.light .bg-\[\#06090f\],
+html.light .bg-\[\#0a0f1d\],
+html.light .bg-\[\#0a0f1e\],
+html.light .bg-\[\#0f172a\],
+html.light .bg-\[\#0d0c16\],
+html.light .bg-\[\#0f0e1a\],
+html.light .bg-\[\#060810\],
+html.light .bg-\[\#0d0e12\],
+html.light .bg-\[\#080811\],
+html.light .bg-\[\#0b0a14\],
+html.light .bg-\[\#0d0c18\],
+html.light .bg-\[\#09090f\],
+html.light .bg-\[\#0e0d1b\] {
+  background-color: transparent !important;
+}
+
+/* Phishing & Dashboard Card Panels */
+html.light .bg-slate-900,
+html.light .bg-slate-900\/40,
+html.light .bg-slate-900\/50,
+html.light .bg-slate-900\/60,
+html.light .bg-slate-900\/80,
+html.light .bg-slate-900\/90,
+html.light .bg-slate-900\/95,
+html.light .bg-slate-900\/98,
+html.light .bg-\[\#1c1b2b\],
+html.light .bg-\[\#222135\],
+html.light .bg-\[\#0e1220\],
+html.light .bg-\[\#100f1c\],
+html.light .bg-\[\#151424\],
+html.light .bg-\[\#14161f\],
+html.light .bg-\[\#14161f\]\/50,
+html.light .bg-\[\#14161f\]\/60 {
+  background-color: rgba(255, 255, 255, 0.92) !important;
+  border-color: rgba(0, 0, 0, 0.08) !important;
+  box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.04);
+}
+
+/* Inner inputs and sub-boxes */
+html.light .bg-slate-800,
+html.light .bg-slate-800\/50,
+html.light .bg-slate-800\/60,
+html.light .bg-\[\#131224\],
+html.light .bg-\[\#141322\],
+html.light .bg-\[\#151423\],
+html.light .bg-\[\#181724\],
+html.light .bg-\[\#1c1b2d\],
+html.light .bg-\[\#141b30\],
+html.light .bg-\[\#161822\],
+html.light .bg-\[\#1c1e29\],
+html.light .bg-\[\#12111f\] {
+  background-color: rgba(241, 245, 249, 0.95) !important;
+  border-color: rgba(0, 0, 0, 0.08) !important;
+  color: #0f172a !important;
+}
+
+/* Faint overlay boxes & cards */
+html.light .bg-white\/5,
+html.light .bg-white\/\[0\.02\],
+html.light .bg-white\/\[0\.03\],
+html.light .bg-white\/\[0\.04\],
+html.light .bg-white\/10 {
+  background-color: rgba(0, 0, 0, 0.03) !important;
+  border-color: rgba(0, 0, 0, 0.07) !important;
+}
+
+html.light .hover\:bg-white\/5:hover,
+html.light .hover\:bg-white\/10:hover,
+html.light .hover\:bg-\[\#151424\]:hover {
+  background-color: rgba(0, 0, 0, 0.06) !important;
+}
+
+/* Borders */
+html.light .border-white\/5,
+html.light .border-white\/10,
+html.light .border-white\/15,
+html.light .border-white\/20,
+html.light .border-white\/30,
+html.light .border-white\/\[0\.05\],
+html.light .border-white\/\[0\.06\],
+html.light .border-white\/\[0\.08\],
+html.light .border-gray-800,
+html.light .border-gray-800\/60,
+html.light .border-gray-800\/80,
+html.light .border-gray-700,
+html.light .border-gray-700\/40,
+html.light .border-gray-700\/50,
+html.light .border-gray-700\/60,
+html.light .border-zinc-800,
+html.light .border-zinc-700,
+html.light .border-zinc-700\/60 {
+  border-color: rgba(0, 0, 0, 0.08) !important;
+}
+
+/* Text Hierarchy */
+html.light .text-white {
+  color: #0f172a !important;
+}
+
+html.light .text-gray-100,
+html.light .text-zinc-100,
+html.light .text-slate-100,
+html.light .text-\[\#f4f4f5\] {
+  color: #0f172a !important;
+}
+
+html.light .text-gray-200,
+html.light .text-zinc-200,
+html.light .text-slate-200 {
+  color: #1e293b !important;
+}
+
+html.light .text-gray-300,
+html.light .text-gray-300\/80,
+html.light .text-gray-300\/90,
+html.light .text-zinc-300,
+html.light .text-slate-300 {
+  color: #334155 !important;
+}
+
+html.light .text-gray-400,
+html.light .text-zinc-400,
+html.light .text-slate-400 {
+  color: #475569 !important;
+}
+
+html.light .text-gray-500,
+html.light .text-zinc-500,
+html.light .text-slate-500 {
+  color: #64748b !important;
+}
+
+/* Keep white text inside colored action buttons and badges */
+html.light button.text-white,
+html.light button[class*="bg-gradient"] .text-white,
+html.light button[class*="bg-gradient"],
+html.light .bg-cyan-500 .text-white,
+html.light .bg-blue-600 .text-white,
+html.light .bg-indigo-600 .text-white,
+html.light .bg-purple-600 .text-white,
+html.light .bg-emerald-500 .text-white,
+html.light .bg-red-500 .text-white,
+html.light [style*="linear-gradient"] > span.text-white,
+html.light [style*="linear-gradient"] .text-white {
+  color: #ffffff !important;
+}
+
+/* Gradient text headings in Light Mode */
+html.light .from-white {
+  --tw-gradient-from: #0f172a var(--tw-gradient-from-position) !important;
+  --tw-gradient-to: rgb(15 23 42 / 0) var(--tw-gradient-to-position) !important;
+  --tw-gradient-stops: var(--tw-gradient-from), #334155 var(--tw-gradient-via-position), var(--tw-gradient-to) !important;
+}
+
+html.light .via-white,
+html.light .via-zinc-200 {
+  --tw-gradient-to: rgb(15 23 42 / 0) var(--tw-gradient-to-position) !important;
+  --tw-gradient-stops: var(--tw-gradient-from), #334155 var(--tw-gradient-via-position), var(--tw-gradient-to) !important;
+}
+
+html.light .to-slate-400,
+html.light .to-slate-500,
+html.light .to-zinc-400 {
+  --tw-gradient-to: #475569 var(--tw-gradient-to-position) !important;
+}
+
+
+/* Modals & Popups in Light Mode */
+html.light [role="dialog"],
+html.light .dialog-content {
+  background-color: #ffffff !important;
+  color: #0f172a !important;
+  border-color: rgba(0, 0, 0, 0.1) !important;
+}
+
+/* Code & Terminal blocks */
+html.light pre,
+html.light code,
+html.light [style*="rgba(5, 8, 18"],
+html.light [style*="rgba(10, 15, 30"] {
+  background: rgba(241, 245, 249, 0.9) !important;
+  border-color: rgba(0, 0, 0, 0.08) !important;
+  color: #0f172a !important;
 }
 
 /* --------- Leaflet Map --------- */
@@ -271,8 +541,6 @@ html { scroll-behavior: smooth; }
   25% { transform: rotate(0.5deg); }
   75% { transform: rotate(-0.5deg); }
 }
-
-/* 1. Default Modern Black Breeze Cursor */
 
 /* --------- System Native Cursor Setup --------- */
 
@@ -304,3 +572,4 @@ textarea,
 [contenteditable="true"] {
   cursor: text !important;
 }
+

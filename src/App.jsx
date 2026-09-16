@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import { allRoutes } from "@/routes";
 import { DashboardLayout } from "@/Apps/Dashboard/layout/DashboardLayout";
 import CyproVextroReveal from "@/components/CyproVextroReveal";
+import { ThemeProvider } from "@/lib/theme";
 
 const queryClient = new QueryClient();
 
@@ -79,13 +80,16 @@ function Router() {
 // ─── App root ─────────────────────────────────────────────────────────────────
 function App() {
   return (
-    <QueryClientProvider client={queryClient}>
-      <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, "")}>
-        <Router />
-      </WouterRouter>
-      <Toaster />
-    </QueryClientProvider>
+    <ThemeProvider>
+      <QueryClientProvider client={queryClient}>
+        <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, "")}>
+          <Router />
+        </WouterRouter>
+        <Toaster />
+      </QueryClientProvider>
+    </ThemeProvider>
   );
 }
 
 export default App;
+

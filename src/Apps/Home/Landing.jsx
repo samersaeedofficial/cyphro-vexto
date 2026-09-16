@@ -7,6 +7,7 @@ import { Arsenal } from "./components/Arsenal";
 import { CtaBanner } from "./components/CtaBanner";
 import { EthicalNotice } from "./components/EthicalNotice";
 import { Footer } from "./components/Layout/Footer";
+import { useTheme } from "@/lib/theme";
 
 /* ── Global CSS animations (GPU-composited) ── */
 const ANIM_CSS = `
@@ -43,6 +44,7 @@ function FloatingOrb({ style, cls }) {
 
 export function Landing() {
   const [scrolled, setScrolled] = useState(false);
+  const { isDark } = useTheme();
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 40);
@@ -51,7 +53,9 @@ export function Landing() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-[#06090f] text-slate-200 font-sans overflow-x-hidden selection:bg-blue-500/30">
+    <div className={`min-h-screen font-sans overflow-x-hidden selection:bg-blue-500/30 transition-colors duration-300 ${
+      isDark ? "bg-[#06090f] text-slate-200" : "bg-[#f8fafc] text-slate-800"
+    }`}>
 
       {/* ── Background Orbs ── */}
       <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
@@ -59,7 +63,11 @@ export function Landing() {
         <FloatingOrb cls="orb-2" style={{ width: 540, height: 540, bottom: "-8%", right: "10%", background: "radial-gradient(circle, rgba(99,102,241,0.09) 0%, transparent 68%)", filter: "blur(48px)" }} />
         <FloatingOrb cls="orb-3" style={{ width: 360, height: 360, top: "50%", left: "-4%", background: "radial-gradient(circle, rgba(16,185,129,0.06) 0%, transparent 68%)", filter: "blur(36px)" }} />
         <div className="absolute inset-0 opacity-[0.15]" style={{ backgroundImage: "radial-gradient(rgba(148,163,184,0.35) 1px, transparent 1px)", backgroundSize: "40px 40px" }} />
-        <div className="absolute inset-0" style={{ background: "radial-gradient(ellipse 80% 60% at 50% 100%, transparent 0%, #06090f 70%)" }} />
+        <div className="absolute inset-0" style={{
+          background: isDark 
+            ? "radial-gradient(ellipse 80% 60% at 50% 100%, transparent 0%, #06090f 70%)"
+            : "radial-gradient(ellipse 80% 60% at 50% 100%, transparent 0%, #f8fafc 70%)"
+        }} />
       </div>
 
       <Header scrolled={scrolled} />
@@ -77,3 +85,4 @@ export function Landing() {
     </div>
   );
 }
+

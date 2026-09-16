@@ -41,8 +41,9 @@ const WifiAnalyzer = () => {
   };
 
   return (
-    <div className="w-full min-h-screen bg-slate-950/20">
+    <div className="w-full min-h-screen transition-colors duration-300">
       <AnimatePresence mode="wait">
+
         {activeView === "dashboard" ? (
           <motion.div
             key="dashboard"

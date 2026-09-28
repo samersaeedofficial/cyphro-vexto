@@ -1,10 +1,19 @@
 import { motion } from "framer-motion";
 import { Lock } from "lucide-react";
 import { CyphroLogoFull } from "@/components/CyphroLogo";
+import { useTheme } from "@/lib/theme";
 
 export function Footer() {
+  const { isDark } = useTheme();
+
   return (
-    <footer className="relative z-10 overflow-hidden" style={{ borderTop: "1px solid rgba(255,255,255,0.06)" }}>
+    <footer
+      className="relative z-10 overflow-hidden transition-colors"
+      style={{
+        borderTop: isDark ? "1px solid rgba(255,255,255,0.06)" : "1px solid rgba(0,0,0,0.08)",
+        background: isDark ? "transparent" : "rgba(255,255,255,0.7)",
+      }}
+    >
       {/* Gradient ambient glow behind footer */}
       <div className="absolute inset-0 pointer-events-none">
         <div className="absolute -top-32 left-1/4 w-[600px] h-[300px] rounded-full" style={{ background: "radial-gradient(ellipse, rgba(59,130,246,0.07) 0%, transparent 70%)", filter: "blur(60px)" }} />
@@ -17,8 +26,8 @@ export function Footer() {
 
           {/* Brand column */}
           <div className="lg:col-span-1 flex flex-col gap-5">
-            <CyphroLogoFull height={32} />
-            <p className="text-slate-400 text-sm leading-relaxed max-w-[240px]">
+            <CyphroLogoFull height={32} isDark={isDark} />
+            <p className="text-slate-600 dark:text-slate-400 text-sm leading-relaxed max-w-[240px]">
               Professional-grade security intelligence suite for authorized testing and digital forensics.
             </p>
             {/* Social icons */}
@@ -34,12 +43,16 @@ export function Footer() {
                   aria-label={label}
                   whileHover={{ scale: 1.15, y: -2 }}
                   whileTap={{ scale: 0.92 }}
-                  className="w-9 h-9 rounded-xl flex items-center justify-center"
-                  style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)", transition: "background 0.2s, border-color 0.2s" }}
+                  className="w-9 h-9 rounded-xl flex items-center justify-center cursor-pointer"
+                  style={{
+                    background: isDark ? "rgba(255,255,255,0.04)" : "rgba(0,0,0,0.04)",
+                    border: isDark ? "1px solid rgba(255,255,255,0.08)" : "1px solid rgba(0,0,0,0.08)",
+                    transition: "background 0.2s, border-color 0.2s",
+                  }}
                   onMouseEnter={e => { e.currentTarget.style.background = "rgba(99,102,241,0.12)"; e.currentTarget.style.borderColor = "rgba(99,102,241,0.3)"; }}
-                  onMouseLeave={e => { e.currentTarget.style.background = "rgba(255,255,255,0.04)"; e.currentTarget.style.borderColor = "rgba(255,255,255,0.08)"; }}
+                  onMouseLeave={e => { e.currentTarget.style.background = isDark ? "rgba(255,255,255,0.04)" : "rgba(0,0,0,0.04)"; e.currentTarget.style.borderColor = isDark ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.08)"; }}
                 >
-                  <svg className="w-4 h-4 text-slate-400 hover:text-white" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                  <svg className="w-4 h-4 text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                     <path d={path} />
                   </svg>
                 </motion.a>
@@ -49,13 +62,13 @@ export function Footer() {
 
           {/* Platform links */}
           <div className="flex flex-col gap-4">
-            <h5 className="text-white font-bold text-sm tracking-widest uppercase">Platform</h5>
+            <h5 className="text-slate-900 dark:text-white font-bold text-sm tracking-widest uppercase">Platform</h5>
             <div className="w-8 h-px" style={{ background: "linear-gradient(90deg, #3b82f6, transparent)" }} />
             {[["#modules","Security Modules"],["#platform","Core Features"],["#workflow","How It Works"],["#","Release Notes"]].map(([href, label]) => (
               <a
                 key={label}
                 href={href}
-                className="text-slate-500 text-sm font-medium hover:text-slate-200 transition-colors flex items-center gap-2 group"
+                className="text-slate-600 dark:text-slate-500 text-sm font-medium hover:text-slate-900 dark:hover:text-slate-200 transition-colors flex items-center gap-2 group"
               >
                 <span className="w-0 group-hover:w-3 h-px bg-blue-500 transition-all duration-300 inline-block" />
                 {label}
@@ -65,13 +78,13 @@ export function Footer() {
 
           {/* Security domains */}
           <div className="flex flex-col gap-4">
-            <h5 className="text-white font-bold text-sm tracking-widest uppercase">Domains</h5>
+            <h5 className="text-slate-900 dark:text-white font-bold text-sm tracking-widest uppercase">Domains</h5>
             <div className="w-8 h-px" style={{ background: "linear-gradient(90deg, #6366f1, transparent)" }} />
             {["Network & WiFi","OSINT Intelligence","Web Vulnerabilities","Credential Auditing","Privacy Assurance"].map((item) => (
               <a
                 key={item}
                 href="#modules"
-                className="text-slate-500 text-sm font-medium hover:text-slate-200 transition-colors flex items-center gap-2 group"
+                className="text-slate-600 dark:text-slate-500 text-sm font-medium hover:text-slate-900 dark:hover:text-slate-200 transition-colors flex items-center gap-2 group"
               >
                 <span className="w-0 group-hover:w-3 h-px bg-indigo-500 transition-all duration-300 inline-block" />
                 {item}
@@ -81,13 +94,13 @@ export function Footer() {
 
           {/* Legal & status */}
           <div className="flex flex-col gap-4">
-            <h5 className="text-white font-bold text-sm tracking-widest uppercase">Legal</h5>
+            <h5 className="text-slate-900 dark:text-white font-bold text-sm tracking-widest uppercase">Legal</h5>
             <div className="w-8 h-px" style={{ background: "linear-gradient(90deg, #10b981, transparent)" }} />
             {["Privacy Policy","Terms of Service","Ethical Guidelines","Cookie Policy"].map((item) => (
               <a
                 key={item}
                 href="#"
-                className="text-slate-500 text-sm font-medium hover:text-slate-200 transition-colors flex items-center gap-2 group"
+                className="text-slate-600 dark:text-slate-500 text-sm font-medium hover:text-slate-900 dark:hover:text-slate-200 transition-colors flex items-center gap-2 group"
               >
                 <span className="w-0 group-hover:w-3 h-px bg-emerald-500 transition-all duration-300 inline-block" />
                 {item}
@@ -95,25 +108,25 @@ export function Footer() {
             ))}
             {/* Status badge */}
             <div className="mt-3 inline-flex items-center gap-2 px-3 py-2 rounded-xl self-start" style={{ background: "rgba(16,185,129,0.07)", border: "1px solid rgba(16,185,129,0.18)" }}>
-              <div className="w-2 h-2 rounded-full bg-emerald-400 cvx-pulse-slow" />
-              <span className="text-emerald-400 text-xs font-bold">All Systems Operational</span>
+              <div className="w-2 h-2 rounded-full bg-emerald-500 cvx-pulse-slow" />
+              <span className="text-emerald-600 dark:text-emerald-400 text-xs font-bold">All Systems Operational</span>
             </div>
           </div>
         </div>
 
         {/* Divider with gradient */}
-        <div className="relative h-px mb-8" style={{ background: "linear-gradient(90deg, transparent, rgba(255,255,255,0.08) 20%, rgba(255,255,255,0.08) 80%, transparent)" }}>
+        <div className="relative h-px mb-8" style={{ background: isDark ? "linear-gradient(90deg, transparent, rgba(255,255,255,0.08) 20%, rgba(255,255,255,0.08) 80%, transparent)" : "linear-gradient(90deg, transparent, rgba(0,0,0,0.08) 20%, rgba(0,0,0,0.08) 80%, transparent)" }}>
           <div className="absolute top-0 left-1/2 -translate-x-1/2 w-32 h-px" style={{ background: "linear-gradient(90deg, transparent, rgba(99,102,241,0.6), transparent)" }} />
         </div>
 
         {/* Bottom bar */}
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-          <p className="text-slate-600 text-xs font-medium">
-            © 2026 <span className="text-slate-500 font-semibold">Cyphro Vexto</span>. All rights reserved. Built for ethical security professionals.
+          <p className="text-slate-600 dark:text-slate-500 text-xs font-medium">
+            © 2026 <span className="text-slate-900 dark:text-slate-300 font-semibold">Cyphro Vexto</span>. All rights reserved. Built for ethical security professionals.
           </p>
-          <div className="flex items-center gap-2 px-3 py-1.5 rounded-full" style={{ background: "rgba(59,130,246,0.06)", border: "1px solid rgba(59,130,246,0.12)" }}>
+          <div className="flex items-center gap-2 px-3 py-1.5 rounded-full" style={{ background: "rgba(59,130,246,0.06)", border: "1px solid rgba(59,130,246,0.15)" }}>
             <Lock className="w-3 h-3 text-blue-500" />
-            <span className="text-blue-400/70 text-xs font-semibold">Authorized Use Only</span>
+            <span className="text-blue-600 dark:text-blue-400/80 text-xs font-semibold">Authorized Use Only</span>
           </div>
         </div>
       </div>

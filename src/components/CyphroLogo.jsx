@@ -1,4 +1,5 @@
 import { motion } from "framer-motion";
+import { useTheme } from "@/lib/theme";
 
 // ─── Icon Only ───────────────────────────────────────────────────────────────
 export function CyphroLogo({ size = 36, className = "", animate = false }) {
@@ -139,7 +140,14 @@ export function CyphroLogo({ size = 36, className = "", animate = false }) {
 }
 
 // ─── Full Logo (Icon + Wordmark) ─────────────────────────────────────────────
-export function CyphroLogoFull({ height = 32, className = "" }) {
+export function CyphroLogoFull({ height = 32, className = "", isDark: propIsDark }) {
+  let isDark = true;
+  try {
+    const themeCtx = useTheme();
+    isDark = propIsDark !== undefined ? propIsDark : themeCtx.isDark;
+  } catch {
+    isDark = propIsDark !== undefined ? propIsDark : true;
+  }
   const iconSize = Math.round(height * 1.15);
 
   return (
@@ -160,11 +168,12 @@ export function CyphroLogoFull({ height = 32, className = "" }) {
           initial={{ opacity: 0, x: -16 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.55, delay: 0.18, ease: [0.22, 1, 0.36, 1] }}
+          className="transition-colors duration-300"
           style={{
             fontSize: Math.round(height * 0.54),
             fontWeight: 800,
             letterSpacing: "-0.025em",
-            color: "#f8fafc",
+            color: isDark ? "#f8fafc" : "#0f172a",
             fontFamily: "'Inter','Manrope',sans-serif",
             lineHeight: 1,
           }}
@@ -179,9 +188,11 @@ export function CyphroLogoFull({ height = 32, className = "" }) {
           transition={{ duration: 0.55, delay: 0.30, ease: [0.22, 1, 0.36, 1] }}
           style={{
             fontSize: Math.round(height * 0.54),
-            fontWeight: 600,
+            fontWeight: 700,
             letterSpacing: "-0.01em",
-            background: "linear-gradient(135deg, #60a5fa 0%, #818cf8 50%, #34d399 100%)",
+            background: isDark
+              ? "linear-gradient(135deg, #60a5fa 0%, #818cf8 50%, #34d399 100%)"
+              : "linear-gradient(135deg, #2563eb 0%, #6366f1 50%, #059669 100%)",
             WebkitBackgroundClip: "text",
             WebkitTextFillColor: "transparent",
             fontFamily: "'Inter','Manrope',sans-serif",

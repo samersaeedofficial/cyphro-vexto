@@ -1,8 +1,11 @@
 import { motion } from "framer-motion";
 import { Link } from "wouter";
 import { Terminal, ArrowRight } from "lucide-react";
+import { useTheme } from "@/lib/theme";
 
 export function CtaBanner() {
+  const { isDark } = useTheme();
+
   return (
     <section className="py-32 px-6">
       <motion.div
@@ -12,10 +15,16 @@ export function CtaBanner() {
         transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
         className="max-w-6xl mx-auto relative rounded-[48px] overflow-hidden"
         style={{
-          background: "rgba(10,14,25,0.9)",
-          border: "1px solid rgba(255,255,255,0.08)",
+          background: isDark
+            ? "rgba(10,14,25,0.9)"
+            : "linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(241,245,249,0.92) 100%)",
+          border: isDark
+            ? "1px solid rgba(255,255,255,0.08)"
+            : "1px solid rgba(99,102,241,0.2)",
           backdropFilter: "blur(20px)",
-          boxShadow: "0 0 0 1px rgba(99,102,241,0.1), 0 40px 100px rgba(0,0,0,0.5), 0 0 80px rgba(59,130,246,0.08)",
+          boxShadow: isDark
+            ? "0 0 0 1px rgba(99,102,241,0.1), 0 40px 100px rgba(0,0,0,0.5), 0 0 80px rgba(59,130,246,0.08)"
+            : "0 20px 60px -10px rgba(99,102,241,0.15), 0 0 0 1px rgba(99,102,241,0.12), 0 8px 30px rgba(0,0,0,0.04)",
         }}
       >
         {/* Multi-color gradient glow orbs */}
@@ -34,20 +43,29 @@ export function CtaBanner() {
             viewport={{ once: true }}
             transition={{ delay: 0.1 }}
             className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full mb-8"
-            style={{ background: "rgba(99,102,241,0.1)", border: "1px solid rgba(99,102,241,0.25)" }}
+            style={{
+              background: isDark ? "rgba(99,102,241,0.1)" : "rgba(99,102,241,0.1)",
+              border: isDark ? "1px solid rgba(99,102,241,0.25)" : "1px solid rgba(99,102,241,0.3)",
+            }}
           >
-            <div className="w-2 h-2 rounded-full bg-indigo-400 cvx-pulse" />
-            <span className="text-indigo-300 text-xs font-bold tracking-widest uppercase">Zero Setup Required</span>
+            <div className="w-2 h-2 rounded-full bg-indigo-500 cvx-pulse" />
+            <span className="text-indigo-600 dark:text-indigo-300 text-xs font-bold tracking-widest uppercase">Zero Setup Required</span>
           </motion.div>
           <motion.h2
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ delay: 0.2 }}
-            className="text-4xl md:text-6xl font-extrabold text-white mb-6"
+            className="text-4xl md:text-6xl font-extrabold text-slate-900 dark:text-white mb-6"
           >
             Ready to start?{" "}
-            <span style={{ background: "linear-gradient(135deg, #60a5fa, #a78bfa, #34d399)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>
+            <span style={{
+              background: isDark
+                ? "linear-gradient(135deg, #60a5fa, #a78bfa, #34d399)"
+                : "linear-gradient(135deg, #2563eb, #7c3aed, #059669)",
+              WebkitBackgroundClip: "text",
+              WebkitTextFillColor: "transparent"
+            }}>
               Today.
             </span>
           </motion.h2>
@@ -56,7 +74,7 @@ export function CtaBanner() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ delay: 0.3 }}
-            className="text-slate-400 text-xl max-w-2xl mx-auto mb-12"
+            className="text-slate-600 dark:text-slate-400 text-xl max-w-2xl mx-auto mb-12"
           >
             Launch the dashboard and run your first authorized security test in seconds. No installation, no configuration.
           </motion.p>
@@ -64,8 +82,8 @@ export function CtaBanner() {
             <motion.button
               whileHover={{ scale: 1.05, boxShadow: "0 0 60px rgba(99,102,241,0.4), 0 20px 60px rgba(59,130,246,0.2)" }}
               whileTap={{ scale: 0.97 }}
-              className="px-12 py-5 rounded-2xl font-extrabold text-lg text-white inline-flex items-center gap-3"
-              style={{ background: "linear-gradient(135deg, #3b82f6, #6366f1, #8b5cf6)", boxShadow: "0 0 40px rgba(99,102,241,0.25)" }}
+              className="px-12 py-5 rounded-2xl font-extrabold text-lg text-white inline-flex items-center gap-3 cursor-pointer"
+              style={{ background: "linear-gradient(135deg, #2563eb, #6366f1, #8b5cf6)", boxShadow: "0 10px 30px rgba(99,102,241,0.3)" }}
             >
               <Terminal className="w-5 h-5" /> Get Started Free <ArrowRight className="w-5 h-5" />
             </motion.button>

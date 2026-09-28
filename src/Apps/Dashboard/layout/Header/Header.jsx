@@ -60,7 +60,7 @@ export function Header() {
 
       <div className="flex items-center gap-6 flex-1 min-w-0">
         <Link href="/" className="cursor-pointer group transition-transform hover:scale-105 shrink-0" data-testid="link-home">
-          <CyphroLogoFull height={32} />
+          <CyphroLogoFull height={32} isDark={isDark} />
         </Link>
 
         <div className={`h-4 w-px hidden md:block shrink-0 ${isDark ? "bg-slate-800" : "bg-slate-300"}`} />

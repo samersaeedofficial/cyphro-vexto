@@ -59,9 +59,9 @@ export function Landing() {
 
       {/* ── Background Orbs ── */}
       <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
-        <FloatingOrb cls="orb-1" style={{ width: 640, height: 640, top: "-12%", left: "14%", background: "radial-gradient(circle, rgba(59,130,246,0.11) 0%, transparent 68%)", filter: "blur(48px)" }} />
-        <FloatingOrb cls="orb-2" style={{ width: 540, height: 540, bottom: "-8%", right: "10%", background: "radial-gradient(circle, rgba(99,102,241,0.09) 0%, transparent 68%)", filter: "blur(48px)" }} />
-        <FloatingOrb cls="orb-3" style={{ width: 360, height: 360, top: "50%", left: "-4%", background: "radial-gradient(circle, rgba(16,185,129,0.06) 0%, transparent 68%)", filter: "blur(36px)" }} />
+        <FloatingOrb cls="orb-1" style={{ width: 640, height: 640, top: "-12%", left: "14%", background: isDark ? "radial-gradient(circle, rgba(59,130,246,0.11) 0%, transparent 68%)" : "radial-gradient(circle, rgba(59,130,246,0.14) 0%, transparent 68%)", filter: "blur(48px)" }} />
+        <FloatingOrb cls="orb-2" style={{ width: 540, height: 540, bottom: "-8%", right: "10%", background: isDark ? "radial-gradient(circle, rgba(99,102,241,0.09) 0%, transparent 68%)" : "radial-gradient(circle, rgba(99,102,241,0.12) 0%, transparent 68%)", filter: "blur(48px)" }} />
+        <FloatingOrb cls="orb-3" style={{ width: 360, height: 360, top: "50%", left: "-4%", background: isDark ? "radial-gradient(circle, rgba(16,185,129,0.06) 0%, transparent 68%)" : "radial-gradient(circle, rgba(16,185,129,0.09) 0%, transparent 68%)", filter: "blur(36px)" }} />
         <div className="absolute inset-0 opacity-[0.15]" style={{ backgroundImage: "radial-gradient(rgba(148,163,184,0.35) 1px, transparent 1px)", backgroundSize: "40px 40px" }} />
         <div className="absolute inset-0" style={{
           background: isDark 

@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
 import { Terminal, Settings, Play, Cpu, ChevronRight } from "lucide-react";
+import { useTheme } from "@/lib/theme";
 
 const STEPS = [
   {
@@ -46,6 +47,8 @@ const fadeUp = {
 };
 
 function StepCard({ step, index }) {
+  const { isDark } = useTheme();
+
   return (
     <motion.div
       custom={index}
@@ -56,16 +59,22 @@ function StepCard({ step, index }) {
       className="relative group w-full"
     >
       <div
-        className="relative p-6 md:p-8 rounded-[32px] border border-white/5 overflow-hidden transition-all duration-500 hover:border-white/20 hover:translate-y-[-4px]"
+        className={`relative p-6 md:p-8 rounded-[32px] overflow-hidden transition-all duration-500 hover:translate-y-[-5px] ${
+          isDark
+            ? "border border-white/5 hover:border-white/20"
+            : "border border-slate-200/90 hover:border-blue-400/50"
+        }`}
         style={{
-          background: "rgba(15,23,42,0.4)",
+          background: isDark ? "rgba(15,23,42,0.4)" : "rgba(255, 255, 255, 0.9)",
           backdropFilter: "blur(16px)",
-          boxShadow: "0 10px 30px rgba(0,0,0,0.2)",
+          boxShadow: isDark
+            ? "0 10px 30px rgba(0,0,0,0.2)"
+            : "0 10px 30px -5px rgba(99,102,241,0.07), 0 2px 10px rgba(0,0,0,0.03)",
         }}
       >
         {/* Subtle background glow */}
         <div 
-          className="absolute -top-12 -right-12 w-32 h-32 rounded-full opacity-0 group-hover:opacity-10 transition-opacity duration-700 blur-2xl pointer-events-none"
+          className="absolute -top-12 -right-12 w-32 h-32 rounded-full opacity-0 group-hover:opacity-15 transition-opacity duration-700 blur-2xl pointer-events-none"
           style={{ background: step.color }}
         />
 
@@ -73,25 +82,31 @@ function StepCard({ step, index }) {
           {/* Top Row: Icon & Large Number */}
           <div className="flex items-center justify-between">
             <div
-              className="w-12 h-12 rounded-xl flex items-center justify-center relative shadow-lg"
+              className="w-12 h-12 rounded-xl flex items-center justify-center relative shadow-sm"
               style={{ 
-                background: `rgba(${step.glow}, 0.1)`, 
-                border: `1px solid rgba(${step.glow}, 0.2)`,
+                background: `rgba(${step.glow}, ${isDark ? "0.1" : "0.12"})`, 
+                border: `1px solid rgba(${step.glow}, ${isDark ? "0.2" : "0.3"})`,
               }}
             >
               <step.icon className="w-6 h-6" style={{ color: step.color }} />
             </div>
-            <span className="text-3xl font-black italic opacity-10 group-hover:opacity-30 group-hover:scale-110 transition-all duration-500 text-white">
+            <span
+              className={`text-3xl font-black italic transition-all duration-500 ${
+                isDark
+                  ? "text-white opacity-10 group-hover:opacity-35 group-hover:scale-110"
+                  : "text-slate-900 opacity-15 group-hover:opacity-40 group-hover:scale-110"
+              }`}
+            >
               {step.tag}
             </span>
           </div>
 
           {/* Content */}
           <div>
-            <h3 className="text-lg font-bold text-white mb-2 group-hover:text-blue-400 transition-colors duration-300">
+            <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors duration-300">
               {step.title}
             </h3>
-            <p className="text-slate-500 text-sm leading-relaxed group-hover:text-slate-300 transition-colors duration-300">
+            <p className="text-slate-600 dark:text-slate-400 text-sm leading-relaxed group-hover:text-slate-800 dark:group-hover:text-slate-300 transition-colors duration-300">
               {step.desc}
             </p>
           </div>
@@ -102,6 +117,8 @@ function StepCard({ step, index }) {
 }
 
 export function Workflow() {
+  const { isDark } = useTheme();
+
   return (
     <section id="workflow" className="py-24 px-6 relative">
       <div className="max-w-7xl mx-auto relative">
@@ -110,10 +127,10 @@ export function Workflow() {
             initial={{ opacity: 0, y: 10 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/5 border border-blue-500/10 mb-4"
+            className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 mb-4"
           >
             <div className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse" />
-            <span className="text-blue-400/80 text-[10px] font-black tracking-[0.3em] uppercase italic">Workflow Engine</span>
+            <span className="text-blue-600 dark:text-blue-400/80 text-[10px] font-black tracking-[0.3em] uppercase italic">Workflow Engine</span>
           </motion.div>
           
           <motion.h2
@@ -121,9 +138,9 @@ export function Workflow() {
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true }}
-            className="text-3xl md:text-5xl font-black text-white mb-4 tracking-tight"
+            className="text-3xl md:text-5xl font-black text-slate-900 dark:text-white mb-4 tracking-tight"
           >
-            Streamlined <span className="text-blue-500">Execution</span>
+            Streamlined <span className="text-blue-600 dark:text-blue-500">Execution</span>
           </motion.h2>
         </div>
 
@@ -136,11 +153,13 @@ export function Workflow() {
 
         {/* Visual Connector for Desktop */}
         <div className="hidden lg:flex justify-center mt-12">
-            <div className="flex items-center gap-4 text-[10px] font-bold text-slate-600 tracking-widest uppercase">
+            <div className={`flex items-center gap-4 text-[10px] font-bold tracking-widest uppercase ${
+              isDark ? "text-slate-500" : "text-slate-600"
+            }`}>
                 <span>Setup</span>
-                <ChevronRight className="w-3 h-3 text-slate-800" />
+                <ChevronRight className={`w-3 h-3 ${isDark ? "text-slate-700" : "text-slate-400"}`} />
                 <span>Initialize</span>
-                <ChevronRight className="w-3 h-3 text-slate-800" />
+                <ChevronRight className={`w-3 h-3 ${isDark ? "text-slate-700" : "text-slate-400"}`} />
                 <span>Execute</span>
             </div>
         </div>

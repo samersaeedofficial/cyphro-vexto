@@ -4,6 +4,7 @@ import {
   Wifi, Users, Eye, ShieldAlert, Key, Zap, Lock, Brain, VenetianMask, ArrowRight 
 } from "lucide-react";
 import { GlowCard } from "./GlowCard";
+import { useTheme } from "@/lib/theme";
 
 const MODULES = [
   { id: "network-wifi",           icon: Wifi,         label: "Network & WiFi",       desc: "Real-time packet analysis, WiFi scanning, and MitM simulation.",          color: "#3b82f6", glow: "59,130,246" },
@@ -23,14 +24,16 @@ const fadeUp = {
 };
 
 export function Arsenal() {
+  const { isDark } = useTheme();
+
   return (
     <section id="modules" className="py-32 px-6 relative">
       <div className="absolute inset-0 pointer-events-none" style={{ background: "radial-gradient(ellipse 60% 40% at 50% 50%, rgba(59,130,246,0.04) 0%, transparent 70%)" }} />
       <div className="max-w-7xl mx-auto relative">
         <div className="text-center mb-20">
-          <motion.p custom={0} variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} className="text-blue-500 font-bold text-xs uppercase tracking-widest mb-4">Arsenal</motion.p>
-          <motion.h2 custom={1} variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} className="text-4xl md:text-6xl font-extrabold text-white mb-6">30+ Tools. 9 Domains.</motion.h2>
-          <motion.p custom={2} variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} className="text-slate-400 max-w-xl mx-auto text-lg">Every tool you need across the full penetration testing lifecycle — from recon to report.</motion.p>
+          <motion.p custom={0} variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} className="text-blue-600 dark:text-blue-500 font-bold text-xs uppercase tracking-widest mb-4">Arsenal</motion.p>
+          <motion.h2 custom={1} variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} className="text-4xl md:text-6xl font-extrabold text-slate-900 dark:text-white mb-6">30+ Tools. 9 Domains.</motion.h2>
+          <motion.p custom={2} variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} className="text-slate-600 dark:text-slate-400 max-w-xl mx-auto text-lg">Every tool you need across the full penetration testing lifecycle — from recon to report.</motion.p>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {MODULES.map((mod, i) => <GlowCard key={mod.label} mod={mod} i={i} />)}
@@ -38,10 +41,15 @@ export function Arsenal() {
         <div className="text-center mt-14">
           <Link href="/dashboard">
             <motion.button
-              whileHover={{ scale: 1.05, boxShadow: "0 0 40px rgba(59,130,246,0.3)" }}
+              whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.97 }}
-              className="px-8 py-4 rounded-2xl font-bold text-blue-400 text-sm inline-flex items-center gap-2"
-              style={{ background: "rgba(59,130,246,0.08)", border: "1px solid rgba(59,130,246,0.25)" }}
+              className="px-8 py-4 rounded-2xl font-bold text-sm inline-flex items-center gap-2 cursor-pointer transition-all"
+              style={{
+                background: isDark ? "rgba(59,130,246,0.08)" : "rgba(59,130,246,0.12)",
+                border: isDark ? "1px solid rgba(59,130,246,0.25)" : "1px solid rgba(59,130,246,0.35)",
+                color: isDark ? "#60a5fa" : "#2563eb",
+                boxShadow: isDark ? "0 0 30px rgba(59,130,246,0.2)" : "0 4px 15px rgba(37,99,235,0.15)",
+              }}
             >
               Open All Modules <ArrowRight className="w-4 h-4" />
             </motion.button>

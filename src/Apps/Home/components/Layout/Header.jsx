@@ -49,7 +49,7 @@ export function Header({ scrolled }) {
       >
         <div className="flex items-center justify-between px-6 h-14 gap-4">
           {/* Logo */}
-          <CyphroLogoFull height={28} />
+          <CyphroLogoFull height={28} isDark={isDark} />
 
           {/* Nav Links */}
           <div className="hidden md:flex items-center gap-1">

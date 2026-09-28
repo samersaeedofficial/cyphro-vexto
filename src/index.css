@@ -469,6 +469,8 @@ html.light .text-slate-500 {
 html.light button.text-white,
 html.light button[class*="bg-gradient"] .text-white,
 html.light button[class*="bg-gradient"],
+html.light button[style*="linear-gradient"],
+html.light button[style*="linear-gradient"] *,
 html.light .bg-cyan-500 .text-white,
 html.light .bg-blue-600 .text-white,
 html.light .bg-indigo-600 .text-white,

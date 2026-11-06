@@ -9,11 +9,13 @@ export default function NotFound() {
     >
       <div className="text-center font-mono">
         <div
-          className="text-8xl font-bold mb-4"
+          className="text-8xl font-bold mb-4 bg-clip-text text-transparent inline-block"
           style={{
-            background: "linear-gradient(135deg, #00d4ff, #00ff88)",
+            backgroundImage: "linear-gradient(135deg, #00d4ff, #00ff88)",
             WebkitBackgroundClip: "text",
+            backgroundClip: "text",
             WebkitTextFillColor: "transparent",
+            color: "transparent",
           }}
         >
           404

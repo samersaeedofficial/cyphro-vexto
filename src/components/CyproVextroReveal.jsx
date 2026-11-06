@@ -263,12 +263,13 @@ const styles = {
     fontWeight: 900,
     textTransform: "uppercase",
     textAlign: "center",
-    background:
+    backgroundImage:
       "linear-gradient(135deg, #00ff66, #ff7700, #ff0055, #a000ff, #00d2ff, #00ff66)",
     backgroundSize: "300% 300%",
     WebkitBackgroundClip: "text",
-    WebkitTextFillColor: "transparent",
     backgroundClip: "text",
+    WebkitTextFillColor: "transparent",
+    color: "transparent",
     opacity: 0,
     letterSpacing: "28px",
     transform: "scale(0.9) translateY(20px)",

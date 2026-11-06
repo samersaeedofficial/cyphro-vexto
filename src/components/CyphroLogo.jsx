@@ -186,15 +186,18 @@ export function CyphroLogoFull({ height = 32, className = "", isDark: propIsDark
           initial={{ opacity: 0, x: -10 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.55, delay: 0.30, ease: [0.22, 1, 0.36, 1] }}
+          className="bg-clip-text text-transparent inline-block"
           style={{
             fontSize: Math.round(height * 0.54),
             fontWeight: 700,
             letterSpacing: "-0.01em",
-            background: isDark
+            backgroundImage: isDark
               ? "linear-gradient(135deg, #60a5fa 0%, #818cf8 50%, #34d399 100%)"
               : "linear-gradient(135deg, #2563eb 0%, #6366f1 50%, #059669 100%)",
             WebkitBackgroundClip: "text",
+            backgroundClip: "text",
             WebkitTextFillColor: "transparent",
+            color: "transparent",
             fontFamily: "'Inter','Manrope',sans-serif",
             lineHeight: 1,
           }}

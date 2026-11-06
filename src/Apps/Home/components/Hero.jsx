@@ -41,13 +41,15 @@ export function Hero() {
         >
           The Future of{" "}
           <span
-            className="relative inline-block pb-4"
+            className="relative inline-block pb-4 bg-clip-text text-transparent"
             style={{
-              background: isDark
+              backgroundImage: isDark
                 ? "linear-gradient(135deg, #60a5fa 0%, #a78bfa 40%, #34d399 100%)"
                 : "linear-gradient(135deg, #2563eb 0%, #7c3aed 45%, #059669 100%)",
               WebkitBackgroundClip: "text",
+              backgroundClip: "text",
               WebkitTextFillColor: "transparent",
+              color: "transparent",
             }}
           >
             Security Intelligence

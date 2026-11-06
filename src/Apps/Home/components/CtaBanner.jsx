@@ -59,13 +59,18 @@ export function CtaBanner() {
             className="text-4xl md:text-6xl font-extrabold text-slate-900 dark:text-white mb-6"
           >
             Ready to start?{" "}
-            <span style={{
-              background: isDark
-                ? "linear-gradient(135deg, #60a5fa, #a78bfa, #34d399)"
-                : "linear-gradient(135deg, #2563eb, #7c3aed, #059669)",
-              WebkitBackgroundClip: "text",
-              WebkitTextFillColor: "transparent"
-            }}>
+            <span
+              className="bg-clip-text text-transparent inline-block"
+              style={{
+                backgroundImage: isDark
+                  ? "linear-gradient(135deg, #60a5fa, #a78bfa, #34d399)"
+                  : "linear-gradient(135deg, #2563eb, #7c3aed, #059669)",
+                WebkitBackgroundClip: "text",
+                backgroundClip: "text",
+                WebkitTextFillColor: "transparent",
+                color: "transparent",
+              }}
+            >
               Today.
             </span>
           </motion.h2>

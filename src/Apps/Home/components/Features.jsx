@@ -25,13 +25,20 @@ export function Features() {
             <motion.p custom={0} variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} className="text-blue-600 dark:text-blue-400 font-bold text-xs uppercase tracking-widest mb-4">Platform</motion.p>
             <motion.h2 custom={1} variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} className="text-4xl md:text-5xl font-extrabold text-slate-900 dark:text-white mb-6 leading-tight">
               Engineered for<br />
-              <span style={{
-                background: isDark
-                  ? "linear-gradient(90deg,#60a5fa,#a78bfa)"
-                  : "linear-gradient(90deg,#2563eb,#7c3aed)",
-                WebkitBackgroundClip: "text",
-                WebkitTextFillColor: "transparent"
-              }}>Professional Security</span>
+              <span
+                className="bg-clip-text text-transparent inline-block"
+                style={{
+                  backgroundImage: isDark
+                    ? "linear-gradient(90deg, #60a5fa, #a78bfa)"
+                    : "linear-gradient(90deg, #2563eb, #7c3aed)",
+                  WebkitBackgroundClip: "text",
+                  backgroundClip: "text",
+                  WebkitTextFillColor: "transparent",
+                  color: "transparent",
+                }}
+              >
+                Professional Security
+              </span>
             </motion.h2>
             <motion.p custom={2} variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} className="text-slate-600 dark:text-slate-400 text-lg leading-relaxed mb-10">
               We removed the complexity from traditional security toolchains. Clean UI, real results, zero noise.

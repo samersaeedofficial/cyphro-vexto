@@ -1,198 +1,829 @@
 // PhishingManager.jsx
-import React, { useMemo, useState } from "react";
+import React, { useState, useMemo } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   Shield,
-  Plus,
-  ChevronRight,
   Zap,
+  Sparkles,
+  ExternalLink,
+  Check,
+  ArrowRight,
+  ArrowLeft,
+  Search,
+  Layers,
+  Cpu,
   Globe,
-  Smartphone,
-  CreditCard,
-  Wifi,
-  Database,
-  Cookie,
+  Lock,
+  X,
+  TrendingUp,
+  Radio,
+  SlidersHorizontal,
 } from "lucide-react";
-import AttackCardsGrid from "./AttackCardsGrid/AttackCardsGrid";
-import CustomAttackBuilder from "./CustomAttackBuilder/CustomAttackBuilder";
-import RecentActivityLog from "./RecentActivityLog/RecentActivityLog";
-import TemplateSelectionPage from "../../../../features/PhishingAttackCards/FakeLogin/TemplateSelectionPage"; // Imported Separate Route View
-import EvilTwinStudio from "./AttackCardsGrid/components/EvilTwinStudio";
+import { FaGoogle, FaMicrosoft, FaApple, FaLinkedin } from "react-icons/fa6";
+import { SiFacebook, SiInstagram } from "react-icons/si";
+import DeploymentPipeline from "@/features/PhishingAttackCards/FakeLogin/components/DeploymentPipeline";
+
+// Platform cards specification
+const PLATFORM_CARDS = [
+  {
+    id: "google",
+    title: "Google Workspace",
+    subtitle: "Accounts & Gmail SSO",
+    version: "v2.8 Material You",
+    category: "Enterprise SSO",
+    stats: "94.2%",
+    deployments: "1,420 deployments",
+    previewUrl: "/template/google-signin",
+    isAvailable: true,
+    brandColor: "#4285F4",
+    accentColor: "from-blue-500 to-cyan-400",
+    glowColor: "shadow-blue-500/20",
+    borderTheme: "border-blue-500/30 hover:border-blue-500/80",
+    selectedBorder: "border-blue-500 ring-2 ring-blue-500/50 shadow-[0_0_25px_rgba(66,133,244,0.3)]",
+    badgeBg: "bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-500/20",
+    iconBg: "bg-blue-500/10 border-blue-500/30 text-blue-600 dark:text-blue-400",
+    icon: <FaGoogle className="w-5 h-5 text-[#4285F4]" />,
+    description:
+      "Enterprise Google authentication vector replicating the official multi-step login interface with email verification, 2FA challenge, password entry, and passkey fallback.",
+    features: [
+      "Multi-step credential flow (Email, Pass, 2FA)",
+      "Material You design with authentic Google fonts",
+      "Passkey challenge & recovery screen options",
+      "Full mobile and desktop responsive viewport",
+    ],
+    renderMock: () => (
+      <div className="w-full h-full bg-slate-900/90 dark:bg-[#141824] flex flex-col items-center justify-center p-2.5 rounded-xl border border-slate-700/50 dark:border-zinc-800 shadow-inner relative overflow-hidden">
+        <div className="w-full h-full bg-white dark:bg-[#1e2333] rounded-lg p-2.5 flex gap-2 border border-slate-200 dark:border-zinc-700 shadow-md">
+          <div className="w-1/2 flex flex-col justify-between py-0.5">
+            <div>
+              <div className="flex gap-[3px] mb-1.5">
+                <span className="w-1.5 h-1.5 rounded-full bg-[#EA4335]" />
+                <span className="w-1.5 h-1.5 rounded-full bg-[#4285F4]" />
+                <span className="w-1.5 h-1.5 rounded-full bg-[#FBBC05]" />
+                <span className="w-1.5 h-1.5 rounded-full bg-[#34A853]" />
+              </div>
+              <div className="w-10 h-2 bg-[#202124] dark:bg-white rounded-sm mb-1.5" />
+              <div className="w-[85%] h-[2px] bg-gray-300 dark:bg-zinc-600 rounded-sm mb-[2px]" />
+              <div className="w-[60%] h-[2px] bg-gray-300 dark:bg-zinc-600 rounded-sm" />
+            </div>
+            <div className="w-6 h-1.5 bg-gray-200 dark:bg-zinc-700 rounded-sm" />
+          </div>
+          <div className="w-1/2 flex flex-col pt-0.5 justify-between">
+            <div className="w-full h-5 border border-gray-300 dark:border-zinc-600 rounded-md flex items-center px-1.5 bg-gray-50 dark:bg-zinc-800">
+              <div className="w-8 h-1 bg-gray-400 dark:bg-zinc-500 rounded-sm" />
+            </div>
+            <div className="flex justify-between items-center mt-1">
+              <div className="w-5 h-1 bg-gray-300 dark:bg-zinc-600 rounded-sm" />
+              <div className="w-8 h-4 bg-[#1a73e8] rounded-md flex items-center justify-center shadow-sm">
+                <div className="w-3 h-0.5 bg-white rounded-sm" />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    ),
+    htmlSnippet: () => (
+      <div className="w-full h-full bg-[#181a24] flex flex-col items-center justify-center p-2 rounded-xl border border-zinc-800 shadow-xl relative overflow-hidden">
+        <div className="w-full h-full bg-white dark:bg-[#1e2333] rounded-lg p-2.5 flex gap-2 border border-zinc-200 dark:border-zinc-700 shadow-md">
+          <div className="w-1/2 flex flex-col justify-between py-0.5">
+            <div>
+              <div className="flex gap-[3px] mb-1.5">
+                <span className="w-1.5 h-1.5 rounded-full bg-[#EA4335]" />
+                <span className="w-1.5 h-1.5 rounded-full bg-[#4285F4]" />
+                <span className="w-1.5 h-1.5 rounded-full bg-[#FBBC05]" />
+                <span className="w-1.5 h-1.5 rounded-full bg-[#34A853]" />
+              </div>
+              <div className="w-10 h-2 bg-[#202124] dark:bg-white rounded-sm mb-1.5" />
+              <div className="w-[85%] h-[2px] bg-gray-300 dark:bg-zinc-600 rounded-sm mb-[2px]" />
+              <div className="w-[60%] h-[2px] bg-gray-300 dark:bg-zinc-600 rounded-sm" />
+            </div>
+            <div className="w-6 h-1.5 bg-gray-200 dark:bg-zinc-700 rounded-sm" />
+          </div>
+          <div className="w-1/2 flex flex-col pt-0.5 justify-between">
+            <div className="w-full h-5 border border-gray-300 dark:border-zinc-600 rounded-md flex items-center px-1.5 bg-gray-50 dark:bg-zinc-800">
+              <div className="w-8 h-1 bg-gray-400 dark:bg-zinc-500 rounded-sm" />
+            </div>
+            <div className="flex justify-between items-center mt-1">
+              <div className="w-5 h-1 bg-gray-300 dark:bg-zinc-600 rounded-sm" />
+              <div className="w-8 h-4 bg-[#1a73e8] rounded-md flex items-center justify-center shadow-sm">
+                <div className="w-3 h-0.5 bg-white rounded-sm" />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    ),
+  },
+  {
+    id: "microsoft",
+    title: "Microsoft 365",
+    subtitle: "Azure AD & Office Cloud",
+    version: "v3.2 Fluent Cloud",
+    category: "Enterprise SSO",
+    stats: "91.8%",
+    deployments: "980 deployments",
+    previewUrl: "/template/microsoft-login",
+    isAvailable: true,
+    brandColor: "#00a4ef",
+    accentColor: "from-sky-500 to-blue-600",
+    glowColor: "shadow-sky-500/20",
+    borderTheme: "border-sky-500/30 hover:border-sky-500/80",
+    selectedBorder: "border-sky-500 ring-2 ring-sky-500/50 shadow-[0_0_25px_rgba(0,164,239,0.3)]",
+    badgeBg: "bg-sky-500/10 text-sky-600 dark:text-sky-400 border-sky-500/20",
+    iconBg: "bg-sky-500/10 border-sky-500/30 text-sky-600 dark:text-sky-400",
+    icon: <FaMicrosoft className="w-5 h-5 text-[#00a4ef]" />,
+    description:
+      "Authentic corporate identity gateway mirroring Microsoft 365 and Azure Active Directory sign-in portals with Keep-Me-Signed-In (KMSI) modal flow.",
+    features: [
+      "Customizable corporate tenant domain injection",
+      "Dynamic password & security verification stages",
+      "Keep Me Signed In (KMSI) interactive prompt",
+      "Official Fluent UI typography & design aesthetic",
+    ],
+    renderMock: () => (
+      <div className="w-full h-full bg-[#0d1b2a] flex flex-col items-center justify-center p-2.5 rounded-xl border border-slate-700/50 dark:border-zinc-800 shadow-inner relative overflow-hidden">
+        <div className="w-full bg-white dark:bg-[#162032] rounded-lg p-2.5 flex flex-col items-center shadow-md border border-slate-200 dark:border-zinc-700">
+          <div className="grid grid-cols-2 gap-[2px] mb-2 transform scale-75">
+            <div className="w-2.5 h-2.5 bg-[#f25f22]" />
+            <div className="w-2.5 h-2.5 bg-[#7fba00]" />
+            <div className="w-2.5 h-2.5 bg-[#00a4ef]" />
+            <div className="w-2.5 h-2.5 bg-[#ffb900]" />
+          </div>
+          <div className="w-full space-y-2 px-0.5">
+            <div className="w-full h-4.5 border-b border-gray-200 dark:border-zinc-600 flex items-center bg-transparent px-0.5">
+              <div className="w-12 h-1 bg-gray-400 dark:bg-zinc-500 rounded-sm" />
+            </div>
+            <div className="flex justify-between items-center pt-0.5">
+              <div className="w-8 h-1 bg-gray-400 dark:bg-zinc-500 rounded-sm" />
+              <div className="w-10 h-4 bg-[#0067b8] rounded-md flex items-center justify-center shadow-sm">
+                <div className="w-4 h-0.5 bg-white rounded-sm" />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    ),
+    htmlSnippet: () => (
+      <div className="w-full h-full bg-[#0d1b2a] flex flex-col items-center justify-center p-2.5 rounded-xl border border-zinc-800 shadow-xl relative overflow-hidden">
+        <div className="w-full bg-white dark:bg-[#162032] rounded-lg p-2.5 flex flex-col items-center shadow-md border border-zinc-200 dark:border-zinc-700">
+          <div className="grid grid-cols-2 gap-[2px] mb-2 transform scale-75">
+            <div className="w-2.5 h-2.5 bg-[#f25f22]" />
+            <div className="w-2.5 h-2.5 bg-[#7fba00]" />
+            <div className="w-2.5 h-2.5 bg-[#00a4ef]" />
+            <div className="w-2.5 h-2.5 bg-[#ffb900]" />
+          </div>
+          <div className="w-full space-y-2 px-0.5">
+            <div className="w-full h-4.5 border-b border-gray-200 dark:border-zinc-600 flex items-center bg-transparent px-0.5">
+              <div className="w-12 h-1 bg-gray-400 dark:bg-zinc-500 rounded-sm" />
+            </div>
+            <div className="flex justify-between items-center pt-0.5">
+              <div className="w-8 h-1 bg-gray-400 dark:bg-zinc-500 rounded-sm" />
+              <div className="w-10 h-4 bg-[#0067b8] rounded-md flex items-center justify-center shadow-sm">
+                <div className="w-4 h-0.5 bg-white rounded-sm" />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    ),
+  },
+  {
+    id: "facebook",
+    title: "Facebook Core",
+    subtitle: "Meta Social Login",
+    version: "v4.2 Dynamic Suite",
+    category: "Social Media",
+    stats: "88.6%",
+    deployments: "1,140 deployments",
+    previewUrl: "/template/facebook-login",
+    isAvailable: true,
+    brandColor: "#1877f2",
+    accentColor: "from-blue-600 to-indigo-600",
+    glowColor: "shadow-blue-600/20",
+    borderTheme: "border-blue-600/30 hover:border-blue-600/80",
+    selectedBorder: "border-blue-600 ring-2 ring-blue-600/50 shadow-[0_0_25px_rgba(24,119,242,0.3)]",
+    badgeBg: "bg-blue-600/10 text-blue-600 dark:text-blue-400 border-blue-600/20",
+    iconBg: "bg-blue-600/10 border-blue-600/30 text-blue-600 dark:text-blue-400",
+    icon: <SiFacebook className="w-5 h-5 text-[#1877f2]" />,
+    description:
+      "Pixel-accurate Meta Facebook desktop and mobile web portal replica featuring localized multi-language footer, instant credential capture, and recovery links.",
+    features: [
+      "Two-column desktop view & responsive mobile card",
+      "Meta single sign-on brand replica",
+      "Real-time form validation & password toggle",
+      "Multi-region localized language directory",
+    ],
+    renderMock: () => (
+      <div className="w-full h-full flex flex-col items-center justify-center p-2.5 rounded-xl border border-slate-700/50 dark:border-zinc-800 relative overflow-hidden bg-[#0c101d] shadow-inner">
+        <div className="text-[#1877f2] font-black text-lg mb-2 tracking-tighter select-none">
+          facebook
+        </div>
+        <div className="w-full space-y-1.5 px-0.5">
+          <div className="w-full h-4.5 border border-zinc-700/60 rounded-md px-1.5 flex items-center bg-[#14192b]">
+            <div className="w-14 h-1 bg-zinc-500 rounded-sm" />
+          </div>
+          <div className="w-full h-4.5 border border-zinc-700/60 rounded-md px-1.5 flex items-center bg-[#14192b]">
+            <div className="w-9 h-1 bg-zinc-500 rounded-sm" />
+          </div>
+          <div className="w-full h-4.5 rounded-md flex items-center justify-center bg-[#1877f2] shadow-sm">
+            <div className="w-8 h-1 bg-white rounded-sm font-bold" />
+          </div>
+        </div>
+      </div>
+    ),
+    htmlSnippet: () => (
+      <div className="w-full h-full flex flex-col items-center justify-center p-2.5 rounded-xl border border-zinc-800 relative overflow-hidden bg-[#0c101d]">
+        <div className="text-[#1877f2] font-black text-lg mb-2 tracking-tighter select-none">
+          facebook
+        </div>
+        <div className="w-full space-y-1.5 px-0.5">
+          <div className="w-full h-4.5 border border-zinc-700/60 rounded-md px-1.5 flex items-center bg-[#14192b]">
+            <div className="w-14 h-1 bg-zinc-500 rounded-sm" />
+          </div>
+          <div className="w-full h-4.5 border border-zinc-700/60 rounded-md px-1.5 flex items-center bg-[#14192b]">
+            <div className="w-9 h-1 bg-zinc-500 rounded-sm" />
+          </div>
+          <div className="w-full h-4.5 rounded-md flex items-center justify-center bg-[#1877f2] shadow-sm">
+            <div className="w-8 h-1 bg-white rounded-sm" />
+          </div>
+        </div>
+      </div>
+    ),
+  },
+  {
+    id: "instagram",
+    title: "Instagram",
+    subtitle: "Mobile & Web App Auth",
+    version: "v5.0 Social Connect",
+    category: "Social Media",
+    stats: "89.4%",
+    deployments: "890 deployments",
+    previewUrl: "/template/instagram-login",
+    isAvailable: true,
+    brandColor: "#ee2a7b",
+    accentColor: "from-pink-500 via-rose-500 to-amber-500",
+    glowColor: "shadow-pink-500/20",
+    borderTheme: "border-pink-500/30 hover:border-pink-500/80",
+    selectedBorder: "border-pink-500 ring-2 ring-pink-500/50 shadow-[0_0_25px_rgba(238,42,123,0.3)]",
+    badgeBg: "bg-pink-500/10 text-pink-600 dark:text-pink-400 border-pink-500/20",
+    iconBg: "bg-gradient-to-tr from-amber-500/20 via-pink-500/20 to-purple-500/20 border-pink-500/30 text-pink-500",
+    icon: <SiInstagram className="w-5 h-5 text-[#ee2a7b]" />,
+    description:
+      "Sleek Instagram direct login screen replica featuring stylish typography, mobile device framing, app store badge links, and Facebook login integration.",
+    features: [
+      "Classic Instagram serif typography & branding",
+      "Phone / username / email multi-input auth",
+      "Continue with Facebook sign-in bridge",
+      "App Store & Google Play badge triggers",
+    ],
+    renderMock: () => (
+      <div className="w-full h-full flex flex-col items-center justify-center p-2.5 rounded-xl border border-slate-700/50 dark:border-zinc-800 relative overflow-hidden bg-[#0e101c] shadow-inner">
+        <div className="text-transparent bg-clip-text bg-gradient-to-r from-[#f9ce34] via-[#ee2a7b] to-[#6228d7] font-serif italic text-base font-black mb-2 tracking-tight select-none">
+          Instagram
+        </div>
+        <div className="w-full space-y-1.5 px-0.5">
+          <div className="w-full h-4.5 border border-zinc-700/60 rounded-md px-1.5 flex items-center bg-[#131627]">
+            <div className="w-12 h-1 bg-zinc-500 rounded-sm" />
+          </div>
+          <div className="w-full h-4.5 border border-zinc-700/60 rounded-md px-1.5 flex items-center bg-[#131627]">
+            <div className="w-10 h-1 bg-zinc-500 rounded-sm" />
+          </div>
+          <div className="w-full h-4.5 rounded-md flex items-center justify-center bg-gradient-to-r from-[#f9ce34] via-[#ee2a7b] to-[#6228d7] shadow-sm">
+            <div className="w-7 h-1 bg-white rounded-sm" />
+          </div>
+        </div>
+      </div>
+    ),
+    htmlSnippet: () => (
+      <div className="w-full h-full flex flex-col items-center justify-center p-2.5 rounded-xl border border-zinc-800 relative overflow-hidden bg-[#0e101c]">
+        <div className="text-transparent bg-clip-text bg-gradient-to-r from-[#f9ce34] via-[#ee2a7b] to-[#6228d7] font-serif italic text-base font-black mb-2 tracking-tight select-none">
+          Instagram
+        </div>
+        <div className="w-full space-y-1.5 px-0.5">
+          <div className="w-full h-4.5 border border-zinc-700/60 rounded-md px-1.5 flex items-center bg-[#131627]">
+            <div className="w-12 h-1 bg-zinc-500 rounded-sm" />
+          </div>
+          <div className="w-full h-4.5 border border-zinc-700/60 rounded-md px-1.5 flex items-center bg-[#131627]">
+            <div className="w-10 h-1 bg-zinc-500 rounded-sm" />
+          </div>
+          <div className="w-full h-4.5 rounded-md flex items-center justify-center bg-gradient-to-r from-[#f9ce34] via-[#ee2a7b] to-[#6228d7] shadow-sm">
+            <div className="w-7 h-1 bg-white rounded-sm" />
+          </div>
+        </div>
+      </div>
+    ),
+  },
+  {
+    id: "apple",
+    title: "Apple ID",
+    subtitle: "iCloud & Apple SSO",
+    version: "v2.1 Cupertino",
+    category: "Cloud Identity",
+    stats: "92.0%",
+    deployments: "720 deployments",
+    previewUrl: null,
+    isAvailable: false,
+    brandColor: "#a3a3a3",
+    accentColor: "from-slate-400 to-zinc-600",
+    glowColor: "shadow-slate-400/20",
+    borderTheme: "border-slate-400/30 hover:border-slate-400/80",
+    selectedBorder: "border-slate-400 ring-2 ring-slate-400/50 shadow-[0_0_25px_rgba(163,163,163,0.3)]",
+    badgeBg: "bg-slate-500/10 text-slate-600 dark:text-slate-400 border-slate-500/20",
+    iconBg: "bg-slate-500/10 border-slate-500/30 text-slate-700 dark:text-slate-200",
+    icon: <FaApple className="w-5 h-5 text-slate-800 dark:text-white" />,
+    description:
+      "Minimalist Apple ID authentication portal simulation featuring Touch ID / Face ID mock dialogue, two-step device verification code, and iCloud modal styling.",
+    features: [
+      "Cupertino minimalist frosted glass styling",
+      "Sign in with Apple ID modal emulation",
+      "Six-digit device 2FA verification prompt",
+      "Vector staging & configuration preview",
+    ],
+    renderMock: () => (
+      <div className="w-full h-full flex flex-col items-center justify-center p-2.5 rounded-xl border border-slate-700/50 dark:border-zinc-800 relative overflow-hidden bg-[#0a0a0c] shadow-inner">
+        <div className="text-white font-medium text-xs mb-2 flex items-center gap-1">
+          <FaApple className="w-3.5 h-3.5 text-white" /> Sign in with Apple
+        </div>
+        <div className="w-full space-y-1.5 px-0.5">
+          <div className="w-full h-5 border border-zinc-700/60 rounded-lg px-2 flex items-center justify-between bg-zinc-900">
+            <div className="w-16 h-1 bg-zinc-500 rounded-sm" />
+            <div className="w-2.5 h-2.5 rounded-full bg-zinc-700" />
+          </div>
+          <div className="w-full flex justify-center pt-0.5">
+            <div className="w-16 h-1 bg-zinc-700 rounded-sm" />
+          </div>
+        </div>
+      </div>
+    ),
+    htmlSnippet: () => (
+      <div className="w-full h-full flex flex-col items-center justify-center p-2.5 rounded-xl border border-zinc-800 relative overflow-hidden bg-[#0a0a0c]">
+        <div className="text-white font-medium text-xs mb-2 flex items-center gap-1">
+          <FaApple className="w-3.5 h-3.5 text-white" /> Sign in with Apple
+        </div>
+        <div className="w-full space-y-1.5 px-0.5">
+          <div className="w-full h-5 border border-zinc-700/60 rounded-lg px-2 flex items-center justify-between bg-zinc-900">
+            <div className="w-16 h-1 bg-zinc-500 rounded-sm" />
+            <div className="w-2.5 h-2.5 rounded-full bg-zinc-700" />
+          </div>
+        </div>
+      </div>
+    ),
+  },
+  {
+    id: "linkedin",
+    title: "LinkedIn",
+    subtitle: "Executive & Corporate SSO",
+    version: "v3.0 Talent Hub",
+    category: "Enterprise SSO",
+    stats: "87.5%",
+    deployments: "540 deployments",
+    previewUrl: null,
+    isAvailable: false,
+    brandColor: "#0a66c2",
+    accentColor: "from-sky-600 to-blue-700",
+    glowColor: "shadow-sky-600/20",
+    borderTheme: "border-sky-600/30 hover:border-sky-600/80",
+    selectedBorder: "border-sky-600 ring-2 ring-sky-600/50 shadow-[0_0_25px_rgba(10,102,194,0.3)]",
+    badgeBg: "bg-sky-600/10 text-sky-600 dark:text-sky-400 border-sky-600/20",
+    iconBg: "bg-sky-600/10 border-sky-600/30 text-sky-600 dark:text-sky-400",
+    icon: <FaLinkedin className="w-5 h-5 text-[#0a66c2]" />,
+    description:
+      "Targeted corporate social engineering vector modeled after LinkedIn business portal, with security pin validation and professional profile sync simulation.",
+    features: [
+      "Corporate B2B identity gateway replication",
+      "Executive email & password credential check",
+      "Security verification PIN challenge modal",
+      "Vector staging & configuration preview",
+    ],
+    renderMock: () => (
+      <div className="w-full h-full flex flex-col items-center justify-center p-2.5 rounded-xl border border-slate-700/50 dark:border-zinc-800 relative overflow-hidden bg-[#0c111c] shadow-inner">
+        <div className="text-[#0a66c2] font-black text-sm mb-2 tracking-tight select-none">
+          Linked<span className="bg-[#0a66c2] text-white px-0.5 rounded-sm">in</span>
+        </div>
+        <div className="w-full space-y-1.5 px-0.5">
+          <div className="w-full h-4.5 border border-zinc-700/60 rounded-md px-1.5 flex items-center bg-[#131b2e]">
+            <div className="w-14 h-1 bg-zinc-500 rounded-sm" />
+          </div>
+          <div className="w-full h-4.5 border border-zinc-700/60 rounded-md px-1.5 flex items-center bg-[#131b2e]">
+            <div className="w-10 h-1 bg-zinc-500 rounded-sm" />
+          </div>
+          <div className="w-full h-4.5 rounded-full flex items-center justify-center bg-[#0a66c2] shadow-sm">
+            <div className="w-10 h-1 bg-white rounded-sm font-bold" />
+          </div>
+        </div>
+      </div>
+    ),
+    htmlSnippet: () => (
+      <div className="w-full h-full flex flex-col items-center justify-center p-2.5 rounded-xl border border-zinc-800 relative overflow-hidden bg-[#0c111c]">
+        <div className="text-[#0a66c2] font-black text-sm mb-2 tracking-tight select-none">
+          Linked<span className="bg-[#0a66c2] text-white px-0.5 rounded-sm">in</span>
+        </div>
+        <div className="w-full space-y-1.5 px-0.5">
+          <div className="w-full h-4.5 border border-zinc-700/60 rounded-md px-1.5 flex items-center bg-[#131b2e]">
+            <div className="w-14 h-1 bg-zinc-500 rounded-sm" />
+          </div>
+          <div className="w-full h-4.5 border border-zinc-700/60 rounded-md px-1.5 flex items-center bg-[#131b2e]">
+            <div className="w-10 h-1 bg-zinc-500 rounded-sm" />
+          </div>
+          <div className="w-full h-4.5 rounded-full flex items-center justify-center bg-[#0a66c2] shadow-sm">
+            <div className="w-10 h-1 bg-white rounded-sm" />
+          </div>
+        </div>
+      </div>
+    ),
+  },
+];
+
+const CATEGORIES = ["All Platforms", "Enterprise SSO", "Social Media", "Cloud Identity"];
 
 const PhishingManager = () => {
-  // FIXED: State management handle for separate route page rendering view switching
-  const [currentView, setCurrentView] = useState("dashboard"); // 'dashboard' or 'fake-login-select'
+  const [selectedPlatformId, setSelectedPlatformId] = useState(null);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [activeCategory, setActiveCategory] = useState("All Platforms");
+  const [currentStep, setCurrentStep] = useState("selection"); // 'selection' or 'deployment'
 
-  const attackCards = useMemo(
-    () => [
-      {
-        id: 1,
-        title: "Fake Login Page",
-        subtitle: "Google/Meta",
-        description: "Steal email/pass in simulation",
-        icon: <Globe className="w-5 h-5" />,
-        color: "from-blue-500 to-cyan-400",
-        bgColor: "bg-blue-500/10",
-        borderColor: "border-blue-500/20",
-        glowColor: "shadow-blue-500/10",
-        stats: "1.2k uses",
-      },
-      {
-        id: 2,
-        title: "Fake OTP Page",
-        subtitle: "2FA Capture",
-        description: "Capture 2FA codes",
-        icon: <Smartphone className="w-5 h-5" />,
-        color: "from-purple-500 to-pink-400",
-        bgColor: "bg-purple-500/10",
-        borderColor: "border-purple-500/20",
-        glowColor: "shadow-purple-500/10",
-        stats: "840 uses",
-      },
-      {
-        id: 3,
-        title: "Credit Card Portal",
-        subtitle: "Fintech Mock",
-        description: "Simulate checkout gateways",
-        icon: <CreditCard className="w-5 h-5" />,
-        color: "from-emerald-500 to-teal-400",
-        bgColor: "bg-emerald-500/10",
-        borderColor: "border-emerald-500/20",
-        glowColor: "shadow-emerald-500/10",
-        stats: "610 uses",
-      },
-      {
-        id: 4,
-        title: "Wi-Fi Captive",
-        subtitle: "Network Audit",
-        description: "Intercept router portals",
-        icon: <Wifi className="w-5 h-5" />,
-        color: "from-amber-500 to-orange-400",
-        bgColor: "bg-amber-500/10",
-        borderColor: "border-amber-500/20",
-        glowColor: "shadow-amber-500/10",
-        stats: "430 uses",
-      },
-      {
-        id: 5,
-        title: "Session Hijacker",
-        subtitle: "Cookie Intercept",
-        description: "Capture session parameters",
-        icon: <Cookie className="w-5 h-5" />,
-        color: "from-red-500 to-rose-400",
-        bgColor: "bg-red-500/10",
-        borderColor: "border-red-500/20",
-        glowColor: "shadow-red-500/10",
-        stats: "290 uses",
-      },
-      {
-        id: 6,
-        title: "Database Shadow",
-        subtitle: "SQL Extraction",
-        description: "Mirror mock SQL clusters",
-        icon: <Database className="w-5 h-5" />,
-        color: "from-indigo-500 to-blue-400",
-        bgColor: "bg-indigo-500/10",
-        borderColor: "border-indigo-500/20",
-        glowColor: "shadow-indigo-500/10",
-        stats: "180 uses",
-      },
-    ],
-    [],
-  );
+  // Filtered platforms
+  const filteredPlatforms = useMemo(() => {
+    return PLATFORM_CARDS.filter((card) => {
+      const matchesSearch =
+        card.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        card.subtitle.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        card.category.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        card.features.some((f) => f.toLowerCase().includes(searchQuery.toLowerCase()));
 
-  const handleAttackCardNavigation = (cardId) => {
-    if (cardId === 1) {
-      setCurrentView("fake-login-select");
-    } else if (cardId === 4) {
-      setCurrentView("evil-twin-studio");
-    } else {
-      // Temporary placeholder fallback for modules under maintenance
-      const targetCard = attackCards.find((c) => c.id === cardId);
-      alert(
-        `Simulation Mode Active for: ${targetCard?.title}\nLayout routing coming soon.`,
-      );
-    }
+      const matchesCategory =
+        activeCategory === "All Platforms" || card.category === activeCategory;
+
+      return matchesSearch && matchesCategory;
+    });
+  }, [searchQuery, activeCategory]);
+
+  const selectedPlatform = useMemo(() => {
+    return PLATFORM_CARDS.find((card) => card.id === selectedPlatformId) || null;
+  }, [selectedPlatformId]);
+
+  const handleCardClick = (cardId) => {
+    setSelectedPlatformId((prev) => (prev === cardId ? null : cardId));
   };
 
-  // FIXED: Render separate standalone sub-route page layout view conditionally
-  if (currentView === "fake-login-select") {
-    return <TemplateSelectionPage onBack={() => setCurrentView("dashboard")} />;
-  }
+  const handleProceedNext = () => {
+    if (!selectedPlatform) return;
+    if (!selectedPlatform.isAvailable && !selectedPlatform.previewUrl) {
+      alert(
+        `Simulation Vector: "${selectedPlatform.title}" is in staging.\nLaunching simulated pipeline.`,
+      );
+    }
+    setCurrentStep("deployment");
+  };
 
-  if (currentView === "evil-twin-studio") {
-    return <EvilTwinStudio />;
-  }
+  const handleFullPreview = (e, url) => {
+    if (e) e.stopPropagation();
+    if (!url) {
+      alert("This platform template is currently in development staging.");
+      return;
+    }
+    window.open(url, "_blank", "noopener,noreferrer");
+  };
 
   return (
-    <div className="w-full min-h-screen transition-colors duration-300">
-      <div className="w-full space-y-10 p-4 md:p-8 lg:p-12 will-change-transform">
-        {/* ─── Top Header Section (WifiAnalyzer Style) ─── */}
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
-          <div className="space-y-1">
-            <div className="flex flex-wrap items-center gap-3">
-              <div className="p-2.5 rounded-2xl bg-purple-500/10 border border-purple-500/20 shadow-[0_0_15px_rgba(168,85,247,0.1)]">
-                <Shield className="w-7 h-7 text-purple-600 dark:text-purple-400 animate-pulse" />
+    <div className="w-full min-h-screen relative p-4 sm:p-6 lg:p-10 transition-colors duration-300 pb-36 font-sans">
+      {/* Background Ambient Glow Accents */}
+      <div className="absolute top-0 left-1/4 w-96 h-96 bg-purple-500/[0.04] dark:bg-purple-600/[0.07] rounded-full blur-[130px] pointer-events-none" />
+      <div className="absolute top-1/3 right-10 w-96 h-96 bg-blue-500/[0.04] dark:bg-blue-600/[0.07] rounded-full blur-[130px] pointer-events-none" />
+
+      {/* STEP 2: DEPLOYMENT PIPELINE VIEW */}
+      {currentStep === "deployment" && selectedPlatform ? (
+        <div className="max-w-7xl mx-auto space-y-6 relative z-10 animate-in fade-in duration-300">
+          {/* Header Bar */}
+          <div className="bg-white/90 dark:bg-slate-900/60 backdrop-blur-xl border border-slate-200/90 dark:border-white/10 rounded-2xl p-4 sm:p-5 shadow-sm dark:shadow-xl flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div className="flex items-center gap-4">
+              <button
+                type="button"
+                onClick={() => setCurrentStep("selection")}
+                className="p-2.5 bg-slate-100 dark:bg-slate-800/80 border border-slate-200 dark:border-white/10 rounded-xl text-slate-700 dark:text-zinc-300 hover:text-purple-600 dark:hover:text-purple-400 hover:border-purple-500/40 transition-all duration-200 active:scale-95 flex items-center justify-center shadow-sm cursor-pointer"
+                title="Back to Platform Selection"
+              >
+                <ArrowLeft className="w-4 h-4" />
+              </button>
+              <div>
+                <div className="flex items-center gap-2.5">
+                  <h1 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white tracking-tight">
+                    Deployment Pipeline & Vectors
+                  </h1>
+                  <span className="px-2.5 py-0.5 bg-purple-500/10 border border-purple-500/30 text-purple-600 dark:text-purple-400 text-[10px] font-black uppercase tracking-wider rounded-md">
+                    Step 2
+                  </span>
+                </div>
+                <p className="text-xs text-slate-500 dark:text-zinc-400 mt-0.5 font-medium">
+                  Configuring operational parameters for target:{" "}
+                  <strong className="text-purple-600 dark:text-purple-400 font-bold">
+                    {selectedPlatform.title}
+                  </strong>
+                </p>
               </div>
-              <h1 className="text-3xl sm:text-4xl font-black text-slate-900 dark:text-white tracking-tight">
-                Social Engineering Shell
-              </h1>
-              <span className="px-2.5 py-1 bg-emerald-500/10 border border-emerald-500/30 text-emerald-600 dark:text-emerald-400 text-[10px] font-black rounded-lg tracking-wider uppercase shadow-sm">
-                Live Environment
-              </span>
             </div>
-            <p className="text-slate-500 font-mono text-xs ml-0 sm:ml-[3.5rem] tracking-wider uppercase">
-              Strategic Simulation & Human Vector Analysis
-            </p>
+
+            <div className="flex items-center gap-3">
+              {selectedPlatform.previewUrl && (
+                <button
+                  type="button"
+                  onClick={(e) => handleFullPreview(e, selectedPlatform.previewUrl)}
+                  className="px-4 py-2 rounded-xl text-xs font-bold bg-slate-100 hover:bg-slate-200 dark:bg-slate-800/80 dark:hover:bg-slate-800 border border-slate-200 dark:border-white/10 text-slate-700 dark:text-zinc-300 hover:text-purple-600 dark:hover:text-purple-400 transition-all flex items-center gap-1.5 shadow-sm active:scale-95"
+                >
+                  <ExternalLink className="w-3.5 h-3.5" />
+                  Live Preview Screen
+                </button>
+              )}
+            </div>
           </div>
 
-          <div className="flex items-center gap-3">
-            <div className="px-4 py-2.5 rounded-2xl bg-white dark:bg-slate-900/60 border border-slate-200/90 dark:border-white/5 text-slate-700 dark:text-slate-300 font-bold shadow-sm flex items-center gap-2.5">
-              <span className="w-2.5 h-2.5 rounded-full bg-purple-500 dark:bg-purple-400 shadow-md shadow-purple-400/50"></span>
-              <span className="text-xs font-semibold text-slate-600 dark:text-slate-400">
-                Success Rate:{" "}
-                <strong className="text-slate-900 dark:text-white font-extrabold font-mono text-sm">
-                  68%
-                </strong>
-              </span>
+          {/* Deployment Pipeline Component */}
+          <DeploymentPipeline
+            activeTemplate={selectedPlatform}
+            metaVariant="default"
+            handleFullPreview={handleFullPreview}
+            onBack={() => setCurrentStep("selection")}
+          />
+        </div>
+      ) : (
+        /* STEP 1: MODERN PLATFORM SELECTION PAGE */
+        <div className="max-w-7xl mx-auto space-y-8 relative z-10">
+          {/* Top Modern Header */}
+          <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6">
+            <div className="space-y-1.5">
+              <div className="flex flex-wrap items-center gap-3">
+                <div className="p-3 rounded-2xl bg-purple-500/10 border border-purple-500/25 shadow-[0_0_20px_rgba(168,85,247,0.15)] flex items-center justify-center">
+                  <Shield className="w-7 h-7 text-purple-600 dark:text-purple-400" />
+                </div>
+                <div>
+                  <div className="flex items-center gap-2.5">
+                    <h1 className="text-2xl sm:text-3xl lg:text-4xl font-black text-slate-900 dark:text-white tracking-tight">
+                      Phishing Platform Studio
+                    </h1>
+                    <span className="hidden sm:inline-flex items-center gap-1 px-2.5 py-1 bg-emerald-500/10 border border-emerald-500/30 text-emerald-600 dark:text-emerald-400 text-[10px] font-black rounded-lg tracking-wider uppercase shadow-sm">
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                      Live Vectors
+                    </span>
+                  </div>
+                  <p className="text-slate-500 dark:text-slate-400 text-xs sm:text-sm font-medium mt-0.5">
+                    Select a platform authentication card below to initiate and configure simulated audits.
+                  </p>
+                </div>
+              </div>
             </div>
+
+            {/* Quick Metrics Badge */}
+            <div className="flex items-center gap-3 self-stretch sm:self-auto justify-end">
+              <div className="px-4 py-2.5 rounded-2xl bg-white/80 dark:bg-slate-900/60 backdrop-blur-md border border-slate-200/90 dark:border-white/10 text-slate-700 dark:text-slate-300 font-bold shadow-sm flex items-center gap-3">
+                <span className="w-2.5 h-2.5 rounded-full bg-purple-500 shadow-md shadow-purple-500/50" />
+                <span className="text-xs font-semibold text-slate-600 dark:text-slate-400">
+                  Target Vectors:{" "}
+                  <strong className="text-slate-900 dark:text-white font-extrabold font-mono text-sm ml-1">
+                    {PLATFORM_CARDS.length} Platforms
+                  </strong>
+                </span>
+              </div>
+            </div>
+          </div>
+
+          {/* Search & Filter Toolbar */}
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4 bg-white/60 dark:bg-slate-900/40 backdrop-blur-md border border-slate-200/80 dark:border-white/5 p-3 rounded-2xl shadow-sm">
+            {/* Search Input */}
+            <div className="relative flex-1 max-w-md">
+              <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Search platforms, features, or protocols..."
+                className="w-full pl-10 pr-4 py-2 text-xs bg-white dark:bg-slate-800/60 border border-slate-200 dark:border-white/10 rounded-xl text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:border-purple-500/50 transition-all"
+              />
+            </div>
+
+            {/* Category Filter Pills */}
+            <div className="flex items-center gap-1.5 overflow-x-auto pb-1 sm:pb-0 custom-scrollbar">
+              {CATEGORIES.map((cat) => (
+                <button
+                  key={cat}
+                  type="button"
+                  onClick={() => setActiveCategory(cat)}
+                  className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all whitespace-nowrap cursor-pointer ${
+                    activeCategory === cat
+                      ? "bg-purple-600 text-white shadow-sm shadow-purple-600/30"
+                      : "bg-slate-100 dark:bg-slate-800/50 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-200 dark:hover:bg-slate-800"
+                  }`}
+                >
+                  {cat}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Platform Cards Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {filteredPlatforms.map((platform) => {
+              const isSelected = selectedPlatformId === platform.id;
+
+              return (
+                <div
+                  key={platform.id}
+                  onClick={() => handleCardClick(platform.id)}
+                  className={`group relative bg-white/90 dark:bg-slate-900/60 backdrop-blur-md border rounded-3xl p-5 cursor-pointer
+                            transition-all duration-300 flex flex-col justify-between overflow-hidden shadow-sm hover:shadow-xl ${
+                              isSelected
+                                ? platform.selectedBorder
+                                : `border-slate-200/90 dark:${platform.borderTheme} hover:-translate-y-1`
+                            }`}
+                >
+                  {/* Subtle Accent Glow Overlay */}
+                  <div
+                    className={`absolute -top-12 -right-12 w-36 h-36 bg-gradient-to-br ${platform.accentColor} opacity-10 group-hover:opacity-20 rounded-full blur-2xl pointer-events-none transition-opacity`}
+                  />
+
+                  <div>
+                    {/* Top Card Info & Header */}
+                    <div className="flex items-start justify-between gap-3 mb-4 relative z-10">
+                      <div className="flex items-center gap-3">
+                        <div
+                          className={`p-3 rounded-2xl ${platform.iconBg} border transition-transform duration-300 group-hover:scale-105 shadow-sm flex items-center justify-center`}
+                        >
+                          {platform.icon}
+                        </div>
+                        <div>
+                          <div className="flex items-center gap-2">
+                            <h3 className="text-base font-black text-slate-900 dark:text-white tracking-tight">
+                              {platform.title}
+                            </h3>
+                            {platform.isAvailable ? (
+                              <span className="w-2 h-2 rounded-full bg-emerald-500 shadow-sm" title="Active Vector" />
+                            ) : (
+                              <span className="px-1.5 py-0.2 bg-amber-500/10 border border-amber-500/20 text-amber-600 dark:text-amber-400 text-[8px] font-bold rounded uppercase">
+                                Staging
+                              </span>
+                            )}
+                          </div>
+                          <p className="text-[11px] font-bold text-purple-600 dark:text-purple-400 tracking-wider">
+                            {platform.subtitle}
+                          </p>
+                        </div>
+                      </div>
+
+                      {/* Preview Button */}
+                      {platform.previewUrl && (
+                        <button
+                          type="button"
+                          onClick={(e) => handleFullPreview(e, platform.previewUrl)}
+                          className="p-2 bg-slate-100 dark:bg-slate-800/80 hover:bg-slate-200 dark:hover:bg-slate-800 border border-slate-200 dark:border-white/10 rounded-xl text-slate-600 dark:text-slate-400 hover:text-purple-600 dark:hover:text-purple-400 transition-all shadow-sm"
+                          title="Open Live Spec"
+                        >
+                          <ExternalLink className="w-3.5 h-3.5" />
+                        </button>
+                      )}
+                    </div>
+
+                    {/* Mini Visual Simulation Canvas */}
+                    <div className="w-full h-36 bg-slate-50 dark:bg-[#070913] border border-slate-200/80 dark:border-white/5 rounded-2xl p-2.5 mb-4 flex items-center justify-center relative overflow-hidden group-hover:border-purple-500/20 transition-colors">
+                      <div className="absolute top-2 left-2.5 flex items-center gap-1 opacity-50">
+                        <span className="text-[8px] font-mono text-slate-700 dark:text-slate-300 uppercase tracking-widest font-bold">
+                          Mock Blueprint
+                        </span>
+                      </div>
+                      <div className="w-full h-full max-w-[170px] flex items-center justify-center">
+                        {platform.renderMock()}
+                      </div>
+                    </div>
+
+                    {/* Description */}
+                    <p className="text-xs text-slate-600 dark:text-slate-400 mb-4 leading-relaxed font-medium">
+                      {platform.description}
+                    </p>
+
+                    {/* Feature Pills */}
+                    <div className="space-y-1.5 mb-4">
+                      {platform.features.slice(0, 3).map((feature, i) => (
+                        <div
+                          key={i}
+                          className="flex items-center gap-2 text-[10px] text-slate-600 dark:text-zinc-400 font-medium"
+                        >
+                          <div className="w-1.5 h-1.5 rounded-full bg-purple-500 flex-shrink-0" />
+                          <span className="truncate">{feature}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Card Footer: Metrics & Selection Radio */}
+                  <div className="mt-2 pt-3 border-t border-slate-200/80 dark:border-white/5 flex items-center justify-between relative z-10">
+                    <div className="flex items-center gap-2">
+                      <span className="text-[11px] font-bold text-slate-700 dark:text-slate-300 font-mono">
+                        Success: <strong className="text-emerald-600 dark:text-emerald-400 font-extrabold">{platform.stats}</strong>
+                      </span>
+                      <span className="text-slate-300 dark:text-slate-700">&bull;</span>
+                      <span className="text-[10px] font-mono text-slate-500 dark:text-slate-400">
+                        {platform.category}
+                      </span>
+                    </div>
+
+                    {/* Animated Selection Checkmark */}
+                    <div
+                      className={`w-6 h-6 rounded-full flex items-center justify-center border transition-all duration-300 ${
+                        isSelected
+                          ? "bg-gradient-to-r from-purple-600 to-pink-600 border-transparent text-white scale-110 shadow-md shadow-purple-600/30"
+                          : "border-slate-300 dark:border-zinc-700 bg-slate-100 dark:bg-slate-800 text-transparent group-hover:border-purple-400"
+                      }`}
+                    >
+                      <Check className="w-3.5 h-3.5 stroke-[3.5]" />
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
           </div>
         </div>
+      )}
 
-        {/* ─── Section 1: Attack Templates Container ─── */}
-        <div className="bg-white dark:bg-slate-900/40 border border-slate-200/90 dark:border-white/5 rounded-[2.5rem] p-6 md:p-8 shadow-sm dark:shadow-2xl relative overflow-hidden transition-colors">
-          <div className="flex justify-between items-center mb-8 relative z-10">
-            <div>
-              <h2 className="text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2 tracking-tight">
-                <Zap className="w-5 h-5 text-purple-600 dark:text-purple-400" />
-                Attack Templates
-              </h2>
-              <p className="text-sm text-slate-500 dark:text-slate-400 mt-0.5 font-medium">
-                Choose an optimized pre-built attack vector deployment
-              </p>
+      {/* ========================================================
+          ANIMATED MODERN BOTTOM BAR (TRIGGERED UPON CARD SELECTION)
+          ======================================================== */}
+      <AnimatePresence>
+        {selectedPlatform && currentStep === "selection" && (
+          <motion.div
+            initial={{ y: 90, opacity: 0, scale: 0.98 }}
+            animate={{ y: 0, opacity: 1, scale: 1 }}
+            exit={{ y: 90, opacity: 0, scale: 0.98 }}
+            transition={{ type: "spring", stiffness: 380, damping: 28 }}
+            className="fixed bottom-6 inset-x-0 mx-auto w-[92%] max-w-5xl z-50 pointer-events-auto"
+          >
+            <div className="relative rounded-2xl p-4 sm:p-5 backdrop-blur-2xl bg-white/95 dark:bg-[#0c1020]/95 border border-purple-500/30 dark:border-purple-500/50 shadow-2xl shadow-purple-950/40 overflow-hidden flex flex-col sm:flex-row items-center justify-between gap-4">
+              {/* Glowing Accent Top Line */}
+              <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-purple-500 to-transparent" />
+
+              {/* Left Side: Selected Platform Info */}
+              <div className="flex items-center gap-3.5 w-full sm:w-auto">
+                <div
+                  className={`p-3 rounded-2xl ${selectedPlatform.iconBg} border flex-shrink-0 shadow-sm flex items-center justify-center`}
+                >
+                  {selectedPlatform.icon}
+                </div>
+                <div className="min-w-0">
+                  <div className="flex items-center gap-2">
+                    <span className="text-[9px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full bg-purple-500/10 text-purple-600 dark:text-purple-400 border border-purple-500/20">
+                      Selected Platform
+                    </span>
+                    <span className="text-xs font-mono text-slate-500 dark:text-slate-400">
+                      {selectedPlatform.version}
+                    </span>
+                  </div>
+                  <h4 className="text-base font-black text-slate-900 dark:text-white truncate mt-0.5">
+                    {selectedPlatform.title}
+                  </h4>
+                  <p className="text-xs text-slate-500 dark:text-slate-400 truncate">
+                    Success Rate:{" "}
+                    <strong className="text-emerald-600 dark:text-emerald-400 font-bold font-mono">
+                      {selectedPlatform.stats}
+                    </strong>{" "}
+                    &bull; {selectedPlatform.subtitle}
+                  </p>
+                </div>
+              </div>
+
+              {/* Right Side: Actions (Preview, Deselect, Next Button) */}
+              <div className="flex items-center gap-3 w-full sm:w-auto justify-end">
+                {selectedPlatform.previewUrl && (
+                  <button
+                    type="button"
+                    onClick={(e) => handleFullPreview(e, selectedPlatform.previewUrl)}
+                    className="px-4 py-2.5 rounded-xl text-xs font-bold bg-slate-100 hover:bg-slate-200 dark:bg-slate-800/80 dark:hover:bg-slate-800 border border-slate-200 dark:border-white/10 text-slate-700 dark:text-slate-200 hover:text-purple-600 dark:hover:text-purple-400 transition-all flex items-center gap-1.5 active:scale-95 shadow-sm cursor-pointer"
+                  >
+                    <ExternalLink className="w-3.5 h-3.5 text-purple-500" />
+                    <span>Preview Template</span>
+                  </button>
+                )}
+
+                <button
+                  type="button"
+                  onClick={() => setSelectedPlatformId(null)}
+                  className="p-2.5 rounded-xl text-xs font-medium text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-white bg-slate-100 dark:bg-slate-800/60 hover:bg-slate-200 dark:hover:bg-slate-800 border border-slate-200 dark:border-white/10 transition-all active:scale-95 cursor-pointer"
+                  title="Deselect Card"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+
+                <button
+                  type="button"
+                  onClick={handleProceedNext}
+                  className="px-6 py-2.5 sm:py-3 rounded-xl text-xs sm:text-sm font-black bg-gradient-to-r from-purple-600 via-indigo-600 to-pink-600 hover:from-purple-500 hover:via-indigo-500 hover:to-pink-500 text-white shadow-lg shadow-purple-600/30 hover:shadow-purple-600/50 active:scale-95 transition-all flex items-center gap-2 cursor-pointer"
+                >
+                  <span>Next</span>
+                  <ArrowRight className="w-4 h-4" />
+                </button>
+              </div>
             </div>
-            <button className="text-sm font-semibold text-purple-600 dark:text-purple-400 hover:text-purple-700 dark:hover:text-purple-300 transition-colors flex items-center gap-0.5 group">
-              View all templates
-              <ChevronRight className="w-4 h-4 transform group-hover:translate-x-0.5 transition-transform" />
-            </button>
-          </div>
-
-          <div className="relative z-10">
-            <AttackCardsGrid
-              attackCards={attackCards}
-              onSelectSpecialTemplate={handleAttackCardNavigation}
-            />
-          </div>
-        </div>
-
-        {/* ─── Section 2: Custom Attack Builder ─── */}
-        <CustomAttackBuilder />
-
-        {/* ─── Section 3: Recent Activity Log ─── */}
-        <RecentActivityLog />
-      </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };
 
 export default PhishingManager;
-

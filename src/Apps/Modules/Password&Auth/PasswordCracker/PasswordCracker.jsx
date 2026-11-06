@@ -7,6 +7,7 @@ import {
   ArrowRight,
   BarChart3,
   Book,
+  BookOpen,
   Check,
   CheckCircle,
   ChevronDown,
@@ -32,6 +33,7 @@ import {
   Settings,
   Shield,
   ShieldCheck,
+  Sliders,
   Sparkles,
   Square,
   Terminal,
@@ -637,6 +639,93 @@ export default function PasswordCracker() {
 
   const hashLines = hashes ? hashes.split("\n") : [""];
   const lineNumbers = Array.from({ length: Math.max(1, hashLines.length) }, (_, i) => i + 1);
+
+  // --- Configuration Catalogs & Dynamic Calculations ---
+  const WORDLIST_CATALOG = [
+    {
+      id: "rockyou.txt",
+      name: "rockyou.txt",
+      badge: "Security Standard",
+      words: "14,344,392 words",
+      size: "133.4 MB",
+      speed: "~15s",
+      desc: "Top real-world breach wordlist. Most effective for general password audits.",
+    },
+    {
+      id: "seclists-top100k.txt",
+      name: "seclists-top100k.txt",
+      badge: "Ultra-Fast Scan",
+      words: "100,000 words",
+      size: "1.1 MB",
+      speed: "< 2s",
+      desc: "Top high-probability consumer passwords for lightning initial sweep.",
+    },
+    {
+      id: "darkweb-leaks.txt",
+      name: "darkweb-leaks.txt",
+      badge: "Modern 2024+",
+      words: "8,950,000 words",
+      size: "92.0 MB",
+      speed: "~10s",
+      desc: "Modern leak dataset with current year combinations and corporate trends.",
+    },
+    {
+      id: "crackstation.txt",
+      name: "crackstation.txt",
+      badge: "Heavy Exhaustive",
+      words: "64,000,000 words",
+      size: "680 MB",
+      speed: "~45s",
+      desc: "Massive compilation covering billions of historic account combinations.",
+    },
+  ];
+
+  const RULESET_CATALOG = [
+    { id: "best64.rule", name: "best64.rule", badge: "Standard (64x)", desc: "Hashcat's top 64 effective mutation rules." },
+    { id: "d3ad0ne.rule", name: "d3ad0ne.rule", badge: "Heavy (340x)", desc: "Exhaustive character substitutions and transformations." },
+    { id: "leetspeak.rule", name: "leetspeak.rule", badge: "Leet (128x)", desc: "Common @/3/1/0/! symbol replacements." },
+    { id: "none", name: "No Ruleset", badge: "Raw 1x", desc: "Pure dictionary matching at maximum speed." },
+  ];
+
+  const getCharsetSize = () => {
+    let size = 0;
+    if (bfConfig.lower) size += 26;
+    if (bfConfig.upper) size += 26;
+    if (bfConfig.digits) size += 10;
+    if (bfConfig.special) size += 32;
+    if (bfConfig.custom) size += bfConfig.custom.length;
+    return Math.max(1, size);
+  };
+
+  const charsetSize = getCharsetSize();
+  const bfCombinations = Math.pow(charsetSize, bfConfig.maxLen);
+
+  const formatBfComb = (comb) => {
+    if (comb >= 1e15) return `~${(comb / 1e15).toFixed(1)} × 10¹⁵ combinations`;
+    if (comb >= 1e12) return `~${(comb / 1e12).toFixed(1)} × 10¹² combinations`;
+    if (comb >= 1e9) return `~${(comb / 1e9).toFixed(1)} × 10⁹ combinations`;
+    if (comb >= 1e6) return `~${(comb / 1e6).toFixed(1)} Million combinations`;
+    return `~${Math.round(comb).toLocaleString()} combinations`;
+  };
+
+  const formatBfTime = (comb) => {
+    const hps = 45000000; // 45 MH/s GPU benchmark
+    const sec = comb / hps;
+    if (sec < 1) return "< 1 second (Ultra-Fast on GPU)";
+    if (sec < 60) return `~${Math.round(sec)} seconds at 45 MH/s`;
+    if (sec < 3600) return `~${Math.round(sec / 60)} minutes at 45 MH/s`;
+    if (sec < 86400) return `~${(sec / 3600).toFixed(1)} hours at 45 MH/s`;
+    return `~${(sec / 86400).toFixed(1)} days at 45 MH/s`;
+  };
+
+  const getHybridPreview = () => {
+    let word = "password";
+    if (hybridConfig.leet) word = word.replace(/a/g, "@").replace(/e/g, "3").replace(/o/g, "0");
+    if (hybridConfig.caseVar) word = word.charAt(0).toUpperCase() + word.slice(1);
+    if (hybridConfig.prependWords) word = `admin_${word}`;
+    if (hybridConfig.appendNum) word = `${word}2024`;
+    return word;
+  };
 
   return (
     <div className="min-h-screen bg-[#080c14] text-slate-200 p-4 sm:p-6 md:p-8 font-sans selection:bg-red-500/30 selection:text-white">

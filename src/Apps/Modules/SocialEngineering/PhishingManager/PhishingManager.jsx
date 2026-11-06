@@ -52,63 +52,111 @@ const PLATFORM_CARDS = [
       "Full mobile and desktop responsive viewport",
     ],
     renderMock: () => (
-      <div className="w-full h-full bg-slate-900/90 dark:bg-[#141824] flex flex-col items-center justify-center p-2.5 rounded-xl border border-slate-700/50 dark:border-zinc-800 shadow-inner relative overflow-hidden">
-        <div className="w-full h-full bg-white dark:bg-[#1e2333] rounded-lg p-2.5 flex gap-2 border border-slate-200 dark:border-zinc-700 shadow-md">
+      <div className="w-full h-full bg-[#131314] flex flex-col justify-between p-2 rounded-xl border border-zinc-800 shadow-inner relative overflow-hidden select-none">
+        {/* Main Google Dark Card */}
+        <div className="w-full bg-[#1e1f20] rounded-xl p-2.5 border border-[#444746]/50 shadow-md flex gap-3 flex-1">
+          {/* Left Column */}
           <div className="w-1/2 flex flex-col justify-between py-0.5">
             <div>
-              <div className="flex gap-[3px] mb-1.5">
-                <span className="w-1.5 h-1.5 rounded-full bg-[#EA4335]" />
-                <span className="w-1.5 h-1.5 rounded-full bg-[#4285F4]" />
-                <span className="w-1.5 h-1.5 rounded-full bg-[#FBBC05]" />
-                <span className="w-1.5 h-1.5 rounded-full bg-[#34A853]" />
-              </div>
-              <div className="w-10 h-2 bg-[#202124] dark:bg-white rounded-sm mb-1.5" />
-              <div className="w-[85%] h-[2px] bg-gray-300 dark:bg-zinc-600 rounded-sm mb-[2px]" />
-              <div className="w-[60%] h-[2px] bg-gray-300 dark:bg-zinc-600 rounded-sm" />
+              {/* Google G Logo */}
+              <svg viewBox="0 0 24 24" className="w-4 h-4 mb-1.5">
+                <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
+                <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
+              </svg>
+              <h4 className="text-white font-normal text-[11px] leading-tight tracking-tight">Sign in</h4>
+              <p className="text-[#c4c7c5] text-[6.5px] leading-[9px] mt-1 line-clamp-3">
+                with your Google Account. This account will be available to other Google apps in the browser.
+              </p>
             </div>
-            <div className="w-6 h-1.5 bg-gray-200 dark:bg-zinc-700 rounded-sm" />
           </div>
-          <div className="w-1/2 flex flex-col pt-0.5 justify-between">
-            <div className="w-full h-5 border border-gray-300 dark:border-zinc-600 rounded-md flex items-center px-1.5 bg-gray-50 dark:bg-zinc-800">
-              <div className="w-8 h-1 bg-gray-400 dark:bg-zinc-500 rounded-sm" />
+
+          {/* Right Column */}
+          <div className="w-1/2 flex flex-col justify-between py-0.5">
+            <div>
+              {/* Input Box */}
+              <div className="w-full border border-[#8e918f]/70 rounded-md px-1.5 py-1 bg-transparent">
+                <span className="text-[#c4c7c5] text-[7px] block truncate">Email or phone</span>
+              </div>
+              <span className="text-[#a8c7fa] text-[6.5px] font-medium block mt-1">Forgot email?</span>
+              <p className="text-[#c4c7c5] text-[5.5px] leading-[7.5px] mt-1 line-clamp-2">
+                Not your computer? Use Guest mode to sign in privately. <span className="text-[#a8c7fa]">Learn more about using Guest mode</span>
+              </p>
             </div>
-            <div className="flex justify-between items-center mt-1">
-              <div className="w-5 h-1 bg-gray-300 dark:bg-zinc-600 rounded-sm" />
-              <div className="w-8 h-4 bg-[#1a73e8] rounded-md flex items-center justify-center shadow-sm">
-                <div className="w-3 h-0.5 bg-white rounded-sm" />
+
+            {/* Bottom Actions */}
+            <div className="flex items-center justify-end gap-2 mt-1.5 pt-0.5">
+              <span className="text-[#a8c7fa] text-[6.5px] font-medium">Create account</span>
+              <div className="bg-[#a8c7fa] text-[#062e6f] font-semibold text-[7px] px-2.5 py-0.5 rounded-full shadow-sm">
+                Next
               </div>
             </div>
+          </div>
+        </div>
+
+        {/* Micro Footer */}
+        <div className="flex items-center justify-between px-1 mt-1 text-[#8e918f] text-[5.5px]">
+          <span>English (United States) &#9662;</span>
+          <div className="flex items-center gap-1.5">
+            <span>Help</span>
+            <span>Privacy</span>
+            <span>Terms</span>
           </div>
         </div>
       </div>
     ),
     htmlSnippet: () => (
-      <div className="w-full h-full bg-[#181a24] flex flex-col items-center justify-center p-2 rounded-xl border border-zinc-800 shadow-xl relative overflow-hidden">
-        <div className="w-full h-full bg-white dark:bg-[#1e2333] rounded-lg p-2.5 flex gap-2 border border-zinc-200 dark:border-zinc-700 shadow-md">
+      <div className="w-full h-full bg-[#131314] flex flex-col justify-between p-2 rounded-xl border border-zinc-800 shadow-inner relative overflow-hidden select-none">
+        {/* Main Google Dark Card */}
+        <div className="w-full bg-[#1e1f20] rounded-xl p-2.5 border border-[#444746]/50 shadow-md flex gap-3 flex-1">
+          {/* Left Column */}
           <div className="w-1/2 flex flex-col justify-between py-0.5">
             <div>
-              <div className="flex gap-[3px] mb-1.5">
-                <span className="w-1.5 h-1.5 rounded-full bg-[#EA4335]" />
-                <span className="w-1.5 h-1.5 rounded-full bg-[#4285F4]" />
-                <span className="w-1.5 h-1.5 rounded-full bg-[#FBBC05]" />
-                <span className="w-1.5 h-1.5 rounded-full bg-[#34A853]" />
-              </div>
-              <div className="w-10 h-2 bg-[#202124] dark:bg-white rounded-sm mb-1.5" />
-              <div className="w-[85%] h-[2px] bg-gray-300 dark:bg-zinc-600 rounded-sm mb-[2px]" />
-              <div className="w-[60%] h-[2px] bg-gray-300 dark:bg-zinc-600 rounded-sm" />
+              {/* Google G Logo */}
+              <svg viewBox="0 0 24 24" className="w-4 h-4 mb-1.5">
+                <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
+                <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
+              </svg>
+              <h4 className="text-white font-normal text-[11px] leading-tight tracking-tight">Sign in</h4>
+              <p className="text-[#c4c7c5] text-[6.5px] leading-[9px] mt-1 line-clamp-3">
+                with your Google Account. This account will be available to other Google apps in the browser.
+              </p>
             </div>
-            <div className="w-6 h-1.5 bg-gray-200 dark:bg-zinc-700 rounded-sm" />
           </div>
-          <div className="w-1/2 flex flex-col pt-0.5 justify-between">
-            <div className="w-full h-5 border border-gray-300 dark:border-zinc-600 rounded-md flex items-center px-1.5 bg-gray-50 dark:bg-zinc-800">
-              <div className="w-8 h-1 bg-gray-400 dark:bg-zinc-500 rounded-sm" />
+
+          {/* Right Column */}
+          <div className="w-1/2 flex flex-col justify-between py-0.5">
+            <div>
+              {/* Input Box */}
+              <div className="w-full border border-[#8e918f]/70 rounded-md px-1.5 py-1 bg-transparent">
+                <span className="text-[#c4c7c5] text-[7px] block truncate">Email or phone</span>
+              </div>
+              <span className="text-[#a8c7fa] text-[6.5px] font-medium block mt-1">Forgot email?</span>
+              <p className="text-[#c4c7c5] text-[5.5px] leading-[7.5px] mt-1 line-clamp-2">
+                Not your computer? Use Guest mode to sign in privately. <span className="text-[#a8c7fa]">Learn more about using Guest mode</span>
+              </p>
             </div>
-            <div className="flex justify-between items-center mt-1">
-              <div className="w-5 h-1 bg-gray-300 dark:bg-zinc-600 rounded-sm" />
-              <div className="w-8 h-4 bg-[#1a73e8] rounded-md flex items-center justify-center shadow-sm">
-                <div className="w-3 h-0.5 bg-white rounded-sm" />
+
+            {/* Bottom Actions */}
+            <div className="flex items-center justify-end gap-2 mt-1.5 pt-0.5">
+              <span className="text-[#a8c7fa] text-[6.5px] font-medium">Create account</span>
+              <div className="bg-[#a8c7fa] text-[#062e6f] font-semibold text-[7px] px-2.5 py-0.5 rounded-full shadow-sm">
+                Next
               </div>
             </div>
+          </div>
+        </div>
+
+        {/* Micro Footer */}
+        <div className="flex items-center justify-between px-1 mt-1 text-[#8e918f] text-[5.5px]">
+          <span>English (United States) &#9662;</span>
+          <div className="flex items-center gap-1.5">
+            <span>Help</span>
+            <span>Privacy</span>
+            <span>Terms</span>
           </div>
         </div>
       </div>
@@ -688,7 +736,7 @@ const PhishingManager = () => {
                           Mock Blueprint
                         </span>
                       </div>
-                      <div className="w-full h-full max-w-[170px] flex items-center justify-center">
+                      <div className={`w-full h-full ${platform.id === "google" ? "max-w-[260px]" : "max-w-[190px]"} flex items-center justify-center`}>
                         {platform.renderMock()}
                       </div>
                     </div>

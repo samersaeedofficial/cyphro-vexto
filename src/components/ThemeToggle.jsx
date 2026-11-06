@@ -21,14 +21,14 @@ export function ThemeToggle({ className = "", compact = false }) {
       } ${className}`}
       style={{
         background: isDark
-          ? "linear-gradient(135deg, rgba(30, 41, 59, 0.7) 0%, rgba(15, 23, 42, 0.8) 100%)"
-          : "linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(241, 245, 249, 0.95) 100%)",
+          ? "linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(15, 23, 42, 0.9) 100%)"
+          : "linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%)",
         border: isDark
-          ? "1px solid rgba(255, 255, 255, 0.1)"
-          : "1px solid rgba(0, 0, 0, 0.08)",
+          ? "1px solid rgba(255, 255, 255, 0.12)"
+          : "1px solid rgba(148, 163, 184, 0.5)",
         boxShadow: isDark
           ? "0 4px 15px -2px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.08)"
-          : "0 4px 15px -2px rgba(99, 102, 241, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.9)",
+          : "0 2px 8px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.04), inset 0 1px 0 rgba(255, 255, 255, 0.9)",
       }}
     >
       {/* Ambient background glow */}
@@ -72,20 +72,20 @@ export function ThemeToggle({ className = "", compact = false }) {
               animate={{ y: 0, opacity: 1, rotate: 0, scale: 1 }}
               exit={{ y: 12, opacity: 0, rotate: -60, scale: 0.7 }}
               transition={{ type: "spring", stiffness: 350, damping: 22 }}
-              className="flex items-center gap-1.5 text-amber-500 group-hover:text-amber-600"
+              className="flex items-center gap-1.5 text-amber-600 group-hover:text-amber-700"
             >
-              <div className="relative">
-                <Sun className="w-4 h-4 transition-transform group-hover:rotate-45 duration-500 fill-amber-400/30" />
+              <div className="relative flex items-center justify-center">
+                <Sun className="w-4 h-4 transition-transform group-hover:rotate-45 duration-500 fill-amber-400 text-amber-600 stroke-[2.2]" />
                 <motion.span
                   animate={{ rotate: 360 }}
                   transition={{ repeat: Infinity, duration: 12, ease: "linear" }}
                   className="absolute inset-0 flex items-center justify-center pointer-events-none"
                 >
-                  <Sparkles className="w-2.5 h-2.5 opacity-0 group-hover:opacity-100 text-amber-400 transition-opacity" />
+                  <Sparkles className="w-2.5 h-2.5 opacity-0 group-hover:opacity-100 text-amber-500 transition-opacity" />
                 </motion.span>
               </div>
               {!compact && (
-                <span className="hidden sm:inline-block text-[10px] font-bold tracking-wider uppercase text-slate-700 group-hover:text-slate-900 transition-colors">
+                <span className="hidden sm:inline-block text-[10px] font-extrabold tracking-wider uppercase text-slate-800 group-hover:text-slate-900 transition-colors">
                   Light
                 </span>
               )}

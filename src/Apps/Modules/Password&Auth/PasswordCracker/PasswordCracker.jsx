@@ -3,13 +3,18 @@ import { AnimatePresence, motion } from "framer-motion";
 import {
   Activity,
   AlertTriangle,
+  ArrowLeft,
+  ArrowRight,
   BarChart3,
   Book,
   Check,
   CheckCircle,
   ChevronDown,
+  ChevronRight,
   Clipboard,
+  Clock,
   Copy,
+  Cpu,
   Database,
   Download,
   FileCode,
@@ -23,8 +28,10 @@ import {
   Lock,
   Play,
   RotateCcw,
+  Search,
   Settings,
   Shield,
+  ShieldCheck,
   Sparkles,
   Square,
   Terminal,
@@ -47,7 +54,6 @@ const detectHash = (hashStr) => {
       mode: "-m 3200",
       bitLength: "184-bit Salted",
       feasibility: "Slow / Heavy Resistance",
-      feasibilityLevel: "hard",
       color: "text-rose-400",
       accentBg: "bg-rose-500/10",
       border: "border-rose-500/30",
@@ -64,16 +70,15 @@ const detectHash = (hashStr) => {
       mode: "-m 7300",
       bitLength: "Tunable Memory",
       feasibility: "Memory-Hard / Extreme",
-      feasibilityLevel: "hard",
       color: "text-purple-400",
       accentBg: "bg-purple-500/10",
       border: "border-purple-500/30",
       pill: "bg-purple-500/20 text-purple-300 border-purple-500/30",
-      note: "PHC winner with memory hardness and side-channel resistance.",
+      note: "PHC winner with tunable memory hardness and resistance against ASICs.",
     };
   }
 
-  // Unix SHA-512 / SHA-256 crypt ($6$, $5$)
+  // Unix SHA-512 crypt ($6$)
   if (h.startsWith("$6$")) {
     return {
       type: "SHA512-Crypt",
@@ -81,7 +86,6 @@ const detectHash = (hashStr) => {
       mode: "-m 1800",
       bitLength: "512-bit Salted",
       feasibility: "Moderate / Linux Shadow",
-      feasibilityLevel: "medium",
       color: "text-cyan-400",
       accentBg: "bg-cyan-500/10",
       border: "border-cyan-500/30",
@@ -97,8 +101,7 @@ const detectHash = (hashStr) => {
       name: "Message Digest 5",
       mode: "-m 0",
       bitLength: "128-bit Hex",
-      feasibility: "Ultra-Fast (Gigahash/sec)",
-      feasibilityLevel: "easy",
+      feasibility: "Ultra-Fast (Gigahashes/sec)",
       color: "text-red-400",
       accentBg: "bg-red-500/10",
       border: "border-red-500/30",
@@ -115,7 +118,6 @@ const detectHash = (hashStr) => {
       mode: "-m 100",
       bitLength: "160-bit Hex",
       feasibility: "Fast (Hundreds MH/sec)",
-      feasibilityLevel: "easy",
       color: "text-amber-400",
       accentBg: "bg-amber-500/10",
       border: "border-amber-500/30",
@@ -132,12 +134,11 @@ const detectHash = (hashStr) => {
       mode: "-m 1400",
       bitLength: "256-bit Hex",
       feasibility: "Moderate Speed",
-      feasibilityLevel: "medium",
       color: "text-emerald-400",
       accentBg: "bg-emerald-500/10",
       border: "border-emerald-500/30",
       pill: "bg-emerald-500/20 text-emerald-300 border-emerald-500/30",
-      note: "Current industry standard for web applications, databases, and blockchain.",
+      note: "Current industry standard for modern web applications, databases, and blockchain.",
     };
   }
 
@@ -149,12 +150,11 @@ const detectHash = (hashStr) => {
       mode: "-m 1700",
       bitLength: "512-bit Hex",
       feasibility: "Heavy / Resource Intensive",
-      feasibilityLevel: "hard",
       color: "text-indigo-400",
       accentBg: "bg-indigo-500/10",
       border: "border-indigo-500/30",
       pill: "bg-indigo-500/20 text-indigo-300 border-indigo-500/30",
-      note: "Large 512-bit digest offering immense resistance against brute-force keyspaces.",
+      note: "Large 512-bit digest offering immense keyspace resistance against brute-force.",
     };
   }
 
@@ -164,7 +164,6 @@ const detectHash = (hashStr) => {
     mode: "-m 9999",
     bitLength: `${h.length * 4}-bit Estimated`,
     feasibility: "Unprofiled",
-    feasibilityLevel: "neutral",
     color: "text-slate-400",
     accentBg: "bg-slate-800/40",
     border: "border-slate-800",
@@ -221,8 +220,15 @@ const SUPPORTED_EXTENSIONS = [
 ];
 
 export default function PasswordCracker() {
+  // --- Master View Navigation ---
+  // "dashboard" -> Main screen with History, Stats, Recovered Passwords, Crack Password button
+  // "step-input" -> Step 1: Upload File (default) or Direct Input
+  // "step-config" -> Step 2: Attack Configuration
+  // "live-attack" -> Step 3: Real-time Cracking Telemetry & Terminal
+  const [currentView, setCurrentView] = useState("dashboard");
+
   // --- Input State ---
-  const [inputType, setInputType] = useState("direct"); // "direct", "file"
+  const [inputType, setInputType] = useState("file"); // Default to "file" as explicitly requested by user!
   const [hashes, setHashes] = useState("");
   const [hashStats, setHashStats] = useState({ count: 0, types: {}, samples: {} });
   const [file, setFile] = useState(null);
@@ -261,7 +267,7 @@ export default function PasswordCracker() {
     salt: "",
   });
 
-  // --- Execution & Results State ---
+  // --- Execution & Live State ---
   const [status, setStatus] = useState("idle"); // "idle", "running", "completed"
   const [progress, setProgress] = useState({
     percent: 0,
@@ -275,58 +281,130 @@ export default function PasswordCracker() {
   });
   const [liveFeed, setLiveFeed] = useState([]);
   const [auditLog, setAuditLog] = useState([
-    `[${new Date().toLocaleTimeString()}] Ready. Paste hashes or load demo set.`,
+    `[${new Date().toLocaleTimeString()}] System initialized. Standby for cracking jobs.`,
   ]);
-  const [activeResultTab, setActiveResultTab] = useState("results");
+
+  // --- Main Dashboard State: History & Recovered Records ---
+  const [dashboardTab, setDashboardTab] = useState("history"); // "history", "passwords", "audit"
+  const [sessionHistory, setSessionHistory] = useState([
+    {
+      id: "CRACK-8492",
+      date: "2026-11-06 14:30",
+      method: "Dictionary Attack (rockyou.txt)",
+      algorithm: "MD5 (32-hex)",
+      hashes: 5,
+      cracked: 5,
+      successRate: "100%",
+      duration: "12s",
+      status: "Success",
+    },
+    {
+      id: "CRACK-8488",
+      date: "2026-11-05 19:15",
+      method: "Hybrid Mask (?u?l?l?d?d)",
+      algorithm: "SHA-256 (64-hex)",
+      hashes: 4,
+      cracked: 3,
+      successRate: "75%",
+      duration: "45s",
+      status: "Partial",
+    },
+    {
+      id: "CRACK-8472",
+      date: "2026-11-04 11:20",
+      method: "Brute Force (Alnum)",
+      algorithm: "NTLM (Windows)",
+      hashes: 8,
+      cracked: 8,
+      successRate: "100%",
+      duration: "1m 15s",
+      status: "Success",
+    },
+  ]);
+
+  const [allCrackedPasswords, setAllCrackedPasswords] = useState([
+    {
+      id: 1,
+      hash: "5f4dcc3b5aa765d61d8327deb882cf99",
+      type: "MD5",
+      password: "password",
+      time: "1.2s",
+      method: "dictionary",
+      date: "2026-11-06 14:30",
+    },
+    {
+      id: 2,
+      hash: "2aae6c35c94fcfb415dbe95f408b9ce91ee846ed",
+      type: "SHA1",
+      password: "admin123",
+      time: "3.4s",
+      method: "dictionary",
+      date: "2026-11-06 14:30",
+    },
+    {
+      id: 3,
+      hash: "8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918",
+      type: "SHA256",
+      password: "admin",
+      time: "8.1s",
+      method: "hybrid",
+      date: "2026-11-05 19:15",
+    },
+    {
+      id: 4,
+      hash: "329153f560eb3295f3eb24cc8f107ee1",
+      type: "MD5",
+      password: "qwerty123",
+      time: "5.0s",
+      method: "bruteforce",
+      date: "2026-11-04 11:20",
+    },
+  ]);
 
   const timerRef = useRef(null);
 
-  // Auto-load demo hashes initially for immediate testability
+  // Parse lines whenever hashes change
   useEffect(() => {
-    if (!hashes) {
-      setHashes(SAMPLE_HASHES.join("\n"));
-    }
-  }, []);
+    const lines = hashes
+      .split("\n")
+      .map((l) => l.trim())
+      .filter(Boolean);
 
-  // Parse lines and compute real-time algorithm profile
-  useEffect(() => {
-    if (inputType === "direct") {
-      const lines = hashes
-        .split("\n")
-        .map((l) => l.trim())
-        .filter(Boolean);
+    const types = {};
+    const samples = {};
 
-      const types = {};
-      const samples = {};
-
-      lines.forEach((h) => {
-        const detected = detectHash(h);
-        if (detected) {
-          types[detected.type] = (types[detected.type] || 0) + 1;
-          if (!samples[detected.type]) {
-            samples[detected.type] = h;
-          }
+    lines.forEach((h) => {
+      const detected = detectHash(h);
+      if (detected) {
+        types[detected.type] = (types[detected.type] || 0) + 1;
+        if (!samples[detected.type]) {
+          samples[detected.type] = h;
         }
-      });
+      }
+    });
 
-      setHashStats({ count: lines.length, types, samples });
-    }
-  }, [hashes, inputType]);
+    setHashStats({ count: lines.length, types, samples });
+  }, [hashes]);
 
   const showNotification = (msg) => {
     setCopiedNotification(msg);
-    setTimeout(() => setCopiedNotification(""), 2000);
+    setTimeout(() => setCopiedNotification(""), 2200);
   };
 
   const logAudit = (msg) => {
     setAuditLog((prev) => [`[${new Date().toLocaleTimeString()}] ${msg}`, ...prev]);
   };
 
+  // Start Cracking flow from Dashboard button
+  const handleOpenCrackWizard = () => {
+    setInputType("file"); // Default is always File Upload
+    setCurrentView("step-input");
+  };
+
   const handleLoadSample = () => {
     setHashes(SAMPLE_HASHES.join("\n"));
-    setInputType("direct");
-    showNotification("Demo hashes loaded!");
-    logAudit(`Loaded ${SAMPLE_HASHES.length} sample demo hashes.`);
+    showNotification("Loaded 5 demo sample hashes!");
+    logAudit(`Loaded ${SAMPLE_HASHES.length} demo target hashes.`);
   };
 
   const handleAppendSpecificHash = (hashVal, typeName) => {
@@ -362,8 +440,8 @@ export default function PasswordCracker() {
   const handleFileUpload = (e) => {
     const f = e.target.files[0];
     if (!f) return;
-    if (f.size > 20 * 1024 * 1024) {
-      alert("File exceeds maximum 20MB limit.");
+    if (f.size > 25 * 1024 * 1024) {
+      alert("File exceeds maximum 25MB limit.");
       return;
     }
     setFile(f);
@@ -384,11 +462,11 @@ export default function PasswordCracker() {
             return;
           }
         }
-        // Windows PWDUMP / SAM: Administrator:500:aad3b435b51404eeaad3b435b51404ee:31d6cfe0d16ae931b73c59d7e0c089c0:::
+        // Windows PWDUMP / SAM: Administrator:500:aad3b435...:31d6cfe0d16ae931b73c59d7e0c089c0:::
         if (line.includes(":") && line.split(":").length >= 4) {
           const parts = line.split(":");
           if (parts[3] && parts[3].length === 32) {
-            extracted.push(parts[3]); // NTLM hash part
+            extracted.push(parts[3]);
             return;
           }
         }
@@ -414,20 +492,21 @@ export default function PasswordCracker() {
         preview: finalHashes.slice(0, 3),
       });
 
-      setInputType("direct"); // Switch to direct view so user sees the editor populated with parsed hashes
       showNotification(`Uploaded ${f.name} (${finalHashes.length} hashes detected)!`);
-      logAudit(`Uploaded file: ${f.name} → Extracted ${finalHashes.length} target hashes.`);
+      logAudit(`Uploaded file: ${f.name} → Parsed ${finalHashes.length} target hashes.`);
     };
     reader.readAsText(f);
   };
 
-  // Start Attack Simulation
-  const startCracking = () => {
+  // Start Cracking Simulation Execution
+  const handleStartCracking = () => {
     if (hashStats.count === 0) {
-      handleLoadSample();
+      alert("Please upload a file or enter hashes first.");
+      setCurrentView("step-input");
       return;
     }
 
+    setCurrentView("live-attack");
     setStatus("running");
     setLiveFeed([]);
     logAudit(`Starting ${activeAttackTab.toUpperCase()} attack on ${hashStats.count} target hashes...`);
@@ -444,6 +523,7 @@ export default function PasswordCracker() {
     let currentTested = 0;
     const startTime = Date.now();
     let crackedCount = 0;
+    const sessionCrackedItems = [];
 
     clearInterval(timerRef.current);
 
@@ -472,8 +552,10 @@ export default function PasswordCracker() {
           password: foundPassword,
           time: `${elapsed}s`,
           method: activeAttackTab,
+          date: new Date().toISOString().replace("T", " ").substring(0, 16),
         };
 
+        sessionCrackedItems.push(newResult);
         setLiveFeed((prev) => [newResult, ...prev]);
         logAudit(`Cracked: ${newResult.hash} → "${foundPassword}" [${typeInfo.type}]`);
       }
@@ -490,6 +572,24 @@ export default function PasswordCracker() {
           elapsed,
           cracked: crackedCount,
         }));
+
+        // Add to persistent dashboard state
+        if (sessionCrackedItems.length > 0) {
+          setAllCrackedPasswords((prev) => [...sessionCrackedItems, ...prev]);
+        }
+
+        const newSessionRecord = {
+          id: `CRACK-${Math.floor(1000 + Math.random() * 9000)}`,
+          date: new Date().toISOString().replace("T", " ").substring(0, 16),
+          method: `${activeAttackTab.toUpperCase()} Attack`,
+          algorithm: Object.keys(hashStats.types).join(", ") || "Auto-Detected",
+          hashes: hashList.length,
+          cracked: crackedCount,
+          successRate: `${Math.round((crackedCount / hashList.length) * 100)}%`,
+          duration: `${elapsed}s`,
+          status: crackedCount === hashList.length ? "Success" : "Partial",
+        };
+        setSessionHistory((prev) => [newSessionRecord, ...prev]);
       } else {
         setProgress({
           percent,
@@ -505,10 +605,16 @@ export default function PasswordCracker() {
     }, 1000);
   };
 
-  const stopCracking = () => {
+  const handleStopCracking = () => {
     clearInterval(timerRef.current);
     setStatus("idle");
-    logAudit("Attack stopped by operator.");
+    logAudit("Attack halted by operator.");
+  };
+
+  const handleFinishAndReturnToDashboard = () => {
+    handleStopCracking();
+    setCurrentView("dashboard");
+    showNotification("Cracking job completed & recorded in session history!");
   };
 
   const handleCopyText = (text, msg = "Copied to clipboard!") => {
@@ -517,8 +623,8 @@ export default function PasswordCracker() {
   };
 
   const handleExportTxt = () => {
-    if (liveFeed.length === 0) return;
-    const content = liveFeed.map((r) => `${r.rawHash || r.hash}:${r.password}`).join("\n");
+    if (allCrackedPasswords.length === 0) return;
+    const content = allCrackedPasswords.map((r) => `${r.rawHash || r.hash}:${r.password}`).join("\n");
     const blob = new Blob([content], { type: "text/plain" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
@@ -529,12 +635,11 @@ export default function PasswordCracker() {
     showNotification("Downloaded cracked_hashes.txt");
   };
 
-  // Line numbers calculation for the editor
   const hashLines = hashes ? hashes.split("\n") : [""];
   const lineNumbers = Array.from({ length: Math.max(1, hashLines.length) }, (_, i) => i + 1);
 
   return (
-    <div className="min-h-screen bg-[#090d14] text-slate-200 p-4 sm:p-6 md:p-8 font-sans selection:bg-red-500/30 selection:text-white">
+    <div className="min-h-screen bg-[#080c14] text-slate-200 p-4 sm:p-6 md:p-8 font-sans selection:bg-red-500/30 selection:text-white">
       {/* Toast Notification Alert */}
       <AnimatePresence>
         {copiedNotification && (
@@ -542,7 +647,7 @@ export default function PasswordCracker() {
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
-            className="fixed top-6 right-6 z-50 px-4 py-2 rounded-xl bg-slate-900 border border-red-500/40 text-white text-xs font-mono font-bold shadow-[0_4px_25px_rgba(239,68,68,0.3)] flex items-center gap-2"
+            className="fixed top-6 right-6 z-50 px-4 py-2.5 rounded-xl bg-slate-900 border border-red-500/40 text-white text-xs font-mono font-bold shadow-[0_4px_25px_rgba(239,68,68,0.3)] flex items-center gap-2"
           >
             <Check className="w-4 h-4 text-emerald-400" />
             <span>{copiedNotification}</span>
@@ -550,103 +655,429 @@ export default function PasswordCracker() {
         )}
       </AnimatePresence>
 
-      {/* --- TOP HEADER BAR --- */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 pb-5 border-b border-slate-800/80">
-        <div>
-          <h1 className="text-2xl sm:text-3xl font-black text-white flex items-center gap-3 tracking-tight">
-            <div className="p-2.5 rounded-xl bg-red-500/10 border border-red-500/30 text-red-500 shadow-[0_0_15px_rgba(239,68,68,0.15)]">
-              <Key className="w-6 h-6" />
+      {/* ========================================================================= */}
+      {/* VIEW 1: MAIN DASHBOARD VIEW (Session History, Stats, Crack Password button) */}
+      {/* ========================================================================= */}
+      {currentView === "dashboard" && (
+        <motion.div
+          key="dashboard"
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0 }}
+          className="max-w-7xl mx-auto space-y-6"
+        >
+          {/* Header Bar */}
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 pb-6 border-b border-slate-800/80">
+            <div>
+              <div className="flex items-center gap-3">
+                <div className="p-2.5 rounded-xl bg-red-500/10 border border-red-500/30 text-red-500 shadow-[0_0_15px_rgba(239,68,68,0.2)]">
+                  <Key className="w-6 h-6" />
+                </div>
+                <div>
+                  <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight">
+                    Password Cracker
+                  </h1>
+                  <p className="text-slate-400 text-xs sm:text-sm font-mono mt-0.5">
+                    Multi-Algorithm Hash Decryption & Audit Suite
+                  </p>
+                </div>
+              </div>
             </div>
-            <span>Password Cracker</span>
-          </h1>
-          <p className="text-slate-400 text-xs sm:text-sm mt-1 font-mono">
-            High-Performance Multi-Vector Hash Decryption Suite
-          </p>
-        </div>
 
-        <div className="flex items-center gap-2.5 w-full sm:w-auto">
-          {/* Quick Demo Hashes button */}
-          <button
-            onClick={handleLoadSample}
-            disabled={status === "running"}
-            className="flex-1 sm:flex-initial flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl text-xs font-semibold bg-slate-900/90 hover:bg-slate-800 border border-slate-800 hover:border-slate-700 text-slate-300 transition-all active:scale-95 disabled:opacity-50"
-            title="Load sample hashes for instant testing"
-          >
-            <Sparkles className="w-3.5 h-3.5 text-red-400" />
-            <span>Load Demo Hashes</span>
-          </button>
+            {/* Primary Action Button: "Crack Password" */}
+            <div className="flex items-center gap-3 w-full sm:w-auto">
+              <button
+                onClick={handleOpenCrackWizard}
+                className="w-full sm:w-auto flex items-center justify-center gap-2.5 bg-gradient-to-r from-red-600 via-rose-600 to-red-600 hover:from-red-500 hover:to-rose-500 text-white px-7 py-3 rounded-xl text-sm font-bold shadow-[0_0_25px_rgba(239,68,68,0.35)] transition-all hover:scale-[1.02] active:scale-95 group"
+              >
+                <Zap className="w-4 h-4 fill-white transition-transform group-hover:scale-110" />
+                <span>Crack Password</span>
+              </button>
+            </div>
+          </div>
 
-          {/* Primary Action Button */}
-          {status === "idle" || status === "completed" ? (
-            <button
-              onClick={startCracking}
-              className="flex-1 sm:flex-initial flex items-center justify-center gap-2 bg-gradient-to-r from-red-600 via-rose-600 to-red-600 hover:from-red-500 hover:to-rose-500 text-white px-6 py-2.5 rounded-xl text-xs font-bold shadow-[0_0_20px_rgba(239,68,68,0.3)] transition-all active:scale-95"
-            >
-              <Play className="w-3.5 h-3.5 fill-white" />
-              <span>Start Attack</span>
-            </button>
-          ) : (
-            <button
-              onClick={stopCracking}
-              className="flex-1 sm:flex-initial flex items-center justify-center gap-2 bg-rose-700 hover:bg-rose-600 text-white px-6 py-2.5 rounded-xl text-xs font-bold shadow-[0_0_20px_rgba(244,63,94,0.3)] transition-all active:scale-95"
-            >
-              <Square className="w-3.5 h-3.5 fill-white" />
-              <span>Stop Attack</span>
-            </button>
-          )}
-        </div>
-      </div>
+          {/* Quick Stats Grid */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            {[
+              {
+                label: "TOTAL CRACKED",
+                value: allCrackedPasswords.length,
+                sub: "All-time recovered hashes",
+                icon: CheckCircle,
+                color: "text-emerald-400",
+                accent: "bg-emerald-500/10 border-emerald-500/20",
+              },
+              {
+                label: "SUCCESS RATE",
+                value: "95.8%",
+                sub: "Historical recovery efficiency",
+                icon: Activity,
+                color: "text-red-400",
+                accent: "bg-red-500/10 border-red-500/20",
+              },
+              {
+                label: "COMPUTE PEAK",
+                value: "28.5 MH/s",
+                sub: "GPU / Multi-threaded performance",
+                icon: Zap,
+                color: "text-amber-400",
+                accent: "bg-amber-500/10 border-amber-500/20",
+              },
+              {
+                label: "ATTACK SESSIONS",
+                value: sessionHistory.length,
+                sub: "Logged penetration audits",
+                icon: History,
+                color: "text-rose-400",
+                accent: "bg-rose-500/10 border-rose-500/20",
+              },
+            ].map((stat, idx) => {
+              const Icon = stat.icon;
+              return (
+                <div
+                  key={idx}
+                  className="p-5 rounded-2xl bg-[#0c1017]/90 border border-slate-800/80 hover:border-slate-700/80 transition-all shadow-sm"
+                >
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-[10px] font-mono font-bold tracking-widest text-slate-400 uppercase">
+                      {stat.label}
+                    </span>
+                    <div className={`p-2 rounded-xl ${stat.accent} ${stat.color} border`}>
+                      <Icon className="w-4 h-4" />
+                    </div>
+                  </div>
+                  <div className="text-2xl font-black text-white font-mono tracking-tight mb-1">
+                    {stat.value}
+                  </div>
+                  <p className="text-xs text-slate-400 font-mono">{stat.sub}</p>
+                </div>
+              );
+            })}
+          </div>
 
-      {/* --- TWO-COLUMN WORKBENCH --- */}
-      <div className="grid grid-cols-1 xl:grid-cols-12 gap-6 mb-6 items-start">
-        {/* ============================================================== */}
-        {/* LEFT COLUMN: Hash Input Source (5 cols on desktop)            */}
-        {/* ============================================================== */}
-        <div className="xl:col-span-5 space-y-6">
+          {/* Main Dashboard Panel: Tabs for History, Cracked Passwords, Audit Log */}
           <div className="rounded-2xl bg-[#0c1017]/95 border border-slate-800/90 shadow-[0_8px_30px_rgba(0,0,0,0.4)] overflow-hidden">
-            {/* Card Header with red accent line */}
-            <div className="px-5 py-4 border-b border-slate-800/80 bg-slate-900/50 flex justify-between items-center relative">
+            {/* Header with red accent line */}
+            <div className="px-5 py-4 border-b border-slate-800/80 bg-slate-900/40 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 relative">
               <div className="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-red-600 via-rose-500 to-red-600" />
               <div className="flex items-center gap-2.5">
                 <div className="p-1.5 rounded-lg bg-red-500/10 text-red-500 border border-red-500/20">
-                  <Lock className="w-4 h-4" />
+                  <History className="w-4 h-4" />
                 </div>
                 <div>
-                  <h3 className="font-bold text-sm text-white tracking-wide">Hash Input Source</h3>
-                  <p className="text-[11px] text-slate-400 font-mono">Input raw hashes or upload hash dump files</p>
+                  <h3 className="font-bold text-sm text-white tracking-wide">Cracking Intelligence & Records</h3>
+                  <p className="text-[11px] text-slate-400 font-mono">Past jobs, decrypted plaintexts, and security logs</p>
                 </div>
               </div>
 
-              {/* Mode Segmented Switcher */}
+              {/* Navigation Tabs */}
+              <div className="flex p-1 rounded-xl bg-slate-950 border border-slate-800">
+                {[
+                  { id: "history", label: "Session History", icon: History },
+                  { id: "passwords", label: "Recovered Plaintexts", icon: CheckCircle },
+                  { id: "audit", label: "Security Audit Log", icon: Terminal },
+                ].map((t) => {
+                  const Icon = t.icon;
+                  return (
+                    <button
+                      key={t.id}
+                      onClick={() => setDashboardTab(t.id)}
+                      className={`flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-semibold rounded-lg transition-all ${
+                        dashboardTab === t.id
+                          ? "bg-slate-800 text-white shadow-sm border border-slate-700/60"
+                          : "text-slate-400 hover:text-slate-200"
+                      }`}
+                    >
+                      <Icon className="w-3.5 h-3.5" />
+                      <span>{t.label}</span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            <div className="p-5">
+              {/* TAB 1: Session History */}
+              {dashboardTab === "history" && (
+                <div className="overflow-x-auto border border-slate-800 rounded-xl bg-slate-950">
+                  <table className="w-full text-left text-xs font-mono">
+                    <thead className="bg-slate-900/90 text-slate-400 border-b border-slate-800">
+                      <tr>
+                        <th className="p-3.5">Job ID</th>
+                        <th className="p-3.5">Method</th>
+                        <th className="p-3.5">Detected Hash Types</th>
+                        <th className="p-3.5">Decrypted</th>
+                        <th className="p-3.5">Duration</th>
+                        <th className="p-3.5">Status</th>
+                        <th className="p-3.5 text-right">Date</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-slate-800/60">
+                      {sessionHistory.map((s) => (
+                        <tr key={s.id} className="hover:bg-slate-900/50 transition-colors">
+                          <td className="p-3.5 font-bold text-red-400">{s.id}</td>
+                          <td className="p-3.5 text-slate-200 font-medium">{s.method}</td>
+                          <td className="p-3.5 text-slate-400">{s.algorithm}</td>
+                          <td className="p-3.5 text-emerald-400 font-bold">
+                            {s.cracked} / {s.hashes} ({s.successRate})
+                          </td>
+                          <td className="p-3.5 text-slate-400">{s.duration}</td>
+                          <td className="p-3.5">
+                            <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">
+                              {s.status}
+                            </span>
+                          </td>
+                          <td className="p-3.5 text-right text-slate-500">{s.date}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+
+              {/* TAB 2: Recovered Passwords */}
+              {dashboardTab === "passwords" && (
+                <div className="space-y-3">
+                  <div className="flex justify-between items-center pb-2">
+                    <span className="text-xs font-mono text-slate-400">
+                      {allCrackedPasswords.length} Passwords Successfully Recovered
+                    </span>
+                    <button
+                      onClick={handleExportTxt}
+                      className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-mono bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition-all"
+                    >
+                      <Download className="w-3.5 h-3.5 text-red-400" />
+                      <span>Export .TXT</span>
+                    </button>
+                  </div>
+
+                  <div className="overflow-x-auto border border-slate-800 rounded-xl bg-slate-950">
+                    <table className="w-full text-left text-xs font-mono">
+                      <thead className="bg-slate-900/90 text-slate-400 border-b border-slate-800">
+                        <tr>
+                          <th className="p-3.5">#</th>
+                          <th className="p-3.5">Hash Digest</th>
+                          <th className="p-3.5">Algorithm</th>
+                          <th className="p-3.5">Plaintext Password</th>
+                          <th className="p-3.5">Time</th>
+                          <th className="p-3.5">Method</th>
+                          <th className="p-3.5 text-right">Action</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-slate-800/60">
+                        {allCrackedPasswords.map((item, idx) => (
+                          <tr key={item.id} className="hover:bg-slate-900/50 transition-colors">
+                            <td className="p-3.5 text-slate-500">{idx + 1}</td>
+                            <td className="p-3.5 font-bold text-slate-300" title={item.hash}>
+                              {item.hash.length > 20
+                                ? `${item.hash.substring(0, 8)}...${item.hash.substring(item.hash.length - 6)}`
+                                : item.hash}
+                            </td>
+                            <td className="p-3.5">
+                              <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-red-500/10 text-red-400 border border-red-500/30">
+                                {item.type}
+                              </span>
+                            </td>
+                            <td className="p-3.5 text-emerald-400 font-bold text-sm">
+                              {item.password}
+                            </td>
+                            <td className="p-3.5 text-slate-400">{item.time}</td>
+                            <td className="p-3.5 text-slate-400 capitalize">{item.method}</td>
+                            <td className="p-3.5 text-right">
+                              <button
+                                onClick={() => handleCopyText(item.password, `Password "${item.password}" copied!`)}
+                                className="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white transition-colors"
+                                title="Copy password"
+                              >
+                                <Copy className="w-3.5 h-3.5" />
+                              </button>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              )}
+
+              {/* TAB 3: Audit Log */}
+              {dashboardTab === "audit" && (
+                <div className="p-4 rounded-xl bg-slate-950 border border-slate-800 h-64 overflow-y-auto font-mono text-xs text-slate-400 space-y-1.5 custom-scrollbar">
+                  {auditLog.map((log, i) => (
+                    <div
+                      key={i}
+                      className={
+                        log.includes("Cracked:")
+                          ? "text-emerald-400 font-semibold"
+                          : log.includes("halted")
+                            ? "text-rose-400"
+                            : log.includes("Starting")
+                              ? "text-red-400 font-semibold"
+                              : ""
+                      }
+                    >
+                      {log}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+        </motion.div>
+      )}
+
+      {/* ========================================================================= */}
+      {/* VIEW 2: STEP 1 - INGEST TARGET HASHES (Upload File as Default / Direct)    */}
+      {/* ========================================================================= */}
+      {currentView === "step-input" && (
+        <motion.div
+          key="step-input"
+          initial={{ opacity: 0, x: 20 }}
+          animate={{ opacity: 1, x: 0 }}
+          exit={{ opacity: 0, x: -20 }}
+          className="max-w-4xl mx-auto space-y-6"
+        >
+          {/* Top Breadcrumb & Step Navigation */}
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 pb-4 border-b border-slate-800/80">
+            <button
+              onClick={() => setCurrentView("dashboard")}
+              className="flex items-center gap-2 text-xs font-mono text-slate-400 hover:text-white transition-colors"
+            >
+              <ArrowLeft className="w-4 h-4 text-red-500" />
+              <span>Back to Dashboard</span>
+            </button>
+
+            {/* Stepper progress indicator */}
+            <div className="flex items-center gap-3 text-xs font-mono">
+              <span className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-red-500/20 text-red-400 border border-red-500/40 font-bold">
+                <span>1</span> Target Hashes
+              </span>
+              <ChevronRight className="w-3.5 h-3.5 text-slate-600" />
+              <span className="text-slate-500">2. Configuration</span>
+            </div>
+          </div>
+
+          {/* Main Card */}
+          <div className="rounded-2xl bg-[#0c1017]/95 border border-slate-800/90 shadow-[0_8px_30px_rgba(0,0,0,0.4)] overflow-hidden">
+            {/* Header with Segmented Switcher (Default: File Upload) */}
+            <div className="px-6 py-4 border-b border-slate-800/80 bg-slate-900/50 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 relative">
+              <div className="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-red-600 via-rose-500 to-red-600" />
+              <div>
+                <h2 className="text-base font-bold text-white tracking-wide">
+                  Select Hash Ingestion Method
+                </h2>
+                <p className="text-xs text-slate-400 font-mono">
+                  Default: Upload hash file. You can also paste hashes directly.
+                </p>
+              </div>
+
+              {/* Segmented Control: File Upload (DEFAULT) | Direct Input */}
               <div className="flex p-1 rounded-xl bg-slate-950 border border-slate-800">
                 <button
+                  type="button"
+                  onClick={() => setInputType("file")}
+                  className={`flex items-center gap-2 px-4 py-1.5 text-xs font-semibold rounded-lg transition-all ${
+                    inputType === "file"
+                      ? "bg-slate-800 text-white shadow-sm border border-slate-700"
+                      : "text-slate-400 hover:text-slate-200"
+                  }`}
+                >
+                  <Upload className="w-3.5 h-3.5 text-red-400" />
+                  <span>File Upload (Default)</span>
+                </button>
+                <button
+                  type="button"
                   onClick={() => setInputType("direct")}
-                  className={`flex items-center gap-1.5 px-3 py-1 text-xs font-semibold rounded-lg transition-all ${
+                  className={`flex items-center gap-2 px-4 py-1.5 text-xs font-semibold rounded-lg transition-all ${
                     inputType === "direct"
-                      ? "bg-slate-800 text-white shadow-sm border border-slate-700/60"
+                      ? "bg-slate-800 text-white shadow-sm border border-slate-700"
                       : "text-slate-400 hover:text-slate-200"
                   }`}
                 >
                   <Type className="w-3.5 h-3.5" />
                   <span>Direct Input</span>
                 </button>
-                <button
-                  onClick={() => setInputType("file")}
-                  className={`flex items-center gap-1.5 px-3 py-1 text-xs font-semibold rounded-lg transition-all ${
-                    inputType === "file"
-                      ? "bg-slate-800 text-white shadow-sm border border-slate-700/60"
-                      : "text-slate-400 hover:text-slate-200"
-                  }`}
-                >
-                  <Upload className="w-3.5 h-3.5" />
-                  <span>File Upload</span>
-                </button>
               </div>
             </div>
 
-            <div className="p-5">
-              {/* --- OPTION 1: Direct Input (Modern Code-Editor Style) --- */}
-              {inputType === "direct" ? (
+            <div className="p-6">
+              {/* --- TAB 1: FILE UPLOAD (Default view) --- */}
+              {inputType === "file" && (
+                <div className="space-y-4">
+                  {/* Drag and Drop Box */}
+                  <div className="border-2 border-dashed border-slate-800 hover:border-red-500/50 rounded-2xl p-8 flex flex-col items-center justify-center text-center bg-[#070a0f] hover:bg-[#070a0f]/80 transition-all group">
+                    <div className="p-4 rounded-2xl bg-red-500/10 border border-red-500/20 text-red-500 mb-3 group-hover:scale-110 transition-transform shadow-[0_0_15px_rgba(239,68,68,0.15)]">
+                      <Upload className="w-8 h-8" />
+                    </div>
+                    <h3 className="text-base font-bold text-white mb-1">
+                      Drag & Drop Target Hash File Here
+                    </h3>
+                    <p className="text-xs text-slate-400 font-mono mb-4">
+                      Supports raw hashes, wordlists, shadow files, and database dumps (Max 25MB)
+                    </p>
+
+                    <label className="px-5 py-2.5 rounded-xl font-bold text-xs bg-red-600/20 hover:bg-red-600/30 text-red-300 border border-red-500/40 cursor-pointer transition-all shadow-md active:scale-95 mb-5">
+                      Browse Local Files
+                      <input
+                        type="file"
+                        className="hidden"
+                        accept=".txt,.hash,.hashes,.pot,.potfile,.csv,.tsv,.json,.shadow,.sam,.pwdump,.lst,.hcmask"
+                        onChange={handleFileUpload}
+                      />
+                    </label>
+
+                    {/* Supported Extension Badges */}
+                    <div className="w-full pt-4 border-t border-slate-800/80">
+                      <span className="text-[10px] font-mono uppercase text-slate-500 block mb-2.5 font-bold tracking-wider">
+                        Supported File Formats:
+                      </span>
+                      <div className="flex flex-wrap justify-center gap-1.5">
+                        {SUPPORTED_EXTENSIONS.map((item) => (
+                          <span
+                            key={item.ext}
+                            className="px-2.5 py-1 rounded-md text-[10px] font-mono bg-slate-900 text-slate-300 border border-slate-800"
+                            title={item.label}
+                          >
+                            {item.ext}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Uploaded File Summary */}
+                  {fileSummary && (
+                    <div className="p-4 rounded-xl bg-slate-900/90 border border-red-500/30 text-xs font-mono space-y-2">
+                      <div className="flex items-center justify-between text-slate-200">
+                        <div className="flex items-center gap-2 truncate">
+                          <FileText className="w-4 h-4 text-red-400 shrink-0" />
+                          <span className="font-bold truncate">{fileSummary.name}</span>
+                          <span className="text-slate-500">({fileSummary.size})</span>
+                        </div>
+                        <span className="px-2.5 py-0.5 rounded bg-emerald-500/10 text-emerald-400 font-bold border border-emerald-500/20 shrink-0">
+                          {fileSummary.lines} Hashes Detected
+                        </span>
+                      </div>
+
+                      {fileSummary.preview && fileSummary.preview.length > 0 && (
+                        <div className="p-2.5 rounded bg-slate-950 text-[10px] text-slate-400 space-y-0.5 border border-slate-800/80">
+                          <div className="text-slate-500 text-[9px] uppercase font-bold mb-1">
+                            Extracted Sample Preview:
+                          </div>
+                          {fileSummary.preview.map((sample, idx) => (
+                            <div key={idx} className="truncate text-slate-300">
+                              {sample}
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* --- TAB 2: DIRECT INPUT (Code-Editor View) --- */}
+              {inputType === "direct" && (
                 <div className="space-y-4">
                   {/* Modern Terminal / Code Editor Container */}
                   <div className="rounded-xl border border-slate-800 bg-[#06090e] shadow-inner overflow-hidden focus-within:border-red-500/50 focus-within:ring-1 focus-within:ring-red-500/20 transition-all">
@@ -655,17 +1086,16 @@ export default function PasswordCracker() {
                       <div className="flex items-center gap-2">
                         <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
                         <span className="text-[11px] font-mono font-bold text-slate-300">
-                          RAW HASH STREAM
+                          RAW HASH INPUT STREAM
                         </span>
                       </div>
 
-                      {/* Quick Chips & Actions */}
+                      {/* Quick Append Chips & Actions */}
                       <div className="flex items-center gap-1.5 flex-wrap">
                         <button
                           type="button"
                           onClick={() => handleAppendSpecificHash("5f4dcc3b5aa765d61d8327deb882cf99", "MD5")}
                           className="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-slate-800 hover:bg-slate-700 text-red-400 hover:text-red-300 border border-slate-700 transition-colors"
-                          title="Append sample MD5 hash"
                         >
                           + MD5
                         </button>
@@ -673,7 +1103,6 @@ export default function PasswordCracker() {
                           type="button"
                           onClick={() => handleAppendSpecificHash("8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918", "SHA-256")}
                           className="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-slate-800 hover:bg-slate-700 text-emerald-400 hover:text-emerald-300 border border-slate-700 transition-colors"
-                          title="Append sample SHA-256 hash"
                         >
                           + SHA-256
                         </button>
@@ -681,7 +1110,6 @@ export default function PasswordCracker() {
                           type="button"
                           onClick={() => handleAppendSpecificHash("329153f560eb3295f3eb24cc8f107ee1", "NTLM")}
                           className="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-slate-800 hover:bg-slate-700 text-amber-400 hover:text-amber-300 border border-slate-700 transition-colors"
-                          title="Append sample NTLM hash"
                         >
                           + NTLM
                         </button>
@@ -712,7 +1140,6 @@ export default function PasswordCracker() {
 
                     {/* Editor Body with Line Numbers Gutter */}
                     <div className="flex text-xs font-mono min-h-[170px] max-h-[260px] overflow-hidden">
-                      {/* Gutter */}
                       <div className="py-3 px-2.5 bg-slate-950/70 select-none text-slate-600 text-right font-mono border-r border-slate-800/60 leading-6 shrink-0 w-10">
                         {lineNumbers.map((num) => (
                           <div key={num} className="text-[11px] font-semibold text-slate-600">
@@ -721,11 +1148,10 @@ export default function PasswordCracker() {
                         ))}
                       </div>
 
-                      {/* Textarea */}
                       <textarea
                         value={hashes}
                         onChange={(e) => setHashes(e.target.value)}
-                        placeholder="Paste hashes here (one per line)...&#10;5f4dcc3b5aa765d61d8327deb882cf99&#10;2aae6c35c94fcfb415dbe95f408b9ce91ee846ed&#10;8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918"
+                        placeholder="Paste hashes here (one per line)...&#10;5f4dcc3b5aa765d61d8327deb882cf99&#10;2aae6c35c94fcfb415dbe95f408b9ce91ee846ed"
                         rows={7}
                         className="flex-1 p-3 bg-transparent text-xs font-mono text-slate-200 outline-none resize-none leading-6 placeholder:text-slate-600 custom-scrollbar overflow-y-auto"
                       />
@@ -733,7 +1159,7 @@ export default function PasswordCracker() {
 
                     {/* Editor Footer Status Bar */}
                     <div className="px-3 py-1.5 bg-slate-950 border-t border-slate-800/80 flex items-center justify-between text-[11px] font-mono text-slate-400">
-                      <span>UTF-8 • Auto-trim spaces</span>
+                      <span>UTF-8 • Auto-strip whitespace</span>
                       <div className="flex items-center gap-3">
                         <span>{hashLines.length} lines</span>
                         <span className="font-bold text-white bg-slate-800 px-2 py-0.5 rounded border border-slate-700">
@@ -743,91 +1169,20 @@ export default function PasswordCracker() {
                     </div>
                   </div>
                 </div>
-              ) : (
-                /* --- OPTION 2: File Upload with Multi-Format Support --- */
-                <div className="space-y-4">
-                  {/* Drag and Drop Zone */}
-                  <div className="border-2 border-dashed border-slate-800 hover:border-red-500/50 rounded-2xl p-6 sm:p-7 flex flex-col items-center justify-center text-center bg-[#070a0f] hover:bg-[#070a0f]/80 transition-all group">
-                    <div className="p-3.5 rounded-2xl bg-red-500/10 border border-red-500/20 text-red-500 mb-3 group-hover:scale-110 transition-transform">
-                      <Upload className="w-7 h-7" />
-                    </div>
-                    <h4 className="text-sm font-bold text-white mb-1">Drag & Drop Target Hash File</h4>
-                    <p className="text-xs text-slate-400 font-mono mb-4">
-                      Max upload limit: 20MB (Supports single & multi-column dumps)
-                    </p>
-
-                    <label className="px-4 py-2 rounded-xl font-bold text-xs bg-red-600/20 hover:bg-red-600/30 text-red-300 border border-red-500/40 cursor-pointer transition-all shadow-md active:scale-95 mb-4">
-                      Browse Local Files
-                      <input
-                        type="file"
-                        className="hidden"
-                        accept=".txt,.hash,.hashes,.pot,.potfile,.csv,.tsv,.json,.shadow,.sam,.pwdump,.lst,.hcmask"
-                        onChange={handleFileUpload}
-                      />
-                    </label>
-
-                    {/* Supported Extension Badges */}
-                    <div className="w-full pt-3 border-t border-slate-800/80">
-                      <span className="text-[10px] font-mono uppercase text-slate-500 block mb-2 font-bold tracking-wider">
-                        Supported File Types:
-                      </span>
-                      <div className="flex flex-wrap justify-center gap-1.5">
-                        {SUPPORTED_EXTENSIONS.map((item) => (
-                          <span
-                            key={item.ext}
-                            className="px-2 py-0.5 rounded-md text-[10px] font-mono bg-slate-900 text-slate-300 border border-slate-800"
-                            title={item.label}
-                          >
-                            {item.ext}
-                          </span>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Uploaded File Details Card */}
-                  {fileSummary && (
-                    <div className="p-3.5 rounded-xl bg-slate-900/90 border border-red-500/30 text-xs font-mono space-y-2">
-                      <div className="flex items-center justify-between text-slate-200">
-                        <div className="flex items-center gap-2 truncate">
-                          <FileText className="w-4 h-4 text-red-400 shrink-0" />
-                          <span className="font-bold truncate">{fileSummary.name}</span>
-                          <span className="text-slate-500">({fileSummary.size})</span>
-                        </div>
-                        <span className="px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 font-bold border border-emerald-500/20 shrink-0">
-                          {fileSummary.lines} Hashes Parsed
-                        </span>
-                      </div>
-
-                      {fileSummary.preview && fileSummary.preview.length > 0 && (
-                        <div className="p-2 rounded bg-slate-950 text-[10px] text-slate-400 space-y-0.5 border border-slate-800/80">
-                          <div className="text-slate-500 text-[9px] uppercase font-bold">Hash Sample Preview:</div>
-                          {fileSummary.preview.map((sample, idx) => (
-                            <div key={idx} className="truncate text-slate-300">
-                              {sample}
-                            </div>
-                          ))}
-                        </div>
-                      )}
-                    </div>
-                  )}
-                </div>
               )}
 
-              {/* ============================================================== */}
-              {/* REAL-TIME ALGORITHM DETECTION & CRYPTOGRAPHIC PROFILING CARDS  */}
-              {/* ============================================================== */}
+              {/* Real-time Algorithm Profiler (Cards below) */}
               {hashStats.count > 0 && (
-                <div className="mt-5 pt-4 border-t border-slate-800/80">
+                <div className="mt-6 pt-5 border-t border-slate-800/80">
                   <div className="flex items-center justify-between mb-3">
                     <div className="flex items-center gap-2">
                       <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
                       <h4 className="text-[11px] font-mono font-bold text-slate-300 uppercase tracking-wider">
-                        Real-Time Algorithm Profiler
+                        Detected Algorithm Profiles
                       </h4>
                     </div>
-                    <span className="text-[10px] font-mono text-red-400 bg-red-500/10 px-2 py-0.5 rounded border border-red-500/20">
-                      {Object.keys(hashStats.types).length} Format(s) Detected
+                    <span className="text-[10px] font-mono text-red-400 bg-red-500/10 px-2.5 py-0.5 rounded border border-red-500/20">
+                      {Object.keys(hashStats.types).length} Format(s) Identified
                     </span>
                   </div>
 
@@ -840,7 +1195,6 @@ export default function PasswordCracker() {
                         mode: "-m ?",
                         bitLength: "Unknown",
                         feasibility: "Standard",
-                        feasibilityLevel: "neutral",
                         color: "text-slate-400",
                         accentBg: "bg-slate-800/40",
                         border: "border-slate-800",
@@ -851,9 +1205,8 @@ export default function PasswordCracker() {
                       return (
                         <div
                           key={type}
-                          className={`p-3.5 rounded-xl border ${info.border} ${info.accentBg} bg-[#070b12] transition-all hover:border-slate-600 shadow-sm`}
+                          className={`p-3.5 rounded-xl border ${info.border} ${info.accentBg} bg-[#070b12] transition-all`}
                         >
-                          {/* Card Top Row */}
                           <div className="flex items-center justify-between mb-1.5">
                             <div className="flex items-center gap-2.5">
                               <span className={`text-sm font-black font-mono ${info.color}`}>
@@ -867,36 +1220,27 @@ export default function PasswordCracker() {
                               </span>
                             </div>
 
-                            <span className="text-xs font-mono font-black text-white bg-slate-900 px-2.5 py-0.5 rounded-lg border border-slate-700 shadow-sm">
+                            <span className="text-xs font-mono font-black text-white bg-slate-900 px-2.5 py-0.5 rounded-lg border border-slate-700">
                               {count} {count === 1 ? "Hash" : "Hashes"}
                             </span>
                           </div>
 
-                          {/* Card Middle: Bit length & Feasibility */}
-                          <div className="flex flex-wrap items-center justify-between text-[11px] font-mono text-slate-400 my-1.5 gap-2">
-                            <span className="flex items-center gap-1.5">
-                              <span className="text-slate-500">Digest:</span>
-                              <span className="text-slate-300 font-semibold">{info.bitLength}</span>
-                            </span>
-
-                            <span
-                              className={`px-2 py-0.5 rounded-full text-[10px] font-bold border ${info.pill}`}
-                            >
+                          <div className="flex flex-wrap items-center justify-between text-[11px] font-mono text-slate-400 my-1 gap-2">
+                            <span>Digest: <strong className="text-slate-300">{info.bitLength}</strong></span>
+                            <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold border ${info.pill}`}>
                               {info.feasibility}
                             </span>
                           </div>
 
-                          {/* Sample Hash String Preview */}
                           {sampleHash && (
                             <div className="mt-2 pt-2 border-t border-slate-800/60 flex items-center justify-between text-[10px] font-mono text-slate-500">
-                              <span className="truncate max-w-[240px] sm:max-w-[280px] text-slate-400">
+                              <span className="truncate max-w-[260px] sm:max-w-[340px] text-slate-400">
                                 Sample: <span className="text-slate-300">{sampleHash.substring(0, 16)}...{sampleHash.substring(sampleHash.length - 8)}</span>
                               </span>
                               <button
                                 type="button"
                                 onClick={() => handleCopyText(sampleHash, "Sample hash copied!")}
                                 className="text-slate-400 hover:text-white transition-colors ml-2"
-                                title="Copy sample hash"
                               >
                                 <Copy className="w-3 h-3" />
                               </button>
@@ -909,29 +1253,102 @@ export default function PasswordCracker() {
                 </div>
               )}
             </div>
-          </div>
-        </div>
 
-        {/* ============================================================== */}
-        {/* RIGHT COLUMN: Attack Configuration (7 cols on desktop)         */}
-        {/* ============================================================== */}
-        <div className="xl:col-span-7 space-y-6">
+            {/* Wizard Navigation Footer */}
+            <div className="px-6 py-4 bg-slate-950 border-t border-slate-800/80 flex items-center justify-between">
+              <button
+                type="button"
+                onClick={() => setCurrentView("dashboard")}
+                className="px-4 py-2 rounded-xl text-xs font-mono text-slate-400 hover:text-white transition-colors"
+              >
+                Cancel
+              </button>
+
+              <button
+                type="button"
+                onClick={() => {
+                  if (hashStats.count === 0) {
+                    handleLoadSample();
+                  }
+                  setCurrentView("step-config");
+                }}
+                className="flex items-center gap-2 px-6 py-2.5 rounded-xl font-bold text-xs bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-500 hover:to-rose-500 text-white shadow-md shadow-red-600/30 transition-all hover:scale-[1.02] active:scale-95"
+              >
+                <span>Next: Attack Configuration</span>
+                <ArrowRight className="w-3.5 h-3.5" />
+              </button>
+            </div>
+          </div>
+        </motion.div>
+      )}
+
+      {/* ========================================================================= */}
+      {/* VIEW 3: STEP 2 - ATTACK CONFIGURATION (Dictionary, Brute, Mask, etc.)     */}
+      {/* ========================================================================= */}
+      {currentView === "step-config" && (
+        <motion.div
+          key="step-config"
+          initial={{ opacity: 0, x: 20 }}
+          animate={{ opacity: 1, x: 0 }}
+          exit={{ opacity: 0, x: -20 }}
+          className="max-w-4xl mx-auto space-y-6"
+        >
+          {/* Top Breadcrumb */}
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 pb-4 border-b border-slate-800/80">
+            <button
+              onClick={() => setCurrentView("step-input")}
+              className="flex items-center gap-2 text-xs font-mono text-slate-400 hover:text-white transition-colors"
+            >
+              <ArrowLeft className="w-4 h-4 text-red-500" />
+              <span>Back to Target Hashes</span>
+            </button>
+
+            {/* Stepper */}
+            <div className="flex items-center gap-3 text-xs font-mono">
+              <span className="text-emerald-400 flex items-center gap-1">
+                <Check className="w-3.5 h-3.5" /> 1. Target Hashes
+              </span>
+              <ChevronRight className="w-3.5 h-3.5 text-slate-600" />
+              <span className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-red-500/20 text-red-400 border border-red-500/40 font-bold">
+                <span>2</span> Attack Configuration
+              </span>
+            </div>
+          </div>
+
+          {/* Target Summary Banner */}
+          <div className="p-3.5 rounded-xl bg-slate-900/90 border border-slate-800 flex items-center justify-between text-xs font-mono">
+            <div className="flex items-center gap-2.5">
+              <span className="w-2 h-2 rounded-full bg-emerald-400" />
+              <span className="text-slate-300">
+                Ready to crack <strong className="text-white">{hashStats.count} hash(es)</strong>
+              </span>
+            </div>
+            <span className="text-red-400">
+              {Object.keys(hashStats.types).join(", ") || "Auto-Profiled"}
+            </span>
+          </div>
+
+          {/* Main Configuration Card */}
           <div className="rounded-2xl bg-[#0c1017]/95 border border-slate-800/90 shadow-[0_8px_30px_rgba(0,0,0,0.4)] overflow-hidden">
             {/* Header */}
-            <div className="px-5 py-4 border-b border-slate-800/80 bg-slate-900/50 flex justify-between items-center relative">
-              <div className="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-rose-500 via-red-500 to-rose-600" />
+            <div className="px-6 py-4 border-b border-slate-800/80 bg-slate-900/50 flex justify-between items-center relative">
+              <div className="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-red-600 via-rose-500 to-red-600" />
               <div className="flex items-center gap-2.5">
                 <div className="p-1.5 rounded-lg bg-red-500/10 text-red-500 border border-red-500/20">
                   <Shield className="w-4 h-4" />
                 </div>
                 <div>
-                  <h3 className="font-bold text-sm text-white tracking-wide">Attack Configuration</h3>
-                  <p className="text-[11px] text-slate-400 font-mono">Select decryption strategy & rule mutations</p>
+                  <h3 className="font-bold text-sm text-white tracking-wide">
+                    Attack Vector & Mutations
+                  </h3>
+                  <p className="text-[11px] text-slate-400 font-mono">
+                    Select cracking methodology and ruleset
+                  </p>
                 </div>
               </div>
             </div>
 
-            <div className="p-5">
+            <div className="p-6">
               {/* Horizontal Attack Mode Tabs */}
               <div className="flex border-b border-slate-800 pb-1 mb-5 overflow-x-auto custom-scrollbar">
                 {[
@@ -957,9 +1374,8 @@ export default function PasswordCracker() {
                       <span>{tab.label}</span>
                       {active && (
                         <motion.div
-                          layoutId="activeAttackUnderline"
+                          layoutId="activeAttackTabIndicator"
                           className="absolute bottom-0 left-1 right-1 h-0.5 bg-red-500 rounded-full"
-                          transition={{ type: "spring", stiffness: 350, damping: 30 }}
                         />
                       )}
                     </button>
@@ -967,13 +1383,14 @@ export default function PasswordCracker() {
                 })}
               </div>
 
+              {/* Tab Contents */}
               <div className="min-h-[220px]">
                 {/* 1. Dictionary Attack Tab */}
                 {activeAttackTab === "dictionary" && (
                   <div className="space-y-4">
                     <div>
                       <label className="block text-xs font-mono font-bold text-slate-300 mb-1.5">
-                        Target Wordlist
+                        Wordlist Catalog
                       </label>
                       <select
                         value={dictConfig.wordlist}
@@ -1032,7 +1449,7 @@ export default function PasswordCracker() {
                         ].map((opt) => (
                           <label
                             key={opt.id}
-                            className="flex items-center gap-2 p-2 rounded-lg bg-slate-950 border border-slate-800/80 cursor-pointer hover:border-slate-700 transition-all"
+                            className="flex items-center gap-2 p-2.5 rounded-lg bg-slate-950 border border-slate-800/80 cursor-pointer hover:border-slate-700 transition-all"
                           >
                             <input
                               type="checkbox"
@@ -1059,7 +1476,7 @@ export default function PasswordCracker() {
                       />
                     </div>
 
-                    <div className="grid grid-cols-2 gap-4 p-3 bg-slate-950 border border-slate-800 rounded-xl">
+                    <div className="grid grid-cols-2 gap-4 p-3.5 bg-slate-950 border border-slate-800 rounded-xl">
                       <div>
                         <div className="flex justify-between text-xs font-mono text-slate-400 mb-1">
                           <span>Min Length:</span>
@@ -1205,104 +1622,168 @@ export default function PasswordCracker() {
                   </div>
                 )}
               </div>
+
+              {/* Advanced Performance Options Drawer */}
+              <div className="mt-5 pt-4 border-t border-slate-800/80">
+                <button
+                  type="button"
+                  onClick={() => setShowAdvanced(!showAdvanced)}
+                  className="flex items-center gap-2 text-xs font-mono text-slate-400 hover:text-white transition-colors mb-2"
+                >
+                  <Settings className="w-3.5 h-3.5 text-red-400" />
+                  <span>Advanced Engine Options</span>
+                  <motion.div animate={{ rotate: showAdvanced ? 180 : 0 }}>
+                    <ChevronDown className="w-3.5 h-3.5" />
+                  </motion.div>
+                </button>
+
+                <AnimatePresence>
+                  {showAdvanced && (
+                    <motion.div
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: "auto", opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                      className="overflow-hidden"
+                    >
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 bg-slate-950 border border-slate-800 rounded-xl mt-2">
+                        <div className="space-y-3">
+                          <div>
+                            <div className="flex justify-between text-xs font-mono text-slate-400 mb-1">
+                              <span>Worker Threads:</span>
+                              <span className="text-red-400 font-bold">{advConfig.threads}</span>
+                            </div>
+                            <input
+                              type="range"
+                              min="1"
+                              max="32"
+                              value={advConfig.threads}
+                              onChange={(e) => setAdvConfig({ ...advConfig, threads: parseInt(e.target.value) })}
+                              className="w-full accent-red-500"
+                            />
+                          </div>
+                          <div>
+                            <div className="flex justify-between text-xs font-mono text-slate-400 mb-1">
+                              <span>RAM Limit:</span>
+                              <span className="text-red-400 font-bold">{advConfig.ram} MB</span>
+                            </div>
+                            <input
+                              type="range"
+                              min="512"
+                              max="8192"
+                              step="512"
+                              value={advConfig.ram}
+                              onChange={(e) => setAdvConfig({ ...advConfig, ram: parseInt(e.target.value) })}
+                              className="w-full accent-red-500"
+                            />
+                          </div>
+                        </div>
+
+                        <div className="space-y-3">
+                          <label className="flex items-center gap-2 cursor-pointer pt-1">
+                            <input
+                              type="checkbox"
+                              checked={advConfig.caseSensitive}
+                              onChange={() => setAdvConfig({ ...advConfig, caseSensitive: !advConfig.caseSensitive })}
+                              className="rounded border-slate-700 bg-slate-900 text-red-500 focus:ring-0"
+                            />
+                            <span className="text-xs text-slate-300 font-mono">Case-insensitive matching</span>
+                          </label>
+
+                          <div>
+                            <label className="block text-xs font-mono text-slate-400 mb-1">Manual Salt (Optional)</label>
+                            <input
+                              type="text"
+                              placeholder="Auto-detect if empty"
+                              value={advConfig.salt}
+                              onChange={(e) => setAdvConfig({ ...advConfig, salt: e.target.value })}
+                              className="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-xs font-mono text-slate-200 outline-none"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+            </div>
+
+            {/* Navigation Footer with "Start Cracking" Button */}
+            <div className="px-6 py-4 bg-slate-950 border-t border-slate-800/80 flex items-center justify-between">
+              <button
+                type="button"
+                onClick={() => setCurrentView("step-input")}
+                className="flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-mono text-slate-400 hover:text-white transition-colors"
+              >
+                <ArrowLeft className="w-3.5 h-3.5" />
+                <span>Back to Hashes</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={handleStartCracking}
+                className="flex items-center gap-2 px-7 py-2.5 rounded-xl font-bold text-xs bg-gradient-to-r from-red-600 via-rose-600 to-red-600 hover:from-red-500 hover:to-rose-500 text-white shadow-[0_0_20px_rgba(239,68,68,0.4)] transition-all hover:scale-[1.02] active:scale-95"
+              >
+                <Play className="w-3.5 h-3.5 fill-white" />
+                <span>Start Cracking</span>
+              </button>
             </div>
           </div>
-        </div>
-      </div>
+        </motion.div>
+      )}
 
-      {/* --- ADVANCED ENGINE TUNING (Collapsible) --- */}
-      <div className="mb-6">
-        <button
-          onClick={() => setShowAdvanced(!showAdvanced)}
-          className="flex items-center gap-2 text-xs font-mono text-slate-400 hover:text-white transition-colors mb-2"
+      {/* ========================================================================= */}
+      {/* VIEW 4: STEP 3 - LIVE CRACKING TELEMETRY (Progress, Speed, Live Matches)   */}
+      {/* ========================================================================= */}
+      {currentView === "live-attack" && (
+        <motion.div
+          key="live-attack"
+          initial={{ opacity: 0, scale: 0.98 }}
+          animate={{ opacity: 1, scale: 1 }}
+          exit={{ opacity: 0 }}
+          className="max-w-5xl mx-auto space-y-6"
         >
-          <Settings className="w-3.5 h-3.5 text-red-400" />
-          <span>Advanced Performance Options</span>
-          <motion.div animate={{ rotate: showAdvanced ? 180 : 0 }}>
-            <ChevronDown className="w-3.5 h-3.5" />
-          </motion.div>
-        </button>
-
-        <AnimatePresence>
-          {showAdvanced && (
-            <motion.div
-              initial={{ height: 0, opacity: 0 }}
-              animate={{ height: "auto", opacity: 1 }}
-              exit={{ height: 0, opacity: 0 }}
-              className="overflow-hidden"
-            >
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 bg-slate-900/60 border border-slate-800 rounded-2xl">
-                <div className="space-y-3">
-                  <div>
-                    <div className="flex justify-between text-xs font-mono text-slate-400 mb-1">
-                      <span>Worker Threads:</span>
-                      <span className="text-red-400 font-bold">{advConfig.threads}</span>
-                    </div>
-                    <input
-                      type="range"
-                      min="1"
-                      max="32"
-                      value={advConfig.threads}
-                      onChange={(e) => setAdvConfig({ ...advConfig, threads: parseInt(e.target.value) })}
-                      className="w-full accent-red-500"
-                    />
-                  </div>
-                  <div>
-                    <div className="flex justify-between text-xs font-mono text-slate-400 mb-1">
-                      <span>RAM Buffer Limit:</span>
-                      <span className="text-red-400 font-bold">{advConfig.ram} MB</span>
-                    </div>
-                    <input
-                      type="range"
-                      min="512"
-                      max="8192"
-                      step="512"
-                      value={advConfig.ram}
-                      onChange={(e) => setAdvConfig({ ...advConfig, ram: parseInt(e.target.value) })}
-                      className="w-full accent-red-500"
-                    />
-                  </div>
-                </div>
-
-                <div className="space-y-3">
-                  <label className="flex items-center gap-2 cursor-pointer pt-1">
-                    <input
-                      type="checkbox"
-                      checked={advConfig.caseSensitive}
-                      onChange={() => setAdvConfig({ ...advConfig, caseSensitive: !advConfig.caseSensitive })}
-                      className="rounded border-slate-700 bg-slate-950 text-red-500 focus:ring-0"
-                    />
-                    <span className="text-xs text-slate-300 font-mono">Case-insensitive matching</span>
-                  </label>
-
-                  <div>
-                    <label className="block text-xs font-mono text-slate-400 mb-1">Manual Salt (Optional)</label>
-                    <input
-                      type="text"
-                      placeholder="Auto-detect if empty"
-                      value={advConfig.salt}
-                      onChange={(e) => setAdvConfig({ ...advConfig, salt: e.target.value })}
-                      className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs font-mono text-slate-200 outline-none"
-                    />
-                  </div>
-                </div>
+          {/* Top Bar */}
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 pb-4 border-b border-slate-800/80">
+            <div>
+              <div className="flex items-center gap-2">
+                <span className="w-2.5 h-2.5 rounded-full bg-red-500 animate-ping" />
+                <h2 className="text-xl font-black text-white font-mono tracking-tight">
+                  {status === "running" ? "CRACKING IN PROGRESS" : "JOB COMPLETED"}
+                </h2>
               </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </div>
+              <p className="text-xs text-slate-400 font-mono mt-0.5">
+                Executing {activeAttackTab.toUpperCase()} vector on {hashStats.count} hashes
+              </p>
+            </div>
 
-      {/* --- REAL-TIME CRACKING DASHBOARD (Visible during/after attack) --- */}
-      <AnimatePresence>
-        {(status === "running" || status === "completed") && (
-          <motion.div
-            initial={{ opacity: 0, y: 15 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 15 }}
-            className="mb-6 rounded-2xl bg-[#0c1017] border border-red-500/30 overflow-hidden shadow-xl relative"
-          >
+            {/* Actions: Stop or Finish */}
+            <div className="flex items-center gap-2.5">
+              {status === "running" ? (
+                <button
+                  type="button"
+                  onClick={handleStopCracking}
+                  className="flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold bg-rose-700 hover:bg-rose-600 text-white shadow-lg transition-all"
+                >
+                  <Square className="w-3.5 h-3.5 fill-white" />
+                  <span>Stop Attack</span>
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  onClick={handleFinishAndReturnToDashboard}
+                  className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs font-bold bg-gradient-to-r from-red-600 to-rose-600 text-white shadow-lg shadow-red-600/30 transition-all hover:scale-[1.02]"
+                >
+                  <Check className="w-4 h-4" />
+                  <span>Done & Return to Dashboard</span>
+                </button>
+              )}
+            </div>
+          </div>
+
+          {/* Telemetry Card */}
+          <div className="rounded-2xl bg-[#0c1017]/95 border border-red-500/30 shadow-[0_0_35px_rgba(239,68,68,0.15)] overflow-hidden">
             {/* Top Animated Progress Sweep */}
-            <div className="w-full h-1 bg-slate-950 overflow-hidden">
+            <div className="w-full h-1.5 bg-slate-950 overflow-hidden">
               <motion.div
                 className="h-full bg-gradient-to-r from-red-600 via-rose-500 to-red-600"
                 style={{ width: `${progress.percent}%` }}
@@ -1312,13 +1793,11 @@ export default function PasswordCracker() {
 
             <div className="grid grid-cols-1 lg:grid-cols-12 divide-y lg:divide-y-0 lg:divide-x divide-slate-800/80">
               {/* Telemetry Stats Column (5 cols) */}
-              <div className="lg:col-span-5 p-5 font-mono text-xs space-y-2.5">
+              <div className="lg:col-span-5 p-6 font-mono text-xs space-y-3">
                 <div className="flex items-center justify-between pb-2 border-b border-slate-800">
                   <div className="flex items-center gap-2 font-bold text-slate-100">
                     <Terminal className="w-4 h-4 text-red-400" />
-                    <span>
-                      {status === "running" ? "CRACKING IN PROGRESS..." : "ATTACK FINISHED"}
-                    </span>
+                    <span>ENGINE STATUS</span>
                   </div>
                   <span
                     className={`px-2 py-0.5 rounded text-[10px] font-bold ${
@@ -1327,7 +1806,7 @@ export default function PasswordCracker() {
                         : "bg-emerald-500/20 text-emerald-400 border border-emerald-500/30"
                     }`}
                   >
-                    {status === "running" ? "ACTIVE" : "COMPLETED"}
+                    {status === "running" ? "CRACKING ACTIVE" : "FINISHED"}
                   </span>
                 </div>
 
@@ -1336,30 +1815,32 @@ export default function PasswordCracker() {
                   <span className="text-white font-bold">{progress.percent.toFixed(1)}%</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-slate-400">Compute Speed:</span>
+                  <span className="text-slate-400">Compute Hashrate:</span>
                   <span className="text-emerald-400 font-bold">{formatSpeed(progress.speed)}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-slate-400">Elapsed / ETA:</span>
-                  <span className="text-slate-300">
-                    {formatTime(progress.elapsed)} / {formatTime(progress.remaining)}
-                  </span>
+                  <span className="text-slate-400">Elapsed Time:</span>
+                  <span className="text-slate-300">{formatTime(progress.elapsed)}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-slate-400">Estimated Remaining:</span>
+                  <span className="text-slate-300">{formatTime(progress.remaining)}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-slate-400">Tested Candidates:</span>
                   <span className="text-slate-300">{formatNumber(progress.tested)}</span>
                 </div>
                 <div className="pt-2 border-t border-slate-800 flex justify-between">
-                  <span className="text-slate-300 font-semibold">Decrypted Matches:</span>
-                  <span className="text-emerald-400 font-bold">
-                    {progress.cracked} / {hashStats.count} Hashes
+                  <span className="text-slate-200 font-bold">Decrypted Hashes:</span>
+                  <span className="text-emerald-400 font-black text-sm">
+                    {progress.cracked} / {hashStats.count} Matches
                   </span>
                 </div>
               </div>
 
               {/* Live Decryption Feed Column (7 cols) */}
-              <div className="lg:col-span-7 p-5 flex flex-col h-56 bg-slate-950/40">
-                <div className="flex items-center justify-between mb-2">
+              <div className="lg:col-span-7 p-6 flex flex-col h-72 bg-slate-950/40">
+                <div className="flex items-center justify-between mb-3">
                   <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1.5 font-mono">
                     <Activity className="w-3.5 h-3.5 text-red-400" /> Live Recovered Plaintexts
                   </h4>
@@ -1368,16 +1849,16 @@ export default function PasswordCracker() {
                   </span>
                 </div>
 
-                <div className="flex-1 overflow-y-auto space-y-1.5 pr-1 custom-scrollbar">
+                <div className="flex-1 overflow-y-auto space-y-2 pr-1 custom-scrollbar">
                   {liveFeed.map((item) => (
                     <motion.div
                       key={item.id}
                       initial={{ opacity: 0, x: -10 }}
                       animate={{ opacity: 1, x: 0 }}
-                      className="flex items-center justify-between p-2 rounded-lg bg-slate-900 border border-emerald-500/20 text-xs font-mono"
+                      className="flex items-center justify-between p-2.5 rounded-lg bg-slate-900 border border-emerald-500/20 text-xs font-mono"
                     >
                       <div className="flex items-center gap-2 truncate">
-                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 shrink-0" />
+                        <span className="w-2 h-2 rounded-full bg-emerald-400 shrink-0" />
                         <span className="text-slate-400 truncate max-w-[140px] sm:max-w-[200px]">
                           {item.hash}
                         </span>
@@ -1393,252 +1874,17 @@ export default function PasswordCracker() {
                   ))}
 
                   {status === "running" && liveFeed.length === 0 && (
-                    <div className="flex items-center justify-center h-full text-center text-slate-500 text-xs font-mono">
-                      Evaluating candidate mutations... Matches will show instantly.
+                    <div className="flex flex-col items-center justify-center h-full text-center text-slate-500 text-xs font-mono space-y-2">
+                      <div className="w-6 h-6 rounded-full border-2 border-red-500/30 border-t-red-500 animate-spin" />
+                      <span>Evaluating candidates... Matches will appear instantly.</span>
                     </div>
                   )}
                 </div>
               </div>
             </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      {/* --- RESULTS & SESSION HISTORY --- */}
-      <div className="rounded-2xl bg-[#0c1017]/95 border border-slate-800/90 shadow-[0_8px_30px_rgba(0,0,0,0.4)] overflow-hidden">
-        {/* Header */}
-        <div className="px-5 py-4 border-b border-slate-800/80 bg-slate-900/50 flex justify-between items-center relative">
-          <div className="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-red-600 to-rose-600" />
-          <div className="flex items-center gap-2.5">
-            <div className="p-1.5 rounded-lg bg-red-500/10 text-red-500 border border-red-500/20">
-              <CheckCircle className="w-4 h-4" />
-            </div>
-            <div>
-              <h3 className="font-bold text-sm text-white tracking-wide">Results & History Hub</h3>
-              <p className="text-[11px] text-slate-400 font-mono">Cracked hashes, statistics, and audit records</p>
-            </div>
           </div>
-        </div>
-
-        <div className="p-5">
-          <div className="flex overflow-x-auto border-b border-slate-800 pb-1 mb-4 custom-scrollbar">
-            {[
-              { id: "results", icon: CheckCircle, label: "Cracked Passwords", badge: liveFeed.length },
-              { id: "stats", icon: BarChart3, label: "Statistics" },
-              { id: "history", icon: History, label: "Session History" },
-              { id: "log", icon: Terminal, label: "Audit Log" },
-            ].map((tab) => {
-              const Icon = tab.icon;
-              const active = activeResultTab === tab.id;
-              return (
-                <button
-                  key={tab.id}
-                  onClick={() => setActiveResultTab(tab.id)}
-                  className={`flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-semibold transition-all relative whitespace-nowrap ${
-                    active
-                      ? "text-red-400 bg-red-500/10"
-                      : "text-slate-400 hover:text-slate-200 hover:bg-slate-800/60"
-                  }`}
-                >
-                  <Icon className={`w-3.5 h-3.5 ${active ? "text-red-400" : ""}`} />
-                  <span>{tab.label}</span>
-                  {tab.badge !== undefined && tab.badge > 0 && (
-                    <span className="px-1.5 py-0.2 rounded-full text-[10px] font-mono bg-red-500 text-white font-bold ml-1">
-                      {tab.badge}
-                    </span>
-                  )}
-                  {active && (
-                    <motion.div
-                      layoutId="activeResultUnderline"
-                      className="absolute bottom-0 left-1 right-1 h-0.5 bg-red-500 rounded-full"
-                      transition={{ type: "spring", stiffness: 350, damping: 30 }}
-                    />
-                  )}
-                </button>
-              );
-            })}
-          </div>
-
-          <div>
-            {/* TAB 1: Cracked Passwords Table */}
-            {activeResultTab === "results" && (
-              <div className="space-y-3">
-                {liveFeed.length > 0 && (
-                  <div className="flex justify-end gap-2 mb-2">
-                    <button
-                      onClick={handleExportTxt}
-                      className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono text-slate-300 hover:text-white bg-slate-800 hover:bg-slate-700 rounded-lg transition-colors border border-slate-700"
-                      title="Export as TXT file"
-                    >
-                      <Download className="w-3.5 h-3.5 text-red-400" />
-                      <span>Download TXT</span>
-                    </button>
-                    <button
-                      onClick={() => {
-                        const allText = liveFeed.map((r) => `${r.rawHash || r.hash}:${r.password}`).join("\n");
-                        handleCopyText(allText, "All cracked hashes copied!");
-                      }}
-                      className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono text-slate-300 hover:text-white bg-slate-800 hover:bg-slate-700 rounded-lg transition-colors border border-slate-700"
-                      title="Copy all to clipboard"
-                    >
-                      <Copy className="w-3.5 h-3.5" />
-                      <span>Copy All</span>
-                    </button>
-                  </div>
-                )}
-
-                <div className="overflow-x-auto border border-slate-800 rounded-xl bg-slate-950">
-                  <table className="w-full text-left text-xs font-mono">
-                    <thead className="bg-slate-900 text-slate-400 border-b border-slate-800">
-                      <tr>
-                        <th className="p-3">#</th>
-                        <th className="p-3">Target Hash</th>
-                        <th className="p-3">Format</th>
-                        <th className="p-3">Plaintext Password</th>
-                        <th className="p-3">Time</th>
-                        <th className="p-3">Method</th>
-                        <th className="p-3 text-right">Action</th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-slate-800/60">
-                      {liveFeed.length > 0 ? (
-                        liveFeed.map((r, i) => (
-                          <tr key={r.id} className="hover:bg-slate-900/50 transition-colors">
-                            <td className="p-3 text-slate-500">{i + 1}</td>
-                            <td className="p-3 text-slate-300 font-bold" title={r.rawHash || r.hash}>
-                              {r.hash}
-                            </td>
-                            <td className="p-3 text-slate-400">{r.type}</td>
-                            <td className="p-3 text-emerald-400 font-bold text-sm">{r.password}</td>
-                            <td className="p-3 text-slate-400">{r.time}</td>
-                            <td className="p-3 text-slate-400 capitalize">{r.method}</td>
-                            <td className="p-3 text-right">
-                              <button
-                                onClick={() => handleCopyText(r.password, `Password "${r.password}" copied!`)}
-                                className="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white transition-colors"
-                                title="Copy plaintext password"
-                              >
-                                <Copy className="w-3.5 h-3.5" />
-                              </button>
-                            </td>
-                          </tr>
-                        ))
-                      ) : (
-                        <tr>
-                          <td colSpan="7" className="p-8 text-center text-slate-500 font-mono">
-                            No cracked hashes yet. Enter hashes and click "Start Attack".
-                          </td>
-                        </tr>
-                      )}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-            )}
-
-            {/* TAB 2: Statistics */}
-            {activeResultTab === "stats" && (
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div className="bg-slate-950 border border-slate-800 rounded-xl p-5 flex flex-col items-center justify-center text-center">
-                  <div className="w-20 h-20 rounded-full border-4 border-red-500 flex items-center justify-center mb-2 text-xl font-bold text-white font-mono">
-                    {hashStats.count > 0 ? Math.round((progress.cracked / hashStats.count) * 100) : 0}%
-                  </div>
-                  <h4 className="text-slate-400 text-xs font-mono">Overall Success Rate</h4>
-                </div>
-
-                <div className="md:col-span-2 bg-slate-950 border border-slate-800 rounded-xl p-5 flex flex-col justify-center space-y-2 font-mono text-xs">
-                  <div className="flex justify-between text-slate-300">
-                    <span>Hashes Tested:</span>
-                    <span className="font-bold">{hashStats.count}</span>
-                  </div>
-                  <div className="flex justify-between text-emerald-400">
-                    <span>Successfully Decrypted:</span>
-                    <span className="font-bold">{progress.cracked}</span>
-                  </div>
-                  <div className="flex justify-between text-slate-400">
-                    <span>Duration:</span>
-                    <span>{formatTime(progress.elapsed)}</span>
-                  </div>
-                  <div className="flex justify-between text-slate-400">
-                    <span>Average Hashrate:</span>
-                    <span>{formatSpeed(progress.speed || 1400000)}</span>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* TAB 3: Session History */}
-            {activeResultTab === "history" && (
-              <div className="space-y-2.5 font-mono text-xs">
-                {[
-                  {
-                    date: "2026-11-06 14:30",
-                    method: "Dictionary (rockyou.txt)",
-                    hashes: "5",
-                    cracked: "5",
-                    time: "12s",
-                  },
-                  {
-                    date: "2026-11-05 09:15",
-                    method: "Brute Force (Lower, Num)",
-                    hashes: "4",
-                    cracked: "3",
-                    time: "45s",
-                  },
-                ].map((h, i) => (
-                  <div
-                    key={i}
-                    className="flex flex-col sm:flex-row sm:items-center justify-between p-3.5 bg-slate-950 border border-slate-800 rounded-xl gap-2"
-                  >
-                    <div>
-                      <h4 className="font-bold text-slate-200">{h.method}</h4>
-                      <p className="text-[11px] text-slate-500 mt-0.5">
-                        {h.date} • Duration: {h.time}
-                      </p>
-                    </div>
-                    <div className="flex items-center gap-4">
-                      <div className="text-right">
-                        <p className="text-emerald-400 font-bold">
-                          {h.cracked} / {h.hashes} Cracked
-                        </p>
-                      </div>
-                      <button
-                        onClick={handleLoadSample}
-                        className="p-1.5 bg-red-500/10 text-red-400 hover:bg-red-500/20 rounded-lg transition-colors"
-                        title="Load this test set"
-                      >
-                        <RotateCcw className="w-3.5 h-3.5" />
-                      </button>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-
-            {/* TAB 4: Audit Log */}
-            {activeResultTab === "log" && (
-              <div className="bg-slate-950 border border-slate-800 rounded-xl p-3.5 h-56 overflow-y-auto font-mono text-xs text-slate-400 space-y-1 custom-scrollbar">
-                {auditLog.map((log, i) => (
-                  <div
-                    key={i}
-                    className={
-                      log.includes("Cracked:")
-                        ? "text-emerald-400 font-semibold"
-                        : log.includes("stopped")
-                          ? "text-rose-400"
-                          : log.includes("Starting")
-                            ? "text-red-400"
-                            : ""
-                    }
-                  >
-                    {log}
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-        </div>
-      </div>
+        </motion.div>
+      )}
     </div>
   );
 }

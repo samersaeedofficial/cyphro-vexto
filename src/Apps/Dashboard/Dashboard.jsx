@@ -33,6 +33,7 @@ import {
   Search,
 } from "lucide-react";
 import { DashboardLayout } from "@/Apps/Dashboard/layout/DashboardLayout";
+import { useTheme } from "@/lib/theme";
 
 const MODULE_CARDS = [
   {
@@ -308,6 +309,7 @@ const statusColors = {
 
 export function Dashboard() {
   const [activeArsenalTab, setActiveArsenalTab] = React.useState("Network");
+  const { isDark } = useTheme();
 
   const categories = React.useMemo(() => {
     return ["All", ...new Set(MODULE_CARDS.map(m => m.cat))];
@@ -322,14 +324,19 @@ export function Dashboard() {
     <div className="max-w-7xl mx-auto px-6 lg:px-10 py-8 space-y-10">
       {/* Page Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
-        <div>
-          <h1 className="text-4xl font-black text-white tracking-tight">
-            Operations <span className="text-blue-500">Dashboard</span>
-          </h1>
-          <p className="text-slate-500 font-medium text-sm mt-2 flex items-center gap-2">
-            <span className="w-1.5 h-1.5 rounded-full bg-cyan-500" />
-            All systems operational — Secure Session Active
-          </p>
+        <div className="flex items-center gap-4">
+          <div className="p-3 rounded-2xl bg-blue-500/10 border border-blue-500/20 shadow-sm flex items-center justify-center">
+            <Shield className="w-8 h-8 text-blue-500 animate-pulse" />
+          </div>
+          <div>
+            <h1 className="text-3xl sm:text-4xl font-black text-slate-900 dark:text-white tracking-tight">
+              Operations <span className="text-blue-500">Dashboard</span>
+            </h1>
+            <p className="text-slate-500 font-medium text-xs sm:text-sm mt-1 flex items-center gap-2">
+              <span className="w-2 h-2 rounded-full bg-emerald-500 shadow-sm" />
+              All systems operational &bull; Secure Session Active
+            </p>
+          </div>
         </div>
       </div>
 
@@ -340,11 +347,12 @@ export function Dashboard() {
           return (
             <div
               key={stat.label}
-              className="relative rounded-3xl p-6 overflow-hidden group transition-all hover:translate-y-[-2px]"
+              className="relative rounded-3xl p-6 overflow-hidden group transition-all hover:translate-y-[-2px] shadow-sm hover:shadow-md"
               style={{
-                background: "rgba(15, 23, 42, 0.4)",
-                border: "1px solid rgba(255, 255, 255, 0.05)",
+                background: isDark ? "rgba(15, 23, 42, 0.4)" : "rgba(255, 255, 255, 0.95)",
+                border: isDark ? "1px solid rgba(255, 255, 255, 0.05)" : "1px solid rgba(226, 232, 240, 0.9)",
                 backdropFilter: "blur(12px)",
+                boxShadow: isDark ? "none" : "0 4px 20px -2px rgba(0, 0, 0, 0.04)",
               }}
             >
               {/* Background glow on hover */}
@@ -379,17 +387,18 @@ export function Dashboard() {
       </div>
 
       {/* Recent Activity & System Logs */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 pt-8 border-t border-white/5">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 pt-8 border-t border-slate-200/80 dark:border-white/5">
         <div className="space-y-4">
           <div className="flex items-center gap-2 px-2">
-            <Radio className="w-4 h-4 text-emerald-400" />
-            <h2 className="text-sm font-black uppercase tracking-widest text-white">Live Activity Feed</h2>
+            <Radio className="w-4 h-4 text-emerald-500 dark:text-emerald-400" />
+            <h2 className="text-sm font-black uppercase tracking-widest text-slate-900 dark:text-white">Live Activity Feed</h2>
           </div>
           <div
-            className="rounded-3xl overflow-hidden"
+            className="rounded-3xl overflow-hidden shadow-sm"
             style={{
-              background: "rgba(15, 23, 42, 0.2)",
-              border: "1px solid rgba(255, 255, 255, 0.03)",
+              background: isDark ? "rgba(15, 23, 42, 0.2)" : "rgba(255, 255, 255, 0.95)",
+              border: isDark ? "1px solid rgba(255, 255, 255, 0.03)" : "1px solid rgba(226, 232, 240, 0.9)",
+              boxShadow: isDark ? "none" : "0 4px 20px -2px rgba(0, 0, 0, 0.04)",
             }}
           >
             {RECENT_ACTIVITY.map((activity, idx) => {
@@ -397,11 +406,11 @@ export function Dashboard() {
               return (
                 <div
                   key={idx}
-                  className="flex items-center gap-4 p-4 hover:bg-white/2 transition-colors border-b border-white/5 last:border-0"
+                  className="flex items-center gap-4 p-4 hover:bg-slate-50 dark:hover:bg-white/2 transition-colors border-b border-slate-100 dark:border-white/5 last:border-0"
                 >
                   <div
                     className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0"
-                    style={{ background: `${statusColors[activity.status]}10` }}
+                    style={{ background: `${statusColors[activity.status]}15` }}
                   >
                     <ActivityIcon
                       className="w-4 h-4"
@@ -409,14 +418,14 @@ export function Dashboard() {
                     />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <div className="text-xs font-bold text-slate-200 truncate">
+                    <div className="text-xs font-bold text-slate-800 dark:text-slate-200 truncate">
                       {activity.action}
                     </div>
                     <div className="text-[10px] text-slate-500 uppercase font-black tracking-tighter mt-0.5">
                       {activity.module}
                     </div>
                   </div>
-                  <div className="text-[10px] font-bold text-slate-600 whitespace-nowrap">
+                  <div className="text-[10px] font-bold text-slate-400 dark:text-slate-600 whitespace-nowrap">
                     {activity.time}
                   </div>
                 </div>
@@ -427,21 +436,22 @@ export function Dashboard() {
 
         <div className="space-y-4">
           <div className="flex items-center gap-2 px-2">
-            <Cpu className="w-4 h-4 text-blue-400" />
-            <h2 className="text-sm font-black uppercase tracking-widest text-white">System Logs</h2>
+            <Cpu className="w-4 h-4 text-blue-500 dark:text-blue-400" />
+            <h2 className="text-sm font-black uppercase tracking-widest text-slate-900 dark:text-white">System Logs</h2>
           </div>
           <div
-            className="rounded-3xl p-6 font-mono text-xs overflow-hidden h-full min-h-[300px]"
+            className="rounded-3xl p-6 font-mono text-xs overflow-hidden h-full min-h-[300px] shadow-sm"
             style={{
-              background: "rgba(5, 8, 18, 0.95)",
-              border: "1px solid rgba(255, 255, 255, 0.05)",
+              background: isDark ? "rgba(5, 8, 18, 0.95)" : "rgba(255, 255, 255, 0.95)",
+              border: isDark ? "1px solid rgba(255, 255, 255, 0.05)" : "1px solid rgba(226, 232, 240, 0.9)",
+              boxShadow: isDark ? "none" : "0 4px 20px -2px rgba(0, 0, 0, 0.04)",
             }}
           >
             <div className="text-emerald-500/80 mb-2 flex items-center gap-2">
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
               [OK] System Core Initialized
             </div>
-            <div className="text-blue-400/80 mb-2">
+            <div className="text-blue-500 dark:text-blue-400/80 mb-2 font-medium">
               [INFO] Listening on port 8080 (0.0.0.0)
             </div>
             <div className="text-slate-500 mb-2">
@@ -453,10 +463,10 @@ export function Dashboard() {
             <div className="text-emerald-500/80 mb-2">
               [OK] SSL/TLS 1.3 Handshake Successful
             </div>
-            <div className="text-slate-400 animate-pulse">
+            <div className="text-slate-600 dark:text-slate-400 animate-pulse">
               [SYSTEM] Ready for operations._
             </div>
-            <div className="mt-8 pt-4 border-t border-white/5 text-slate-700 font-bold uppercase tracking-widest text-[9px]">
+            <div className="mt-8 pt-4 border-t border-slate-100 dark:border-white/5 text-slate-400 dark:text-slate-700 font-bold uppercase tracking-widest text-[9px]">
               Python backend not connected. UI is ready — connect your backend
               to activate tools.
             </div>
@@ -465,26 +475,33 @@ export function Dashboard() {
       </div>
 
       {/* All Modules Quick Access - Modern Category Filtered View */}
-      <div className="pt-16 border-t border-white/5">
-        <div className="bg-slate-900/30 backdrop-blur-xl border border-white/5 rounded-[3rem] p-8 md:p-12 space-y-12 overflow-hidden relative">
+      <div className="pt-16 border-t border-slate-200/80 dark:border-white/5">
+        <div
+          className="rounded-[3rem] p-8 md:p-12 space-y-12 overflow-hidden relative shadow-sm"
+          style={{
+            background: isDark ? "rgba(15, 23, 42, 0.3)" : "rgba(255, 255, 255, 0.95)",
+            border: isDark ? "1px solid rgba(255, 255, 255, 0.05)" : "1px solid rgba(226, 232, 240, 0.9)",
+            boxShadow: isDark ? "none" : "0 4px 25px -4px rgba(0, 0, 0, 0.05)",
+          }}
+        >
           {/* Decorative background glow */}
           <div className="absolute top-0 right-0 w-[300px] h-[300px] bg-blue-500/5 blur-[100px] -z-10" />
           
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 relative z-10">
             <div className="space-y-2">
-              <h2 className="text-3xl font-black text-white tracking-tight">Available <span className="text-blue-500">Arsenal</span></h2>
+              <h2 className="text-3xl font-black text-slate-900 dark:text-white tracking-tight">Available <span className="text-blue-500">Arsenal</span></h2>
               <p className="text-slate-500 font-medium text-sm">Strategic security modules categorized for rapid deployment</p>
             </div>
 
             {/* Category Tabs */}
-            <div className="flex items-center gap-2 p-1.5 rounded-2xl bg-white/5 border border-white/10 overflow-x-auto no-scrollbar max-w-full md:max-w-none">
+            <div className="flex items-center gap-2 p-1.5 rounded-2xl bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 overflow-x-auto no-scrollbar max-w-full md:max-w-none">
               {categories.map((cat) => (
                 <button
                   key={cat}
                   onClick={() => setActiveArsenalTab(cat)}
-                  className={`px-5 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all whitespace-nowrap ${activeArsenalTab === cat
+                  className={`px-5 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all whitespace-nowrap cursor-pointer ${activeArsenalTab === cat
                     ? 'bg-blue-600 text-white shadow-[0_5px_15px_rgba(37,99,235,0.4)]'
-                    : 'text-slate-500 hover:text-slate-300 hover:bg-white/5'
+                    : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-300 hover:bg-slate-200/60 dark:hover:bg-white/5'
                     }`}
                 >
                   {cat}
@@ -514,19 +531,19 @@ export function Dashboard() {
                   >
                     <Link href={`/modules/${mod.id}`} className="group relative block h-full">
                       <div
-                        className="h-full p-6 rounded-[2rem] transition-all duration-300 hover:translate-y-[-4px] overflow-hidden flex flex-col justify-between"
+                        className="h-full p-6 rounded-[2rem] transition-all duration-300 hover:translate-y-[-4px] overflow-hidden flex flex-col justify-between shadow-sm hover:shadow-md"
                         style={{
-                          background: "rgba(15, 23, 42, 0.4)",
-                          border: "1px solid rgba(255, 255, 255, 0.05)",
+                          background: isDark ? "rgba(15, 23, 42, 0.4)" : "rgba(248, 250, 252, 0.95)",
+                          border: isDark ? "1px solid rgba(255, 255, 255, 0.05)" : "1px solid rgba(226, 232, 240, 0.8)",
                           minHeight: "140px"
                         }}
                         onMouseEnter={(e) => {
-                          e.currentTarget.style.borderColor = `${mod.color}30`;
-                          e.currentTarget.style.background = "rgba(15, 23, 42, 0.6)";
+                          e.currentTarget.style.borderColor = `${mod.color}50`;
+                          e.currentTarget.style.background = isDark ? "rgba(15, 23, 42, 0.6)" : "#ffffff";
                         }}
                         onMouseLeave={(e) => {
-                          e.currentTarget.style.borderColor = "rgba(255, 255, 255, 0.05)";
-                          e.currentTarget.style.background = "rgba(15, 23, 42, 0.4)";
+                          e.currentTarget.style.borderColor = isDark ? "rgba(255, 255, 255, 0.05)" : "rgba(226, 232, 240, 0.8)";
+                          e.currentTarget.style.background = isDark ? "rgba(15, 23, 42, 0.4)" : "rgba(248, 250, 252, 0.95)";
                         }}
                       >
                         <div
@@ -539,11 +556,11 @@ export function Dashboard() {
                             className="w-6 h-6 mb-4 transition-transform group-hover:scale-110 group-hover:rotate-3"
                             style={{ color: mod.color }}
                           />
-                          <div className="text-xs font-black text-white leading-tight uppercase tracking-widest truncate">
+                          <div className="text-xs font-black text-slate-800 dark:text-white leading-tight uppercase tracking-widest truncate">
                             {mod.label}
                           </div>
                         </div>
-                        <div className="text-[8px] font-black text-slate-600 uppercase tracking-tighter mt-3">
+                        <div className="text-[8px] font-black text-slate-500 uppercase tracking-tighter mt-3">
                           {mod.cat}
                         </div>
                       </div>

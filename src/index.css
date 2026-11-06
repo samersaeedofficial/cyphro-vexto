@@ -584,3 +584,11 @@ textarea,
   -webkit-text-fill-color: transparent !important;
   color: transparent !important;
 }
+
+/* Fallback: Ensure cards with rgba(15, 23, 42) render clean white in light mode */
+html.light [style*="rgba(15, 23, 42"],
+html.light [style*="rgba(15,23,42"] {
+  background: rgba(255, 255, 255, 0.95) !important;
+  border-color: rgba(226, 232, 240, 0.9) !important;
+  box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.04) !important;
+}

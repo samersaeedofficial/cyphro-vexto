@@ -3,6 +3,7 @@ import WifiAnalyzer from "@/Apps/Modules/Wifi&Network/WifiAnalyzer/WifiAnalyzer"
 import WordlistGen from "@/Apps/Modules/Password&Auth/WordlistGen/WordlistGen";
 import PasswordCracker from "@/Apps/Modules/Password&Auth/PasswordCracker/PasswordCracker";
 import PhishingManager from "@/Apps/Modules/SocialEngineering/PhishingManager/PhishingManager";
+import ExploitDatabase from "@/Apps/Modules/Exploitation/ExploitDatabase/ExploitDatabase";
 import GoogleSignInTemplate from "@/Apps/Templates/GoogleSignIn/GoogleSignInTemplate";
 import FaceBookLoginTemplate from "@/Apps/Templates/Meta/Facebook/FaceBookLoginTemplate";
 import InstagramLoginTemplate from "@/Apps/Templates/Meta/Instagram/InstagramLoginTemplate";
@@ -24,6 +25,10 @@ export const ModuleRoutes = [
   {
     path: "/modules/phishing",
     component: PhishingManager,
+  },
+  {
+    path: "/modules/exploit-db",
+    component: ExploitDatabase,
   },
   {
     path: "/template/google-signin",

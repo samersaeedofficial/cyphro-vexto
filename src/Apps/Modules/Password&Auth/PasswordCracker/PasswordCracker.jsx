@@ -937,24 +937,18 @@ export default function PasswordCracker() {
           exit={{ opacity: 0, x: -20 }}
           className="max-w-4xl mx-auto space-y-6"
         >
-          {/* Top Breadcrumb & Step Navigation */}
-          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 pb-4 border-b border-slate-800/80">
+          {/* Top Navigation */}
+          <div className="flex items-center justify-between pb-4 border-b border-slate-800/80">
             <button
+              type="button"
               onClick={() => setCurrentView("dashboard")}
-              className="flex items-center gap-2 text-xs font-mono text-slate-400 hover:text-white transition-colors"
+              className="group inline-flex items-center gap-2.5 px-4 py-2 rounded-xl bg-slate-900/90 hover:bg-slate-800/90 border border-slate-800 hover:border-red-500/40 text-slate-300 hover:text-white transition-all duration-200 shadow-sm hover:shadow-[0_0_15px_rgba(239,68,68,0.15)] active:scale-95"
             >
-              <ArrowLeft className="w-4 h-4 text-red-500" />
-              <span>Back to Dashboard</span>
+              <div className="w-6 h-6 rounded-lg bg-slate-800 border border-slate-700/60 group-hover:bg-red-500/15 group-hover:border-red-500/30 flex items-center justify-center transition-all duration-200">
+                <ArrowLeft className="w-3.5 h-3.5 text-slate-400 group-hover:text-red-400 transition-transform duration-200 group-hover:-translate-x-0.5" />
+              </div>
+              <span className="text-xs font-mono font-bold tracking-wide">Back to Dashboard</span>
             </button>
-
-            {/* Stepper progress indicator */}
-            <div className="flex items-center gap-3 text-xs font-mono">
-              <span className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-red-500/20 text-red-400 border border-red-500/40 font-bold">
-                <span>1</span> Target Hashes
-              </span>
-              <ChevronRight className="w-3.5 h-3.5 text-slate-600" />
-              <span className="text-slate-500">2. Configuration</span>
-            </div>
           </div>
 
           {/* Main Card */}
@@ -1259,9 +1253,10 @@ export default function PasswordCracker() {
               <button
                 type="button"
                 onClick={() => setCurrentView("dashboard")}
-                className="px-4 py-2 rounded-xl text-xs font-mono text-slate-400 hover:text-white transition-colors"
+                className="group inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-mono font-semibold bg-slate-900/90 hover:bg-slate-800 border border-slate-800 hover:border-slate-700 text-slate-400 hover:text-white transition-all active:scale-95"
               >
-                Cancel
+                <ArrowLeft className="w-3.5 h-3.5 transition-transform group-hover:-translate-x-0.5 text-slate-400 group-hover:text-red-400" />
+                <span>Cancel</span>
               </button>
 
               <button
@@ -1293,26 +1288,18 @@ export default function PasswordCracker() {
           exit={{ opacity: 0, x: -20 }}
           className="max-w-4xl mx-auto space-y-6"
         >
-          {/* Top Breadcrumb */}
-          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 pb-4 border-b border-slate-800/80">
+          {/* Top Navigation */}
+          <div className="flex items-center justify-between pb-4 border-b border-slate-800/80">
             <button
+              type="button"
               onClick={() => setCurrentView("step-input")}
-              className="flex items-center gap-2 text-xs font-mono text-slate-400 hover:text-white transition-colors"
+              className="group inline-flex items-center gap-2.5 px-4 py-2 rounded-xl bg-slate-900/90 hover:bg-slate-800/90 border border-slate-800 hover:border-red-500/40 text-slate-300 hover:text-white transition-all duration-200 shadow-sm hover:shadow-[0_0_15px_rgba(239,68,68,0.15)] active:scale-95"
             >
-              <ArrowLeft className="w-4 h-4 text-red-500" />
-              <span>Back to Target Hashes</span>
+              <div className="w-6 h-6 rounded-lg bg-slate-800 border border-slate-700/60 group-hover:bg-red-500/15 group-hover:border-red-500/30 flex items-center justify-center transition-all duration-200">
+                <ArrowLeft className="w-3.5 h-3.5 text-slate-400 group-hover:text-red-400 transition-transform duration-200 group-hover:-translate-x-0.5" />
+              </div>
+              <span className="text-xs font-mono font-bold tracking-wide">Back to Target Hashes</span>
             </button>
-
-            {/* Stepper */}
-            <div className="flex items-center gap-3 text-xs font-mono">
-              <span className="text-emerald-400 flex items-center gap-1">
-                <Check className="w-3.5 h-3.5" /> 1. Target Hashes
-              </span>
-              <ChevronRight className="w-3.5 h-3.5 text-slate-600" />
-              <span className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-red-500/20 text-red-400 border border-red-500/40 font-bold">
-                <span>2</span> Attack Configuration
-              </span>
-            </div>
           </div>
 
           {/* Target Summary Banner */}
@@ -1712,9 +1699,9 @@ export default function PasswordCracker() {
               <button
                 type="button"
                 onClick={() => setCurrentView("step-input")}
-                className="flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-mono text-slate-400 hover:text-white transition-colors"
+                className="group inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-mono font-semibold bg-slate-900/90 hover:bg-slate-800 border border-slate-800 hover:border-slate-700 text-slate-300 hover:text-white transition-all active:scale-95"
               >
-                <ArrowLeft className="w-3.5 h-3.5" />
+                <ArrowLeft className="w-3.5 h-3.5 transition-transform group-hover:-translate-x-0.5 text-slate-400 group-hover:text-red-400" />
                 <span>Back to Hashes</span>
               </button>
 

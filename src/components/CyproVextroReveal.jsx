@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
+import { useTheme } from "@/lib/theme";
 
 const CyproVextroReveal = ({ isVisible }) => {
   const [render, setRender] = useState(isVisible);
@@ -9,6 +10,16 @@ const CyproVextroReveal = ({ isVisible }) => {
   const flowAnimYRef = useRef(null);
   const flowAnimX2Ref = useRef(null);
   const flowAnimY2Ref = useRef(null);
+
+  let isDark = true;
+  try {
+    const themeCtx = useTheme();
+    isDark = themeCtx.isDark;
+  } catch {
+    if (typeof document !== "undefined") {
+      isDark = !document.documentElement.classList.contains("light");
+    }
+  }
 
   // Smooth unmount control
   useEffect(() => {
@@ -111,8 +122,9 @@ const CyproVextroReveal = ({ isVisible }) => {
     <div
       style={{
         ...styles.bodyWrapper,
+        backgroundColor: isDark ? "#000000" : "#f4f7fb",
         opacity: isVisible ? 1 : 0,
-        transition: "opacity 0.5s ease-in-out",
+        transition: "opacity 0.5s ease-in-out, background-color 0.3s ease",
         pointerEvents: isVisible ? "all" : "none",
       }}
     >
@@ -170,7 +182,10 @@ const CyproVextroReveal = ({ isVisible }) => {
               id="v-fill"
               className="solid-fill"
               d="M 10,20 H 36 V 26 H 30 L 46,74 L 62,26 H 56 V 20 H 82 V 26 H 76 L 53,82 H 39 L 16,26 H 10 Z"
-              style={styles.solidFill}
+              style={{
+                ...styles.solidFill,
+                fill: isDark ? "#ffffff" : "#0f172a",
+              }}
             />
 
             <path
@@ -193,12 +208,20 @@ const CyproVextroReveal = ({ isVisible }) => {
       </div>
 
       <style>{`
-        .laser-track { animation: megaGlowLoop 6s linear infinite; }
+        .laser-track {
+          animation: ${isDark ? "megaGlowLoop" : "megaGlowLoopLight"} 6s linear infinite;
+        }
         @keyframes megaGlowLoop {
           0%, 100% { filter: drop-shadow(0 0 4px rgba(255,255,255,0.9)) drop-shadow(0 0 10px #00ff66) drop-shadow(0 0 22px #ff0055); }
           25% { filter: drop-shadow(0 0 4px rgba(255,255,255,0.9)) drop-shadow(0 0 10px #ff7700) drop-shadow(0 0 22px #a000ff); }
           50% { filter: drop-shadow(0 0 4px rgba(255,255,255,0.9)) drop-shadow(0 0 10px #00d2ff) drop-shadow(0 0 22px #ff00aa); }
           75% { filter: drop-shadow(0 0 4px rgba(255,255,255,0.9)) drop-shadow(0 0 10px #ff0055) drop-shadow(0 0 22px #00ffcc); }
+        }
+        @keyframes megaGlowLoopLight {
+          0%, 100% { filter: drop-shadow(0 0 3px rgba(0,0,0,0.12)) drop-shadow(0 0 8px #059669) drop-shadow(0 0 18px rgba(225,29,72,0.4)); }
+          25% { filter: drop-shadow(0 0 3px rgba(0,0,0,0.12)) drop-shadow(0 0 8px #d97706) drop-shadow(0 0 18px rgba(124,58,237,0.4)); }
+          50% { filter: drop-shadow(0 0 3px rgba(0,0,0,0.12)) drop-shadow(0 0 8px #0284c7) drop-shadow(0 0 18px rgba(219,39,119,0.4)); }
+          75% { filter: drop-shadow(0 0 3px rgba(0,0,0,0.12)) drop-shadow(0 0 8px #e11d48) drop-shadow(0 0 18px rgba(13,148,136,0.4)); }
         }
         .solid-fill.show-fill {
           animation: fadeInFill 0.1s linear forwards, wipeLeftToRight 1.2s cubic-bezier(0.4, 0, 0.2, 1) forwards;
@@ -210,7 +233,7 @@ const CyproVextroReveal = ({ isVisible }) => {
           opacity: 1 !important;
           letter-spacing: 8px !important;
           transform: scale(1) translateY(0) !important;
-          filter: blur(0px) brightness(1.3) drop-shadow(0 0 12px rgba(0, 210, 255, 0.4)) !important;
+          filter: ${isDark ? "blur(0px) brightness(1.3) drop-shadow(0 0 12px rgba(0, 210, 255, 0.4))" : "blur(0px) brightness(0.95) drop-shadow(0 2px 10px rgba(99, 102, 241, 0.35))"} !important;
           animation: textInkShift 4s linear infinite;
         }
         @keyframes textInkShift {

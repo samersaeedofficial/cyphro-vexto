@@ -1,15 +1,13 @@
-import React, { useMemo } from "react";
 import {
-  Layers,
   ArrowUpRight,
-  ShieldCheck,
-  Cpu,
   Globe2,
-  Server,
-  Wifi,
-  KeyRound,
+  Layers,
   LogOut,
+  Server,
+  ShieldCheck,
+  Wifi,
 } from "lucide-react";
+import { useMemo } from "react";
 
 export default function EvilTwinStudio() {
   const templates = useMemo(
@@ -75,7 +73,7 @@ export default function EvilTwinStudio() {
       <div className="max-w-6xl mx-auto mb-6 relative z-20 flex justify-start">
         <button
           onClick={handleExit}
-          className="group/exit flex items-center gap-2.5 px-4 py-2 rounded-xl text-xs font-mono font-medium text-slate-600 dark:text-zinc-400 hover:text-rose-600 dark:hover:text-rose-400 bg-white/80 dark:bg-[#14161f]/60 backdrop-blur-md border border-slate-200 dark:border-white/[0.06] hover:border-rose-500/30 shadow-sm dark:shadow-[0_4px_12px_rgba(0,0,0,0.15)] transition-all duration-300 active:scale-95"
+          className="group/exit flex items-center gap-2.5 px-4 py-2 rounded-xl text-xs font-mono font-medium text-slate-600 dark:text-zinc-400 hover:text-rose-600 dark:hover:text-rose-400 bg-white/80 dark:bg-[#14161f]/60 border border-slate-200 dark:border-white/[0.06] hover:border-rose-500/30 shadow-sm dark:shadow-[0_4px_12px_rgba(0,0,0,0.15)] transition-all duration-300 active:scale-95"
         >
           <LogOut className="w-3.5 h-3.5 transition-transform duration-300 group-hover/exit:-translate-x-0.5" />
           <span>Exit Workspace</span>
@@ -84,7 +82,7 @@ export default function EvilTwinStudio() {
 
       <div className="max-w-6xl mx-auto relative z-10">
         {/* Modern Workspace Dashboard Header */}
-        <header className="relative mb-14 overflow-hidden rounded-2xl border border-slate-200/80 dark:border-white/[0.06] bg-white/80 dark:bg-[#14161f]/50 p-6 shadow-sm dark:shadow-[0_8px_32px_0_rgba(0,0,0,0.37)] backdrop-blur-xl transition-all duration-300 hover:border-indigo-500/30">
+        <header className="relative mb-14 overflow-hidden rounded-2xl border border-slate-200/80 dark:border-white/[0.06] bg-white/80 dark:bg-[#14161f]/50 p-6 shadow-sm dark:shadow-[0_8px_32px_0_rgba(0,0,0,0.37)] transition-all duration-300 hover:border-indigo-500/30">
           {/* Micro-glow highlight inside the header */}
           <div className="absolute top-0 left-0 -translate-x-12 -translate-y-12 w-48 h-48 bg-gradient-to-br from-indigo-500/10 to-transparent rounded-full blur-2xl pointer-events-none" />
 

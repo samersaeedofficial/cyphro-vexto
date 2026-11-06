@@ -1,27 +1,18 @@
 // PhishingManager.jsx
-import React, { useState, useMemo } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import {
-  Shield,
-  Zap,
-  Sparkles,
-  ExternalLink,
-  Check,
-  ArrowRight,
-  ArrowLeft,
-  Search,
-  Layers,
-  Cpu,
-  Globe,
-  Lock,
-  X,
-  TrendingUp,
-  Radio,
-  SlidersHorizontal,
-} from "lucide-react";
-import { FaGoogle, FaMicrosoft, FaApple, FaLinkedin } from "react-icons/fa6";
-import { SiFacebook, SiInstagram } from "react-icons/si";
 import DeploymentPipeline from "@/features/PhishingAttackCards/FakeLogin/components/DeploymentPipeline";
+import { AnimatePresence, motion } from "framer-motion";
+import {
+  ArrowLeft,
+  ArrowRight,
+  Check,
+  ExternalLink,
+  Search,
+  Shield,
+  X,
+} from "lucide-react";
+import { useMemo, useState } from "react";
+import { FaApple, FaGoogle, FaLinkedin, FaMicrosoft } from "react-icons/fa6";
+import { SiFacebook, SiInstagram } from "react-icons/si";
 
 // Platform cards specification
 const PLATFORM_CARDS = [
@@ -39,9 +30,12 @@ const PLATFORM_CARDS = [
     accentColor: "from-blue-500 to-cyan-400",
     glowColor: "shadow-blue-500/20",
     borderTheme: "border-blue-500/30 hover:border-blue-500/80",
-    selectedBorder: "border-blue-500 ring-2 ring-blue-500/50 shadow-[0_0_25px_rgba(66,133,244,0.3)]",
-    badgeBg: "bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-500/20",
-    iconBg: "bg-blue-500/10 border-blue-500/30 text-blue-600 dark:text-blue-400",
+    selectedBorder:
+      "border-blue-500 ring-2 ring-blue-500/50 shadow-[0_0_25px_rgba(66,133,244,0.3)]",
+    badgeBg:
+      "bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-500/20",
+    iconBg:
+      "bg-blue-500/10 border-blue-500/30 text-blue-600 dark:text-blue-400",
     icon: <FaGoogle className="w-5 h-5 text-[#4285F4]" />,
     description:
       "Enterprise Google authentication vector replicating the official multi-step login interface with email verification, 2FA challenge, password entry, and passkey fallback.",
@@ -60,14 +54,29 @@ const PLATFORM_CARDS = [
             <div>
               {/* Google G Logo */}
               <svg viewBox="0 0 24 24" className="w-4 h-4 mb-1.5">
-                <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
-                <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
-                <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
-                <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
+                <path
+                  fill="#4285F4"
+                  d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
+                />
+                <path
+                  fill="#34A853"
+                  d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
+                />
+                <path
+                  fill="#FBBC05"
+                  d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"
+                />
+                <path
+                  fill="#EA4335"
+                  d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"
+                />
               </svg>
-              <h4 className="text-white font-normal text-[11px] leading-tight tracking-tight">Sign in</h4>
+              <h4 className="text-white font-normal text-[11px] leading-tight tracking-tight">
+                Sign in
+              </h4>
               <p className="text-[#c4c7c5] text-[6.5px] leading-[9px] mt-1 line-clamp-3">
-                with your Google Account. This account will be available to other Google apps in the browser.
+                with your Google Account. This account will be available to
+                other Google apps in the browser.
               </p>
             </div>
           </div>
@@ -77,17 +86,26 @@ const PLATFORM_CARDS = [
             <div>
               {/* Input Box */}
               <div className="w-full border border-[#8e918f]/70 rounded-md px-1.5 py-1 bg-transparent">
-                <span className="text-[#c4c7c5] text-[7px] block truncate">Email or phone</span>
+                <span className="text-[#c4c7c5] text-[7px] block truncate">
+                  Email or phone
+                </span>
               </div>
-              <span className="text-[#a8c7fa] text-[6.5px] font-medium block mt-1">Forgot email?</span>
+              <span className="text-[#a8c7fa] text-[6.5px] font-medium block mt-1">
+                Forgot email?
+              </span>
               <p className="text-[#c4c7c5] text-[5.5px] leading-[7.5px] mt-1 line-clamp-2">
-                Not your computer? Use Guest mode to sign in privately. <span className="text-[#a8c7fa]">Learn more about using Guest mode</span>
+                Not your computer? Use Guest mode to sign in privately.{" "}
+                <span className="text-[#a8c7fa]">
+                  Learn more about using Guest mode
+                </span>
               </p>
             </div>
 
             {/* Bottom Actions */}
             <div className="flex items-center justify-end gap-2 mt-1.5 pt-0.5">
-              <span className="text-[#a8c7fa] text-[6.5px] font-medium">Create account</span>
+              <span className="text-[#a8c7fa] text-[6.5px] font-medium">
+                Create account
+              </span>
               <div className="bg-[#a8c7fa] text-[#062e6f] font-semibold text-[7px] px-2.5 py-0.5 rounded-full shadow-sm">
                 Next
               </div>
@@ -115,14 +133,29 @@ const PLATFORM_CARDS = [
             <div>
               {/* Google G Logo */}
               <svg viewBox="0 0 24 24" className="w-4 h-4 mb-1.5">
-                <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
-                <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
-                <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
-                <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
+                <path
+                  fill="#4285F4"
+                  d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
+                />
+                <path
+                  fill="#34A853"
+                  d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
+                />
+                <path
+                  fill="#FBBC05"
+                  d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"
+                />
+                <path
+                  fill="#EA4335"
+                  d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"
+                />
               </svg>
-              <h4 className="text-white font-normal text-[11px] leading-tight tracking-tight">Sign in</h4>
+              <h4 className="text-white font-normal text-[11px] leading-tight tracking-tight">
+                Sign in
+              </h4>
               <p className="text-[#c4c7c5] text-[6.5px] leading-[9px] mt-1 line-clamp-3">
-                with your Google Account. This account will be available to other Google apps in the browser.
+                with your Google Account. This account will be available to
+                other Google apps in the browser.
               </p>
             </div>
           </div>
@@ -132,17 +165,26 @@ const PLATFORM_CARDS = [
             <div>
               {/* Input Box */}
               <div className="w-full border border-[#8e918f]/70 rounded-md px-1.5 py-1 bg-transparent">
-                <span className="text-[#c4c7c5] text-[7px] block truncate">Email or phone</span>
+                <span className="text-[#c4c7c5] text-[7px] block truncate">
+                  Email or phone
+                </span>
               </div>
-              <span className="text-[#a8c7fa] text-[6.5px] font-medium block mt-1">Forgot email?</span>
+              <span className="text-[#a8c7fa] text-[6.5px] font-medium block mt-1">
+                Forgot email?
+              </span>
               <p className="text-[#c4c7c5] text-[5.5px] leading-[7.5px] mt-1 line-clamp-2">
-                Not your computer? Use Guest mode to sign in privately. <span className="text-[#a8c7fa]">Learn more about using Guest mode</span>
+                Not your computer? Use Guest mode to sign in privately.{" "}
+                <span className="text-[#a8c7fa]">
+                  Learn more about using Guest mode
+                </span>
               </p>
             </div>
 
             {/* Bottom Actions */}
             <div className="flex items-center justify-end gap-2 mt-1.5 pt-0.5">
-              <span className="text-[#a8c7fa] text-[6.5px] font-medium">Create account</span>
+              <span className="text-[#a8c7fa] text-[6.5px] font-medium">
+                Create account
+              </span>
               <div className="bg-[#a8c7fa] text-[#062e6f] font-semibold text-[7px] px-2.5 py-0.5 rounded-full shadow-sm">
                 Next
               </div>
@@ -176,7 +218,8 @@ const PLATFORM_CARDS = [
     accentColor: "from-sky-500 to-blue-600",
     glowColor: "shadow-sky-500/20",
     borderTheme: "border-sky-500/30 hover:border-sky-500/80",
-    selectedBorder: "border-sky-500 ring-2 ring-sky-500/50 shadow-[0_0_25px_rgba(0,164,239,0.3)]",
+    selectedBorder:
+      "border-sky-500 ring-2 ring-sky-500/50 shadow-[0_0_25px_rgba(0,164,239,0.3)]",
     badgeBg: "bg-sky-500/10 text-sky-600 dark:text-sky-400 border-sky-500/20",
     iconBg: "bg-sky-500/10 border-sky-500/30 text-sky-600 dark:text-sky-400",
     icon: <FaMicrosoft className="w-5 h-5 text-[#00a4ef]" />,
@@ -200,11 +243,17 @@ const PLATFORM_CARDS = [
                 <div className="w-1.5 h-1.5 bg-[#00a4ef]" />
                 <div className="w-1.5 h-1.5 bg-[#ffb900]" />
               </div>
-              <span className="text-white text-[9px] font-semibold tracking-tight">Microsoft</span>
+              <span className="text-white text-[9px] font-semibold tracking-tight">
+                Microsoft
+              </span>
             </div>
-            <h4 className="text-white font-semibold text-[11px] leading-tight">Sign in</h4>
+            <h4 className="text-white font-semibold text-[11px] leading-tight">
+              Sign in
+            </h4>
             <div className="w-full border-b border-[#3b4b6e] mt-2 pb-1">
-              <span className="text-[#94a3b8] text-[7px] block">Email, phone, or Skype</span>
+              <span className="text-[#94a3b8] text-[7px] block">
+                Email, phone, or Skype
+              </span>
             </div>
             <div className="mt-1 flex items-center justify-between text-[6px]">
               <span className="text-[#38bdf8]">No account? Create one!</span>
@@ -234,11 +283,17 @@ const PLATFORM_CARDS = [
                 <div className="w-1.5 h-1.5 bg-[#00a4ef]" />
                 <div className="w-1.5 h-1.5 bg-[#ffb900]" />
               </div>
-              <span className="text-white text-[9px] font-semibold tracking-tight">Microsoft</span>
+              <span className="text-white text-[9px] font-semibold tracking-tight">
+                Microsoft
+              </span>
             </div>
-            <h4 className="text-white font-semibold text-[11px] leading-tight">Sign in</h4>
+            <h4 className="text-white font-semibold text-[11px] leading-tight">
+              Sign in
+            </h4>
             <div className="w-full border-b border-[#3b4b6e] mt-2 pb-1">
-              <span className="text-[#94a3b8] text-[7px] block">Email, phone, or Skype</span>
+              <span className="text-[#94a3b8] text-[7px] block">
+                Email, phone, or Skype
+              </span>
             </div>
             <div className="mt-1 flex items-center justify-between text-[6px]">
               <span className="text-[#38bdf8]">No account? Create one!</span>
@@ -272,9 +327,12 @@ const PLATFORM_CARDS = [
     accentColor: "from-blue-600 to-indigo-600",
     glowColor: "shadow-blue-600/20",
     borderTheme: "border-blue-600/30 hover:border-blue-600/80",
-    selectedBorder: "border-blue-600 ring-2 ring-blue-600/50 shadow-[0_0_25px_rgba(24,119,242,0.3)]",
-    badgeBg: "bg-blue-600/10 text-blue-600 dark:text-blue-400 border-blue-600/20",
-    iconBg: "bg-blue-600/10 border-blue-600/30 text-blue-600 dark:text-blue-400",
+    selectedBorder:
+      "border-blue-600 ring-2 ring-blue-600/50 shadow-[0_0_25px_rgba(24,119,242,0.3)]",
+    badgeBg:
+      "bg-blue-600/10 text-blue-600 dark:text-blue-400 border-blue-600/20",
+    iconBg:
+      "bg-blue-600/10 border-blue-600/30 text-blue-600 dark:text-blue-400",
     icon: <SiFacebook className="w-5 h-5 text-[#1877f2]" />,
     description:
       "Pixel-accurate Meta Facebook desktop and mobile web portal replica featuring localized multi-language footer, instant credential capture, and recovery links.",
@@ -292,7 +350,9 @@ const PLATFORM_CARDS = [
           </div>
           <div className="w-full max-w-[210px] bg-[#242526] rounded-xl p-2 border border-zinc-700/50 shadow-md space-y-1.5">
             <div className="w-full h-5 border border-zinc-600/70 rounded-md px-1.5 flex items-center bg-[#3a3b3c]/60">
-              <span className="text-zinc-400 text-[6.5px]">Email address or phone number</span>
+              <span className="text-zinc-400 text-[6.5px]">
+                Email address or phone number
+              </span>
             </div>
             <div className="w-full h-5 border border-zinc-600/70 rounded-md px-1.5 flex items-center bg-[#3a3b3c]/60">
               <span className="text-zinc-400 text-[6.5px]">Password</span>
@@ -301,7 +361,9 @@ const PLATFORM_CARDS = [
               Log in
             </div>
             <div className="text-center">
-              <span className="text-[#2e89ff] text-[6px]">Forgotten password?</span>
+              <span className="text-[#2e89ff] text-[6px]">
+                Forgotten password?
+              </span>
             </div>
           </div>
         </div>
@@ -322,7 +384,9 @@ const PLATFORM_CARDS = [
           </div>
           <div className="w-full max-w-[210px] bg-[#242526] rounded-xl p-2 border border-zinc-700/50 shadow-md space-y-1.5">
             <div className="w-full h-5 border border-zinc-600/70 rounded-md px-1.5 flex items-center bg-[#3a3b3c]/60">
-              <span className="text-zinc-400 text-[6.5px]">Email address or phone number</span>
+              <span className="text-zinc-400 text-[6.5px]">
+                Email address or phone number
+              </span>
             </div>
             <div className="w-full h-5 border border-zinc-600/70 rounded-md px-1.5 flex items-center bg-[#3a3b3c]/60">
               <span className="text-zinc-400 text-[6.5px]">Password</span>
@@ -349,9 +413,12 @@ const PLATFORM_CARDS = [
     accentColor: "from-pink-500 via-rose-500 to-amber-500",
     glowColor: "shadow-pink-500/20",
     borderTheme: "border-pink-500/30 hover:border-pink-500/80",
-    selectedBorder: "border-pink-500 ring-2 ring-pink-500/50 shadow-[0_0_25px_rgba(238,42,123,0.3)]",
-    badgeBg: "bg-pink-500/10 text-pink-600 dark:text-pink-400 border-pink-500/20",
-    iconBg: "bg-gradient-to-tr from-amber-500/20 via-pink-500/20 to-purple-500/20 border-pink-500/30 text-pink-500",
+    selectedBorder:
+      "border-pink-500 ring-2 ring-pink-500/50 shadow-[0_0_25px_rgba(238,42,123,0.3)]",
+    badgeBg:
+      "bg-pink-500/10 text-pink-600 dark:text-pink-400 border-pink-500/20",
+    iconBg:
+      "bg-gradient-to-tr from-amber-500/20 via-pink-500/20 to-purple-500/20 border-pink-500/30 text-pink-500",
     icon: <SiInstagram className="w-5 h-5 text-[#ee2a7b]" />,
     description:
       "Sleek Instagram direct login screen replica featuring stylish typography, mobile device framing, app store badge links, and Facebook login integration.",
@@ -369,7 +436,9 @@ const PLATFORM_CARDS = [
           </div>
           <div className="w-full max-w-[210px] space-y-1.5">
             <div className="w-full h-5 border border-zinc-800 rounded-md px-1.5 flex items-center bg-[#121212]">
-              <span className="text-zinc-500 text-[6.5px]">Phone number, username, or email</span>
+              <span className="text-zinc-500 text-[6.5px]">
+                Phone number, username, or email
+              </span>
             </div>
             <div className="w-full h-5 border border-zinc-800 rounded-md px-1.5 flex items-center bg-[#121212]">
               <span className="text-zinc-500 text-[6.5px]">Password</span>
@@ -378,7 +447,9 @@ const PLATFORM_CARDS = [
               Log in
             </div>
             <div className="flex items-center justify-center gap-1 pt-0.5">
-              <span className="text-[#385185] dark:text-[#a8c7fa] text-[6px] font-semibold">Log in with Facebook</span>
+              <span className="text-[#385185] dark:text-[#a8c7fa] text-[6px] font-semibold">
+                Log in with Facebook
+              </span>
             </div>
           </div>
         </div>
@@ -395,7 +466,9 @@ const PLATFORM_CARDS = [
           </div>
           <div className="w-full max-w-[210px] space-y-1.5">
             <div className="w-full h-5 border border-zinc-800 rounded-md px-1.5 flex items-center bg-[#121212]">
-              <span className="text-zinc-500 text-[6.5px]">Phone number, username, or email</span>
+              <span className="text-zinc-500 text-[6.5px]">
+                Phone number, username, or email
+              </span>
             </div>
             <div className="w-full h-5 border border-zinc-800 rounded-md px-1.5 flex items-center bg-[#121212]">
               <span className="text-zinc-500 text-[6.5px]">Password</span>
@@ -422,9 +495,12 @@ const PLATFORM_CARDS = [
     accentColor: "from-slate-400 to-zinc-600",
     glowColor: "shadow-slate-400/20",
     borderTheme: "border-slate-400/30 hover:border-slate-400/80",
-    selectedBorder: "border-slate-400 ring-2 ring-slate-400/50 shadow-[0_0_25px_rgba(163,163,163,0.3)]",
-    badgeBg: "bg-slate-500/10 text-slate-600 dark:text-slate-400 border-slate-500/20",
-    iconBg: "bg-slate-500/10 border-slate-500/30 text-slate-700 dark:text-slate-200",
+    selectedBorder:
+      "border-slate-400 ring-2 ring-slate-400/50 shadow-[0_0_25px_rgba(163,163,163,0.3)]",
+    badgeBg:
+      "bg-slate-500/10 text-slate-600 dark:text-slate-400 border-slate-500/20",
+    iconBg:
+      "bg-slate-500/10 border-slate-500/30 text-slate-700 dark:text-slate-200",
     icon: <FaApple className="w-5 h-5 text-slate-800 dark:text-white" />,
     description:
       "Minimalist Apple ID authentication portal simulation featuring Touch ID / Face ID mock dialogue, two-step device verification code, and iCloud modal styling.",
@@ -449,7 +525,9 @@ const PLATFORM_CARDS = [
               </div>
             </div>
             <div className="flex items-center justify-center pt-0.5">
-              <span className="text-[#2997ff] text-[6px]">Forgot Apple ID or password?</span>
+              <span className="text-[#2997ff] text-[6px]">
+                Forgot Apple ID or password?
+              </span>
             </div>
           </div>
         </div>
@@ -487,7 +565,8 @@ const PLATFORM_CARDS = [
     accentColor: "from-sky-600 to-blue-700",
     glowColor: "shadow-sky-600/20",
     borderTheme: "border-sky-600/30 hover:border-sky-600/80",
-    selectedBorder: "border-sky-600 ring-2 ring-sky-600/50 shadow-[0_0_25px_rgba(10,102,194,0.3)]",
+    selectedBorder:
+      "border-sky-600 ring-2 ring-sky-600/50 shadow-[0_0_25px_rgba(10,102,194,0.3)]",
     badgeBg: "bg-sky-600/10 text-sky-600 dark:text-sky-400 border-sky-600/20",
     iconBg: "bg-sky-600/10 border-sky-600/30 text-sky-600 dark:text-sky-400",
     icon: <FaLinkedin className="w-5 h-5 text-[#0a66c2]" />,
@@ -503,7 +582,10 @@ const PLATFORM_CARDS = [
       <div className="w-full h-full flex flex-col items-center justify-between p-2.5 relative overflow-hidden bg-[#0c111c] select-none">
         <div className="w-full flex flex-col items-center justify-center flex-1">
           <div className="text-[#0a66c2] font-black text-sm mb-1.5 tracking-tight select-none">
-            Linked<span className="bg-[#0a66c2] text-white px-0.5 rounded-sm">in</span>
+            Linked
+            <span className="bg-[#0a66c2] text-white px-0.5 rounded-sm">
+              in
+            </span>
           </div>
           <div className="w-full max-w-[210px] space-y-1.5">
             <div className="w-full h-5 border border-zinc-700/60 rounded-md px-1.5 flex items-center bg-[#131b2e]">
@@ -530,7 +612,8 @@ const PLATFORM_CARDS = [
     htmlSnippet: () => (
       <div className="w-full h-full flex flex-col items-center justify-center p-2.5 relative overflow-hidden bg-[#0c111c]">
         <div className="text-[#0a66c2] font-black text-sm mb-2 tracking-tight select-none">
-          Linked<span className="bg-[#0a66c2] text-white px-0.5 rounded-sm">in</span>
+          Linked
+          <span className="bg-[#0a66c2] text-white px-0.5 rounded-sm">in</span>
         </div>
         <div className="w-full space-y-1.5 px-0.5">
           <div className="w-full h-4.5 border border-zinc-700/60 rounded-md px-1.5 flex items-center bg-[#131b2e]">
@@ -542,7 +625,12 @@ const PLATFORM_CARDS = [
   },
 ];
 
-const CATEGORIES = ["All Platforms", "Enterprise SSO", "Social Media", "Cloud Identity"];
+const CATEGORIES = [
+  "All Platforms",
+  "Enterprise SSO",
+  "Social Media",
+  "Cloud Identity",
+];
 
 const PhishingManager = () => {
   const [selectedPlatformId, setSelectedPlatformId] = useState(null);
@@ -557,7 +645,9 @@ const PhishingManager = () => {
         card.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
         card.subtitle.toLowerCase().includes(searchQuery.toLowerCase()) ||
         card.category.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        card.features.some((f) => f.toLowerCase().includes(searchQuery.toLowerCase()));
+        card.features.some((f) =>
+          f.toLowerCase().includes(searchQuery.toLowerCase()),
+        );
 
       const matchesCategory =
         activeCategory === "All Platforms" || card.category === activeCategory;
@@ -567,7 +657,9 @@ const PhishingManager = () => {
   }, [searchQuery, activeCategory]);
 
   const selectedPlatform = useMemo(() => {
-    return PLATFORM_CARDS.find((card) => card.id === selectedPlatformId) || null;
+    return (
+      PLATFORM_CARDS.find((card) => card.id === selectedPlatformId) || null
+    );
   }, [selectedPlatformId]);
 
   const handleCardClick = (cardId) => {
@@ -603,7 +695,7 @@ const PhishingManager = () => {
       {currentStep === "deployment" && selectedPlatform ? (
         <div className="max-w-7xl mx-auto space-y-6 relative z-10 animate-in fade-in duration-300">
           {/* Header Bar */}
-          <div className="bg-white/90 dark:bg-slate-900/60 backdrop-blur-xl border border-slate-200/90 dark:border-white/10 rounded-2xl p-4 sm:p-5 shadow-sm dark:shadow-xl flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="bg-white/90 dark:bg-slate-900/60 border border-slate-200/90 dark:border-white/10 rounded-2xl p-4 sm:p-5 shadow-sm dark:shadow-xl flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div className="flex items-center gap-4">
               <button
                 type="button"
@@ -635,7 +727,9 @@ const PhishingManager = () => {
               {selectedPlatform.previewUrl && (
                 <button
                   type="button"
-                  onClick={(e) => handleFullPreview(e, selectedPlatform.previewUrl)}
+                  onClick={(e) =>
+                    handleFullPreview(e, selectedPlatform.previewUrl)
+                  }
                   className="px-4 py-2 rounded-xl text-xs font-bold bg-slate-100 hover:bg-slate-200 dark:bg-slate-800/80 dark:hover:bg-slate-800 border border-slate-200 dark:border-white/10 text-slate-700 dark:text-zinc-300 hover:text-purple-600 dark:hover:text-purple-400 transition-all flex items-center gap-1.5 shadow-sm active:scale-95"
                 >
                   <ExternalLink className="w-3.5 h-3.5" />
@@ -674,7 +768,8 @@ const PhishingManager = () => {
                     </span>
                   </div>
                   <p className="text-slate-500 dark:text-slate-400 text-xs sm:text-sm font-medium mt-0.5">
-                    Select a platform authentication card below to initiate and configure simulated audits.
+                    Select a platform authentication card below to initiate and
+                    configure simulated audits.
                   </p>
                 </div>
               </div>
@@ -682,7 +777,7 @@ const PhishingManager = () => {
 
             {/* Quick Metrics Badge */}
             <div className="flex items-center gap-3 self-stretch sm:self-auto justify-end">
-              <div className="px-4 py-2.5 rounded-2xl bg-white/80 dark:bg-slate-900/60 backdrop-blur-md border border-slate-200/90 dark:border-white/10 text-slate-700 dark:text-slate-300 font-bold shadow-sm flex items-center gap-3">
+              <div className="px-4 py-2.5 rounded-2xl bg-white/80 dark:bg-slate-900/60 border border-slate-200/90 dark:border-white/10 text-slate-700 dark:text-slate-300 font-bold shadow-sm flex items-center gap-3">
                 <span className="w-2.5 h-2.5 rounded-full bg-purple-500 shadow-md shadow-purple-500/50" />
                 <span className="text-xs font-semibold text-slate-600 dark:text-slate-400">
                   Target Vectors:{" "}
@@ -695,7 +790,7 @@ const PhishingManager = () => {
           </div>
 
           {/* Search & Filter Toolbar */}
-          <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4 bg-white/60 dark:bg-slate-900/40 backdrop-blur-md border border-slate-200/80 dark:border-white/5 p-3 rounded-2xl shadow-sm">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4 bg-white/60 dark:bg-slate-900/40 border border-slate-200/80 dark:border-white/5 p-3 rounded-2xl shadow-sm">
             {/* Search Input */}
             <div className="relative flex-1 max-w-md">
               <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
@@ -736,7 +831,7 @@ const PhishingManager = () => {
                 <div
                   key={platform.id}
                   onClick={() => handleCardClick(platform.id)}
-                  className={`group relative bg-white/90 dark:bg-slate-900/60 backdrop-blur-md border rounded-3xl p-5 cursor-pointer
+                  className={`group relative bg-white/90 dark:bg-slate-900/60 border rounded-3xl p-5 cursor-pointer
                             transition-all duration-300 flex flex-col justify-between overflow-hidden shadow-sm hover:shadow-xl ${
                               isSelected
                                 ? platform.selectedBorder
@@ -763,7 +858,10 @@ const PhishingManager = () => {
                               {platform.title}
                             </h3>
                             {platform.isAvailable ? (
-                              <span className="w-2 h-2 rounded-full bg-emerald-500 shadow-sm" title="Active Vector" />
+                              <span
+                                className="w-2 h-2 rounded-full bg-emerald-500 shadow-sm"
+                                title="Active Vector"
+                              />
                             ) : (
                               <span className="px-1.5 py-0.2 bg-amber-500/10 border border-amber-500/20 text-amber-600 dark:text-amber-400 text-[8px] font-bold rounded uppercase">
                                 Staging
@@ -780,7 +878,9 @@ const PhishingManager = () => {
                       {platform.previewUrl && (
                         <button
                           type="button"
-                          onClick={(e) => handleFullPreview(e, platform.previewUrl)}
+                          onClick={(e) =>
+                            handleFullPreview(e, platform.previewUrl)
+                          }
                           className="p-2 bg-slate-100 dark:bg-slate-800/80 hover:bg-slate-200 dark:hover:bg-slate-800 border border-slate-200 dark:border-white/10 rounded-xl text-slate-600 dark:text-slate-400 hover:text-purple-600 dark:hover:text-purple-400 transition-all shadow-sm"
                           title="Open Live Spec"
                         >
@@ -817,9 +917,14 @@ const PhishingManager = () => {
                   <div className="mt-2 pt-3 border-t border-slate-200/80 dark:border-white/5 flex items-center justify-between relative z-10">
                     <div className="flex items-center gap-2">
                       <span className="text-[11px] font-bold text-slate-700 dark:text-slate-300 font-mono">
-                        Success: <strong className="text-emerald-600 dark:text-emerald-400 font-extrabold">{platform.stats}</strong>
+                        Success:{" "}
+                        <strong className="text-emerald-600 dark:text-emerald-400 font-extrabold">
+                          {platform.stats}
+                        </strong>
                       </span>
-                      <span className="text-slate-300 dark:text-slate-700">&bull;</span>
+                      <span className="text-slate-300 dark:text-slate-700">
+                        &bull;
+                      </span>
                       <span className="text-[10px] font-mono text-slate-500 dark:text-slate-400">
                         {platform.category}
                       </span>
@@ -855,7 +960,7 @@ const PhishingManager = () => {
             transition={{ type: "spring", stiffness: 380, damping: 28 }}
             className="fixed bottom-6 inset-x-0 mx-auto w-[92%] max-w-5xl z-50 pointer-events-auto"
           >
-            <div className="relative rounded-2xl p-4 sm:p-5 backdrop-blur-2xl bg-white/95 dark:bg-[#0c1020]/95 border border-purple-500/30 dark:border-purple-500/50 shadow-2xl shadow-purple-950/40 overflow-hidden flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div className="relative rounded-2xl p-4 sm:p-5 bg-white/95 dark:bg-[#0c1020]/95 border border-purple-500/30 dark:border-purple-500/50 shadow-2xl shadow-purple-950/40 overflow-hidden flex flex-col sm:flex-row items-center justify-between gap-4">
               {/* Glowing Accent Top Line */}
               <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-purple-500 to-transparent" />
 
@@ -893,7 +998,9 @@ const PhishingManager = () => {
                 {selectedPlatform.previewUrl && (
                   <button
                     type="button"
-                    onClick={(e) => handleFullPreview(e, selectedPlatform.previewUrl)}
+                    onClick={(e) =>
+                      handleFullPreview(e, selectedPlatform.previewUrl)
+                    }
                     className="px-4 py-2.5 rounded-xl text-xs font-bold bg-slate-100 hover:bg-slate-200 dark:bg-slate-800/80 dark:hover:bg-slate-800 border border-slate-200 dark:border-white/10 text-slate-700 dark:text-slate-200 hover:text-purple-600 dark:hover:text-purple-400 transition-all flex items-center gap-1.5 active:scale-95 shadow-sm cursor-pointer"
                   >
                     <ExternalLink className="w-3.5 h-3.5 text-purple-500" />

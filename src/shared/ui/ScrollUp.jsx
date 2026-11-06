@@ -1,8 +1,8 @@
-import { ArrowUp } from 'lucide-react';
-import React, { useEffect, useState } from 'react';
-import { AnimatePresence, motion } from 'framer-motion';
-import { useLocation } from 'react-router-dom';
-import { Button } from '@/shared/ui/ui-elements';
+import { Button } from "@/shared/ui/ui-elements";
+import { AnimatePresence, motion } from "framer-motion";
+import { ArrowUp } from "lucide-react";
+import { useEffect, useState } from "react";
+import { useLocation } from "react-router-dom";
 
 export const ScrollUp = () => {
   const { pathname } = useLocation();
@@ -15,14 +15,14 @@ export const ScrollUp = () => {
         behavior: "smooth",
       });
 
-      const mainContent = document.querySelector('main');
+      const mainContent = document.querySelector("main");
       if (mainContent) {
         mainContent.scrollTo({
           top: 0,
           behavior: "smooth",
         });
       }
-    }, 100); 
+    }, 100);
 
     return () => clearTimeout(timer);
   }, [pathname]);
@@ -43,14 +43,14 @@ export const ScrollToTopIcon = () => {
       }
     };
 
-    window.addEventListener('scroll', toggleVisibility);
-    return () => window.removeEventListener('scroll', toggleVisibility);
+    window.addEventListener("scroll", toggleVisibility);
+    return () => window.removeEventListener("scroll", toggleVisibility);
   }, []);
 
   const scrollToTop = () => {
     window.scrollTo({
       top: 0,
-      behavior: 'smooth',
+      behavior: "smooth",
     });
   };
 
@@ -66,7 +66,7 @@ export const ScrollToTopIcon = () => {
           <Button
             onClick={scrollToTop}
             size="icon"
-            className="h-12 w-12 rounded-full bg-black/40 backdrop-blur-xl shadow-2xl border border-white/10 text-white hover:bg-white/10"
+            className="h-12 w-12 rounded-full bg-black/40 shadow-2xl border border-white/10 text-white hover:bg-white/10"
           >
             <ArrowUp className="h-6 w-6" />
           </Button>

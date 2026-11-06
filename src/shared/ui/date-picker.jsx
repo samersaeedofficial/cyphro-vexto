@@ -1,15 +1,20 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronLeft, ChevronRight, ChevronDown } from 'lucide-react';
-import { cn } from '@/lib/utils';
-import { Button } from '@/shared/ui/ui-elements';
+import { cn } from "@/lib/utils";
+import { Button } from "@/shared/ui/ui-elements";
+import { AnimatePresence, motion } from "framer-motion";
+import { ChevronDown, ChevronLeft, ChevronRight } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
 
-export const DatePicker = ({ selected, onSelect, placeholder = 'Select date', className }) => {
+export const DatePicker = ({
+  selected,
+  onSelect,
+  placeholder = "Select date",
+  className,
+}) => {
   const [isOpen, setIsOpen] = useState(false);
-  const [view, setView] = useState('days');
-  const [direction, setDirection] = useState(0); 
+  const [view, setView] = useState("days");
+  const [direction, setDirection] = useState(0);
   const [currentMonth, setCurrentMonth] = useState(
-    selected ? new Date(selected) : new Date()
+    selected ? new Date(selected) : new Date(),
   );
 
   useEffect(() => {
@@ -20,7 +25,7 @@ export const DatePicker = ({ selected, onSelect, placeholder = 'Select date', cl
       }
     }
   }, [selected]);
-  
+
   const calendarRef = useRef(null);
 
   const currentYear = new Date().getFullYear();
@@ -30,16 +35,26 @@ export const DatePicker = ({ selected, onSelect, placeholder = 'Select date', cl
     const handleClickOutside = (event) => {
       if (calendarRef.current && !calendarRef.current.contains(event.target)) {
         setIsOpen(false);
-        setView('days');
+        setView("days");
       }
     };
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
   const months = [
-    'January', 'February', 'March', 'April', 'May', 'June',
-    'July', 'August', 'September', 'October', 'November', 'December'
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December",
   ];
 
   const getDaysInMonth = (date) => {
@@ -53,11 +68,11 @@ export const DatePicker = ({ selected, onSelect, placeholder = 'Select date', cl
   };
 
   const formatDate = (date) => {
-    if (!date) return '';
-    const d = (date instanceof Date) ? date : new Date(date);
-    if (isNaN(d.getTime())) return '';
-    const day = d.getDate().toString().padStart(2, '0');
-    const month = (d.getMonth() + 1).toString().padStart(2, '0');
+    if (!date) return "";
+    const d = date instanceof Date ? date : new Date(date);
+    if (isNaN(d.getTime())) return "";
+    const day = d.getDate().toString().padStart(2, "0");
+    const month = (d.getMonth() + 1).toString().padStart(2, "0");
     const year = d.getFullYear();
     return `${day}/${month}/${year}`;
   };
@@ -66,7 +81,7 @@ export const DatePicker = ({ selected, onSelect, placeholder = 'Select date', cl
     const newDate = new Date(
       currentMonth.getFullYear(),
       currentMonth.getMonth(),
-      day
+      day,
     );
     onSelect(newDate);
     setIsOpen(false);
@@ -76,12 +91,14 @@ export const DatePicker = ({ selected, onSelect, placeholder = 'Select date', cl
     const newDate = new Date(currentMonth);
     newDate.setFullYear(year);
     setCurrentMonth(newDate);
-    setView('days');
+    setView("days");
   };
 
   const changeMonth = (dir) => {
     setDirection(dir);
-    setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() + dir, 1));
+    setCurrentMonth(
+      new Date(currentMonth.getFullYear(), currentMonth.getMonth() + dir, 1),
+    );
   };
 
   const { daysInMonth, startingDayOfWeek } = getDaysInMonth(currentMonth);
@@ -95,10 +112,15 @@ export const DatePicker = ({ selected, onSelect, placeholder = 'Select date', cl
         onClick={() => setIsOpen(!isOpen)}
         className={cn(
           "w-full h-12 text-left bg-transparent focus:outline-none text-white text-sm flex items-center transition-all duration-300",
-          className
+          className,
         )}
       >
-        <span className={cn('block truncate font-medium', !selected ? 'text-slate-500' : 'text-slate-100')}>
+        <span
+          className={cn(
+            "block truncate font-medium",
+            !selected ? "text-slate-500" : "text-slate-100",
+          )}
+        >
           {selected ? formatDate(selected) : placeholder}
         </span>
       </button>
@@ -106,18 +128,21 @@ export const DatePicker = ({ selected, onSelect, placeholder = 'Select date', cl
       <AnimatePresence>
         {isOpen && (
           <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4">
-             <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={() => setIsOpen(false)} />
-             
+            <div
+              className="absolute inset-0 bg-black/50"
+              onClick={() => setIsOpen(false)}
+            />
+
             <motion.div
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.9 }}
               transition={{ duration: 0.2 }}
-              className="relative w-[300px] sm:w-[340px] bg-slate-900/95 backdrop-blur-xl rounded-2xl shadow-2xl border border-white/10 p-4 text-white overflow-hidden ring-1 ring-black/50"
+              className="relative w-[300px] sm:w-[340px] bg-slate-900/95 rounded-2xl shadow-2xl border border-white/10 p-4 text-white overflow-hidden ring-1 ring-black/50"
             >
               {/* Header */}
               <div className="flex items-center justify-between mb-4 px-1">
-                {view === 'days' ? (
+                {view === "days" ? (
                   <>
                     <Button
                       type="button"
@@ -128,16 +153,19 @@ export const DatePicker = ({ selected, onSelect, placeholder = 'Select date', cl
                     >
                       <ChevronLeft className="h-4 w-4" />
                     </Button>
-                    
-                    <button 
+
+                    <button
                       type="button"
-                      onClick={() => setView('years')}
+                      onClick={() => setView("years")}
                       className="flex items-center space-x-1 text-sm font-bold tracking-wide hover:bg-white/10 px-3 py-1.5 rounded-lg transition-colors group"
                     >
-                      <span>{months[currentMonth.getMonth()]} {currentMonth.getFullYear()}</span>
+                      <span>
+                        {months[currentMonth.getMonth()]}{" "}
+                        {currentMonth.getFullYear()}
+                      </span>
                       <ChevronDown className="w-3 h-3 text-slate-400 group-hover:text-white transition-colors" />
                     </button>
-                    
+
                     <Button
                       type="button"
                       variant="ghost"
@@ -150,12 +178,12 @@ export const DatePicker = ({ selected, onSelect, placeholder = 'Select date', cl
                   </>
                 ) : (
                   <div className="flex items-center w-full justify-between">
-                     <span className="text-sm font-bold px-2">Select Year</span>
-                     <Button
+                    <span className="text-sm font-bold px-2">Select Year</span>
+                    <Button
                       type="button"
                       variant="ghost"
                       size="sm"
-                      onClick={() => setView('days')}
+                      onClick={() => setView("days")}
                       className="text-xs text-slate-400 hover:text-white"
                     >
                       Cancel
@@ -165,9 +193,9 @@ export const DatePicker = ({ selected, onSelect, placeholder = 'Select date', cl
               </div>
 
               {/* Content */}
-              <div className="relative min-h-[280px]"> 
+              <div className="relative min-h-[280px]">
                 <AnimatePresence mode="wait">
-                  {view === 'days' ? (
+                  {view === "days" ? (
                     <motion.div
                       key="days-view"
                       initial={{ opacity: 0, x: -20 }}
@@ -175,33 +203,46 @@ export const DatePicker = ({ selected, onSelect, placeholder = 'Select date', cl
                       exit={{ opacity: 0, x: 20 }}
                       transition={{ duration: 0.2 }}
                     >
-                       {/* Days Header */}
+                      {/* Days Header */}
                       <div className="grid grid-cols-7 gap-1 mb-2">
-                        {['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'].map((day) => (
-                          <div key={day} className="text-center text-[10px] font-bold text-slate-500 uppercase tracking-wider py-1">
-                            {day}
-                          </div>
-                        ))}
+                        {["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"].map(
+                          (day) => (
+                            <div
+                              key={day}
+                              className="text-center text-[10px] font-bold text-slate-500 uppercase tracking-wider py-1"
+                            >
+                              {day}
+                            </div>
+                          ),
+                        )}
                       </div>
-                      
+
                       {/* Calendar Grid */}
                       <div className="grid grid-cols-7 gap-1">
                         {emptyDays.map((_, index) => (
-                          <div key={`empty-${index}`} className="aspect-square" />
+                          <div
+                            key={`empty-${index}`}
+                            className="aspect-square"
+                          />
                         ))}
                         {days.map((day) => {
-                          const normalizedSelected = selected ? new Date(selected) : null;
+                          const normalizedSelected = selected
+                            ? new Date(selected)
+                            : null;
                           const isSelected =
                             normalizedSelected &&
                             !isNaN(normalizedSelected.getTime()) &&
                             normalizedSelected.getDate() === day &&
-                            normalizedSelected.getMonth() === currentMonth.getMonth() &&
-                            normalizedSelected.getFullYear() === currentMonth.getFullYear();
+                            normalizedSelected.getMonth() ===
+                              currentMonth.getMonth() &&
+                            normalizedSelected.getFullYear() ===
+                              currentMonth.getFullYear();
 
-                          const isToday = 
+                          const isToday =
                             new Date().getDate() === day &&
                             new Date().getMonth() === currentMonth.getMonth() &&
-                            new Date().getFullYear() === currentMonth.getFullYear();
+                            new Date().getFullYear() ===
+                              currentMonth.getFullYear();
 
                           return (
                             <motion.button
@@ -211,11 +252,13 @@ export const DatePicker = ({ selected, onSelect, placeholder = 'Select date', cl
                               whileHover={{ scale: 1.1 }}
                               whileTap={{ scale: 0.95 }}
                               className={cn(
-                                'aspect-square rounded-lg text-sm font-medium transition-all duration-200 flex items-center justify-center relative',
+                                "aspect-square rounded-lg text-sm font-medium transition-all duration-200 flex items-center justify-center relative",
                                 isSelected
-                                  ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/30 z-10 font-bold'
-                                  : 'text-slate-300 hover:bg-white/10 hover:text-white',
-                                isToday && !isSelected && 'text-blue-400 font-bold bg-blue-500/10 border border-blue-500/20'
+                                  ? "bg-blue-600 text-white shadow-lg shadow-blue-500/30 z-10 font-bold"
+                                  : "text-slate-300 hover:bg-white/10 hover:text-white",
+                                isToday &&
+                                  !isSelected &&
+                                  "text-blue-400 font-bold bg-blue-500/10 border border-blue-500/20",
                               )}
                             >
                               {day}
@@ -243,9 +286,9 @@ export const DatePicker = ({ selected, onSelect, placeholder = 'Select date', cl
                             onClick={() => handleYearSelect(year)}
                             className={cn(
                               "py-2 rounded-lg text-sm font-medium transition-all duration-200 hover:bg-white/10",
-                              currentMonth.getFullYear() === year 
-                                ? "bg-blue-600 text-white shadow-lg shadow-blue-500/20" 
-                                : "text-slate-300"
+                              currentMonth.getFullYear() === year
+                                ? "bg-blue-600 text-white shadow-lg shadow-blue-500/20"
+                                : "text-slate-300",
                             )}
                           >
                             {year}

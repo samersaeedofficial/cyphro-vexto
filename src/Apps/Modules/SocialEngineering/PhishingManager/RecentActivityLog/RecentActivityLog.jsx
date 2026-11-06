@@ -1,20 +1,20 @@
 // components/RecentActivityLog.jsx
-import React, { useState, useMemo, useRef, useEffect } from "react";
 import {
-  Terminal,
   Activity,
-  Filter,
-  Calendar as CalendarIcon,
-  X,
-  Search,
   ArrowUpRight,
+  Calendar as CalendarIcon,
+  CheckCircle2,
   ChevronDown,
   ChevronLeft,
   ChevronRight,
+  Filter,
   Play,
-  CheckCircle2,
+  Search,
+  Terminal,
+  X,
   XCircle,
 } from "lucide-react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 // Modernized Mock Data with Categories, Statuses, and Extended Details
 const initialActivities = [
@@ -221,7 +221,7 @@ const RecentActivityLog = () => {
       <div className="absolute top-20 right-10 w-80 h-80 bg-blue-500/[0.04] rounded-full blur-[120px] pointer-events-none" />
 
       {/* Header section */}
-      <div className="border-b border-slate-200/80 dark:border-white/5 px-8 py-6 bg-slate-50/50 dark:bg-white/[0.02] backdrop-blur-md relative z-20 transition-colors">
+      <div className="border-b border-slate-200/80 dark:border-white/5 px-8 py-6 bg-slate-50/50 dark:bg-white/[0.02] relative z-20 transition-colors">
         <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
           <div className="flex items-center gap-4">
             <div className="p-3 bg-gradient-to-br from-purple-500/10 to-indigo-500/10 border border-purple-500/20 rounded-2xl shadow-inner">
@@ -267,7 +267,7 @@ const RecentActivityLog = () => {
               </button>
 
               {showFilterDropdown && (
-                <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-[#151424] border border-slate-200 dark:border-white/[0.08] rounded-xl shadow-2xl z-50 p-1.5 backdrop-blur-xl">
+                <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-[#151424] border border-slate-200 dark:border-white/[0.08] rounded-xl shadow-2xl z-50 p-1.5">
                   {["all", "active", "completed", "failed"].map((type) => (
                     <button
                       key={type}
@@ -313,7 +313,7 @@ const RecentActivityLog = () => {
               </button>
 
               {showDatePicker && (
-                <div className="absolute right-0 mt-3 w-72 bg-white dark:bg-[#12111f] border border-slate-200 dark:border-white/[0.08] rounded-2xl shadow-2xl z-50 p-4 backdrop-blur-xl">
+                <div className="absolute right-0 mt-3 w-72 bg-white dark:bg-[#12111f] border border-slate-200 dark:border-white/[0.08] rounded-2xl shadow-2xl z-50 p-4">
                   <div className="flex items-center justify-between mb-4">
                     <span className="text-xs font-black text-slate-900 dark:text-white tracking-wider uppercase">
                       {months[currentCalendarDate.getMonth()]}{" "}
@@ -493,7 +493,8 @@ const RecentActivityLog = () => {
         </div>
 
         <div className="text-[11px] text-purple-600 dark:text-purple-400/60 font-mono font-bold tracking-wider uppercase flex items-center gap-1.5">
-          <Play className="w-3 h-3 fill-purple-600/20 dark:fill-purple-400/20" /> Engine Connected
+          <Play className="w-3 h-3 fill-purple-600/20 dark:fill-purple-400/20" />{" "}
+          Engine Connected
         </div>
       </div>
     </div>
@@ -501,4 +502,3 @@ const RecentActivityLog = () => {
 };
 
 export default RecentActivityLog;
-

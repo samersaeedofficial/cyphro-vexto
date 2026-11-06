@@ -1,17 +1,17 @@
 // components/DeploymentPipeline.jsx
-import React from "react";
 import {
-  ExternalLink,
-  Monitor,
-  Globe,
   Cpu,
-  Terminal,
-  Radio,
+  ExternalLink,
+  Globe,
+  Monitor,
   Network,
   QrCode,
+  Radio,
   Sparkles,
+  Terminal,
   Zap,
 } from "lucide-react";
+import React from "react";
 
 // Flattened & High-Identity Deployment Vectors Data
 const unifiedDeploymentNodes = [
@@ -103,7 +103,7 @@ class DeploymentPipeline extends React.Component {
            ========================================== */}
         <div className="lg:col-span-1 space-y-5">
           {/* Active Template Glass-Card */}
-          <div className="bg-white dark:bg-[#0f1322]/50 backdrop-blur-md border border-slate-200 dark:border-zinc-800/80 rounded-2xl p-5 flex flex-col justify-between relative overflow-hidden shadow-sm dark:shadow-xl">
+          <div className="bg-white dark:bg-[#0f1322]/50 border border-slate-200 dark:border-zinc-800/80 rounded-2xl p-5 flex flex-col justify-between relative overflow-hidden shadow-sm dark:shadow-xl">
             <div
               className={`absolute top-0 right-0 w-32 h-32 bg-gradient-to-br ${activeTemplate.accentColor} opacity-[0.04] rounded-full blur-2xl pointer-events-none`}
             />

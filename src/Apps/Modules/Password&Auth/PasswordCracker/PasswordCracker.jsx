@@ -1302,278 +1302,191 @@ export default function PasswordCracker() {
             </button>
           </div>
 
+          {/* Target Summary Banner */}
+          <div className="p-3.5 rounded-xl bg-slate-900/90 border border-slate-800 flex items-center justify-between text-xs font-mono">
+            <div className="flex items-center gap-2.5">
+              <span className="w-2 h-2 rounded-full bg-emerald-400" />
+              <span className="text-slate-300">
+                Ready to crack <strong className="text-white">{hashStats.count} hash(es)</strong>
+              </span>
+            </div>
+            <span className="text-red-400">
+              {Object.keys(hashStats.types).join(", ") || "Auto-Profiled"}
+            </span>
+          </div>
+
           {/* Main Configuration Card */}
-          <div className="rounded-2xl bg-[#0c1017]/95 border border-slate-800/90 shadow-[0_12px_40px_rgba(0,0,0,0.5)] overflow-hidden">
-            {/* Header with Red Accent Bar */}
-            <div className="px-6 py-5 border-b border-slate-800/80 bg-slate-900/50 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 relative">
+          <div className="rounded-2xl bg-[#0c1017]/95 border border-slate-800/90 shadow-[0_8px_30px_rgba(0,0,0,0.4)] overflow-hidden">
+            {/* Header */}
+            <div className="px-6 py-4 border-b border-slate-800/80 bg-slate-900/50 flex justify-between items-center relative">
               <div className="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-red-600 via-rose-500 to-red-600" />
-              <div className="flex items-center gap-3">
-                <div className="p-2 rounded-xl bg-red-500/10 text-red-500 border border-red-500/20 shadow-[0_0_15px_rgba(239,68,68,0.15)]">
-                  <Shield className="w-5 h-5" />
+              <div className="flex items-center gap-2.5">
+                <div className="p-1.5 rounded-lg bg-red-500/10 text-red-500 border border-red-500/20">
+                  <Shield className="w-4 h-4" />
                 </div>
                 <div>
                   <h3 className="font-bold text-sm text-white tracking-wide">
-                    Attack Vector & Mutation Engine
+                    Attack Vector & Mutations
                   </h3>
                   <p className="text-[11px] text-slate-400 font-mono">
-                    Select cracking methodology, wordlists, and mutation heuristics
+                    Select cracking methodology and ruleset
                   </p>
                 </div>
-              </div>
-
-              {/* Status Pill */}
-              <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-slate-950 border border-slate-800 text-[11px] font-mono">
-                <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse" />
-                <span className="text-slate-400">Target:</span>
-                <span className="text-white font-bold">{hashStats.count} Hash(es)</span>
               </div>
             </div>
 
             <div className="p-6">
-              {/* Segmented Attack Vector Navigation Tabs */}
-              <div className="p-1.5 rounded-2xl bg-slate-950 border border-slate-800/90 flex gap-1.5 overflow-x-auto mb-6 custom-scrollbar">
+              {/* Horizontal Attack Mode Tabs */}
+              <div className="flex border-b border-slate-800 pb-1 mb-5 overflow-x-auto custom-scrollbar">
                 {[
-                  { id: "dictionary", icon: Book, label: "Dictionary", sub: "Wordlist Attacks" },
-                  { id: "bruteforce", icon: Hash, label: "Brute Force", sub: "Keyspace Search" },
-                  { id: "hybrid", icon: Zap, label: "Hybrid", sub: "Rules & Mutations" },
-                  { id: "mask", icon: Type, label: "Mask", sub: "Pattern Matching" },
-                  { id: "rainbow", icon: Database, label: "Rainbow Table", sub: "Precomputed" },
+                  { id: "dictionary", icon: Book, label: "Dictionary" },
+                  { id: "bruteforce", icon: Hash, label: "Brute Force" },
+                  { id: "hybrid", icon: Zap, label: "Hybrid" },
+                  { id: "mask", icon: Type, label: "Mask" },
+                  { id: "rainbow", icon: Database, label: "Rainbow Table" },
                 ].map((tab) => {
                   const Icon = tab.icon;
                   const active = activeAttackTab === tab.id;
                   return (
                     <button
                       key={tab.id}
-                      type="button"
                       onClick={() => setActiveAttackTab(tab.id)}
-                      className={`flex-1 min-w-[130px] p-2.5 rounded-xl text-left transition-all relative ${
+                      className={`flex items-center gap-2 px-3.5 py-2 rounded-lg text-xs font-semibold transition-all relative whitespace-nowrap ${
                         active
-                          ? "bg-gradient-to-r from-red-600/20 via-rose-600/15 to-red-600/10 border border-red-500/40 text-white shadow-[0_0_20px_rgba(239,68,68,0.15)]"
-                          : "text-slate-400 hover:text-slate-200 hover:bg-slate-900/60 border border-transparent"
+                          ? "text-red-400 bg-red-500/10"
+                          : "text-slate-400 hover:text-slate-200 hover:bg-slate-800/60"
                       }`}
                     >
-                      <div className="flex items-center gap-2 mb-0.5">
-                        <Icon className={`w-3.5 h-3.5 ${active ? "text-red-400" : "text-slate-500"}`} />
-                        <span className={`text-xs font-bold font-mono ${active ? "text-white" : "text-slate-300"}`}>
-                          {tab.label}
-                        </span>
-                      </div>
-                      <div className="text-[10px] font-mono text-slate-500 pl-5 truncate">
-                        {tab.sub}
-                      </div>
+                      <Icon className={`w-3.5 h-3.5 ${active ? "text-red-400" : ""}`} />
+                      <span>{tab.label}</span>
+                      {active && (
+                        <motion.div
+                          layoutId="activeAttackTabIndicator"
+                          className="absolute bottom-0 left-1 right-1 h-0.5 bg-red-500 rounded-full"
+                        />
+                      )}
                     </button>
                   );
                 })}
               </div>
 
               {/* Tab Contents */}
-              <div className="min-h-[260px]">
-                {/* 1. DICTIONARY ATTACK MODE */}
+              <div className="min-h-[220px]">
+                {/* 1. Dictionary Attack Tab */}
                 {activeAttackTab === "dictionary" && (
-                  <div className="space-y-5">
+                  <div className="space-y-4">
                     <div>
-                      <div className="flex items-center justify-between mb-2.5">
-                        <label className="text-xs font-mono font-bold text-slate-300 uppercase tracking-wider">
-                          Select Wordlist Catalog
-                        </label>
-                        <span className="text-[10px] font-mono text-red-400">
-                          Pre-indexed dictionaries ready
-                        </span>
-                      </div>
+                      <label className="block text-xs font-mono font-bold text-slate-300 mb-1.5">
+                        Wordlist Catalog
+                      </label>
+                      <select
+                        value={dictConfig.wordlist}
+                        onChange={(e) => setDictConfig({ ...dictConfig, wordlist: e.target.value })}
+                        className="w-full bg-slate-950 border border-slate-800 focus:border-red-500/50 rounded-xl p-2.5 text-xs text-slate-200 outline-none"
+                      >
+                        <option value="rockyou.txt">rockyou.txt (14,344,392 words — Standard)</option>
+                        <option value="seclists-top100k.txt">SecLists Top 100K (Fast Scan)</option>
+                        <option value="darkweb-leaks.txt">DarkWeb Leaks 2024 (8.9M words)</option>
+                        <option value="crackstation.txt">CrackStation Human Words (64M words)</option>
+                      </select>
+                    </div>
 
-                      {/* Interactive Wordlist Cards Grid */}
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                        {[
-                          {
-                            id: "rockyou.txt",
-                            name: "rockyou.txt",
-                            tag: "Most Popular",
-                            words: "14,344,392 words",
-                            size: "133.4 MB",
-                            desc: "Industry standard list derived from historical breaches.",
-                          },
-                          {
-                            id: "seclists-top100k.txt",
-                            name: "SecLists Top 100K",
-                            tag: "Ultra-Fast",
-                            words: "100,000 words",
-                            size: "1.2 MB",
-                            desc: "High density list covering common passwords in seconds.",
-                          },
-                          {
-                            id: "darkweb-leaks.txt",
-                            name: "DarkWeb Leaks 2024",
-                            tag: "Recent Breaches",
-                            words: "8,950,000 words",
-                            size: "92.0 MB",
-                            desc: "Modern password patterns and regional corporate variants.",
-                          },
-                          {
-                            id: "crackstation.txt",
-                            name: "CrackStation Human",
-                            tag: "Heavy Coverage",
-                            words: "64,000,000 words",
-                            size: "680.0 MB",
-                            desc: "Massive dictionary covering exhaustive human passwords.",
-                          },
-                        ].map((w) => {
-                          const selected = dictConfig.wordlist === w.id;
-                          return (
-                            <div
-                              key={w.id}
-                              onClick={() => setDictConfig({ ...dictConfig, wordlist: w.id })}
-                              className={`p-3.5 rounded-xl border cursor-pointer transition-all ${
-                                selected
-                                  ? "bg-red-500/10 border-red-500/50 shadow-[0_0_15px_rgba(239,68,68,0.15)]"
-                                  : "bg-slate-950 border-slate-800/90 hover:border-slate-700 hover:bg-slate-900/40"
-                              }`}
-                            >
-                              <div className="flex items-center justify-between mb-1.5">
-                                <div className="flex items-center gap-2">
-                                  <span className={`w-2 h-2 rounded-full ${selected ? "bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.8)]" : "bg-slate-700"}`} />
-                                  <span className="text-xs font-bold text-white font-mono">{w.name}</span>
-                                </div>
-                                <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-slate-900 text-slate-300 border border-slate-800">
-                                  {w.tag}
-                                </span>
-                              </div>
-                              <p className="text-[11px] text-slate-400 font-mono mb-2 line-clamp-1">
-                                {w.desc}
-                              </p>
-                              <div className="flex items-center justify-between text-[10px] font-mono text-slate-500 pt-2 border-t border-slate-900">
-                                <span>{w.words}</span>
-                                <span>{w.size}</span>
-                              </div>
-                            </div>
-                          );
-                        })}
+                    <div className="flex items-center gap-3 p-3 bg-slate-950 border border-slate-800 rounded-xl text-xs font-mono">
+                      <FileDigit className="w-5 h-5 text-red-400 shrink-0" />
+                      <div>
+                        <p className="text-slate-300">
+                          Path: <span className="text-emerald-400">/wordlists/{dictConfig.wordlist}</span>
+                        </p>
+                        <p className="text-slate-500 text-[11px] mt-0.5">
+                          {dictConfig.wordlist === "rockyou.txt" ? "14.3 Million words • Est. Speed: ~15s" : "High Coverage Wordlist"}
+                        </p>
                       </div>
                     </div>
 
-                    {/* Wordlist Telemetry Box */}
-                    <div className="p-3.5 rounded-xl bg-slate-950 border border-slate-800 flex items-center justify-between text-xs font-mono">
-                      <div className="flex items-center gap-3">
-                        <FileDigit className="w-5 h-5 text-red-400 shrink-0" />
-                        <div>
-                          <div className="text-slate-200">
-                            Loaded: <strong className="text-emerald-400">/wordlists/{dictConfig.wordlist}</strong>
-                          </div>
-                          <div className="text-[11px] text-slate-500 mt-0.5">
-                            Estimated Keyspace Time: ~15 seconds at 1.4 MH/s
-                          </div>
-                        </div>
-                      </div>
-                      <span className="px-2.5 py-1 rounded bg-slate-900 text-slate-300 border border-slate-800 text-[11px]">
-                        Indexed Ready
-                      </span>
-                    </div>
-
-                    {/* Mutation Ruleset Attachment */}
                     <div>
-                      <label className="block text-xs font-mono font-bold text-slate-300 mb-2 uppercase tracking-wider">
-                        Hashcat Mutation Ruleset (Optional)
+                      <label className="block text-xs font-mono font-bold text-slate-300 mb-1.5">
+                        Mutation Ruleset (Optional)
                       </label>
                       <select
                         value={dictConfig.ruleset}
                         onChange={(e) => setDictConfig({ ...dictConfig, ruleset: e.target.value })}
-                        className="w-full bg-slate-950 border border-slate-800 focus:border-red-500/50 rounded-xl p-3 text-xs font-mono text-slate-200 outline-none"
+                        className="w-full bg-slate-950 border border-slate-800 focus:border-red-500/50 rounded-xl p-2.5 text-xs text-slate-200 outline-none"
                       >
-                        <option value="best64.rule">best64.rule — Top 64 standard Hashcat mutation heuristics (64x expansion)</option>
-                        <option value="d3ad0ne.rule">d3ad0ne.rule — Heavy character substitutions & insertions (340x expansion)</option>
-                        <option value="leetspeak.rule">leetspeak.rule — Common leet transformations: @/3/1/0/5 (128x expansion)</option>
-                        <option value="none">None — Pure dictionary attack (exact word matching)</option>
+                        <option value="best64.rule">best64.rule (Hashcat standard mutations)</option>
+                        <option value="d3ad0ne.rule">d3ad0ne.rule (Heavy mutations)</option>
+                        <option value="leetspeak.rule">leetspeak.rule (@/3/1/0 replacements)</option>
                       </select>
                     </div>
                   </div>
                 )}
 
-                {/* 2. BRUTE FORCE ATTACK MODE */}
+                {/* 2. Brute Force Attack Tab */}
                 {activeAttackTab === "bruteforce" && (
-                  <div className="space-y-5">
+                  <div className="space-y-4">
                     <div>
-                      <label className="block text-xs font-mono font-bold text-slate-300 mb-2.5 uppercase tracking-wider">
+                      <label className="block text-xs font-mono font-bold text-slate-300 mb-2">
                         Character Sets
                       </label>
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      <div className="grid grid-cols-2 gap-2">
                         {[
-                          { id: "lower", label: "Lowercase Characters", range: "a-z (26 chars)", preview: "abcdef..." },
-                          { id: "upper", label: "Uppercase Characters", range: "A-Z (26 chars)", preview: "ABCDEF..." },
-                          { id: "digits", label: "Numeric Digits", range: "0-9 (10 chars)", preview: "0123456789" },
-                          { id: "special", label: "Special Symbols", range: "!@#$%^&* (32 chars)", preview: "!@#$%^&*..." },
-                        ].map((opt) => {
-                          const active = bfConfig[opt.id];
-                          return (
-                            <div
-                              key={opt.id}
-                              onClick={() => setBfConfig({ ...bfConfig, [opt.id]: !active })}
-                              className={`p-3.5 rounded-xl border cursor-pointer transition-all ${
-                                active
-                                  ? "bg-red-500/10 border-red-500/50 shadow-[0_0_15px_rgba(239,68,68,0.15)]"
-                                  : "bg-slate-950 border-slate-800/90 hover:border-slate-700"
-                              }`}
-                            >
-                              <div className="flex items-center justify-between mb-1">
-                                <span className="text-xs font-mono font-bold text-white">{opt.label}</span>
-                                <div
-                                  className={`w-4 h-4 rounded border flex items-center justify-center transition-colors ${
-                                    active ? "bg-red-500 border-red-500 text-white" : "border-slate-700 bg-slate-900"
-                                  }`}
-                                >
-                                  {active && <Check className="w-3 h-3" />}
-                                </div>
-                              </div>
-                              <div className="flex items-center justify-between text-[11px] font-mono text-slate-400">
-                                <span>{opt.range}</span>
-                                <span className="text-slate-500">{opt.preview}</span>
-                              </div>
-                            </div>
-                          );
-                        })}
+                          { id: "lower", label: "Lowercase (a-z)" },
+                          { id: "upper", label: "Uppercase (A-Z)" },
+                          { id: "digits", label: "Digits (0-9)" },
+                          { id: "special", label: "Special (!@#$)" },
+                        ].map((opt) => (
+                          <label
+                            key={opt.id}
+                            className="flex items-center gap-2 p-2.5 rounded-lg bg-slate-950 border border-slate-800/80 cursor-pointer hover:border-slate-700 transition-all"
+                          >
+                            <input
+                              type="checkbox"
+                              checked={bfConfig[opt.id]}
+                              onChange={() => setBfConfig({ ...bfConfig, [opt.id]: !bfConfig[opt.id] })}
+                              className="rounded border-slate-700 bg-slate-900 text-red-500 focus:ring-0"
+                            />
+                            <span className="text-xs text-slate-300 font-medium">{opt.label}</span>
+                          </label>
+                        ))}
                       </div>
                     </div>
 
                     <div>
-                      <label className="block text-xs font-mono font-bold text-slate-400 mb-1.5 uppercase tracking-wider">
+                      <label className="block text-xs font-mono text-slate-400 mb-1">
                         Custom Characters (Optional)
                       </label>
                       <input
                         type="text"
-                        placeholder="e.g. ? * + = - _"
+                        placeholder="e.g. ? * + = -"
                         value={bfConfig.custom}
                         onChange={(e) => setBfConfig({ ...bfConfig, custom: e.target.value })}
-                        className="w-full bg-slate-950 border border-slate-800 focus:border-red-500/50 rounded-xl px-4 py-2.5 text-xs font-mono text-white outline-none"
+                        className="w-full bg-slate-950 border border-slate-800 focus:border-red-500/50 rounded-xl px-3 py-2 text-xs font-mono text-white outline-none"
                       />
                     </div>
 
-                    {/* Length Range Sliders */}
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 p-4 bg-slate-950 border border-slate-800 rounded-xl">
+                    <div className="grid grid-cols-2 gap-4 p-3.5 bg-slate-950 border border-slate-800 rounded-xl">
                       <div>
-                        <div className="flex justify-between text-xs font-mono text-slate-300 mb-1.5">
-                          <span>Minimum Password Length:</span>
-                          <span className="text-red-400 font-bold bg-slate-900 px-2 py-0.5 rounded border border-slate-700">
-                            {bfConfig.minLen} chars
-                          </span>
+                        <div className="flex justify-between text-xs font-mono text-slate-400 mb-1">
+                          <span>Min Length:</span>
+                          <span className="text-red-400 font-bold">{bfConfig.minLen}</span>
                         </div>
                         <input
                           type="range"
                           min="1"
-                          max="16"
+                          max="14"
                           value={bfConfig.minLen}
                           onChange={(e) => setBfConfig({ ...bfConfig, minLen: parseInt(e.target.value) })}
                           className="w-full accent-red-500 cursor-pointer"
                         />
                       </div>
                       <div>
-                        <div className="flex justify-between text-xs font-mono text-slate-300 mb-1.5">
-                          <span>Maximum Password Length:</span>
-                          <span className="text-red-400 font-bold bg-slate-900 px-2 py-0.5 rounded border border-slate-700">
-                            {bfConfig.maxLen} chars
-                          </span>
+                        <div className="flex justify-between text-xs font-mono text-slate-400 mb-1">
+                          <span>Max Length:</span>
+                          <span className="text-red-400 font-bold">{bfConfig.maxLen}</span>
                         </div>
                         <input
                           type="range"
                           min="1"
-                          max="16"
+                          max="14"
                           value={bfConfig.maxLen}
                           onChange={(e) => setBfConfig({ ...bfConfig, maxLen: parseInt(e.target.value) })}
                           className="w-full accent-red-500 cursor-pointer"
@@ -1583,190 +1496,129 @@ export default function PasswordCracker() {
                   </div>
                 )}
 
-                {/* 3. HYBRID ATTACK MODE */}
+                {/* 3. Hybrid Attack Tab */}
                 {activeAttackTab === "hybrid" && (
-                  <div className="space-y-5">
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="space-y-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                       <div>
-                        <label className="block text-xs font-mono font-bold text-slate-300 mb-1.5 uppercase tracking-wider">
-                          Base Dictionary
-                        </label>
-                        <select className="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-xs font-mono text-slate-200 outline-none">
-                          <option>rockyou.txt (14.3M entries)</option>
-                          <option>seclists-top100k.txt (100K entries)</option>
+                        <label className="block text-xs font-mono text-slate-400 mb-1">Base Wordlist</label>
+                        <select className="w-full bg-slate-950 border border-slate-800 rounded-xl p-2 text-xs text-slate-200 outline-none">
+                          <option>rockyou.txt</option>
+                          <option>seclists-top100k.txt</option>
                         </select>
                       </div>
                       <div>
-                        <label className="block text-xs font-mono font-bold text-slate-300 mb-1.5 uppercase tracking-wider">
-                          Base Ruleset
-                        </label>
-                        <select className="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-xs font-mono text-slate-200 outline-none">
-                          <option>best64.rule (Standard permutations)</option>
-                          <option>d3ad0ne.rule (Heavy mutations)</option>
+                        <label className="block text-xs font-mono text-slate-400 mb-1">Ruleset</label>
+                        <select className="w-full bg-slate-950 border border-slate-800 rounded-xl p-2 text-xs text-slate-200 outline-none">
+                          <option>best64.rule</option>
+                          <option>d3ad0ne.rule</option>
                         </select>
                       </div>
                     </div>
 
-                    <div className="p-4 bg-slate-950 border border-slate-800 rounded-xl space-y-3">
-                      <h4 className="text-xs font-mono font-bold text-slate-300 uppercase tracking-wider">
-                        Active Dynamic Mutation Modifiers
-                      </h4>
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-                        {[
-                          { id: "appendNum", label: "Append Suffix Numbers (0-999)", example: "admin → admin123" },
-                          { id: "prependWords", label: "Prepend Prefix Words", example: "root → admin_root" },
-                          { id: "leet", label: "Leet Speak Transformations", example: "password → p@ssw0rd" },
-                          { id: "caseVar", label: "Case Permutations", example: "summer → Summer / SUMMER" },
-                        ].map((opt) => (
-                          <label
-                            key={opt.id}
-                            className="flex items-start gap-2.5 p-3 rounded-lg bg-slate-900 border border-slate-800 cursor-pointer hover:border-slate-700 transition-all"
-                          >
-                            <input
-                              type="checkbox"
-                              checked={hybridConfig[opt.id]}
-                              onChange={() => setHybridConfig({ ...hybridConfig, [opt.id]: !hybridConfig[opt.id] })}
-                              className="mt-0.5 rounded border-slate-700 bg-slate-950 text-red-500 focus:ring-0"
-                            />
-                            <div>
-                              <div className="text-xs font-mono font-bold text-slate-200">{opt.label}</div>
-                              <div className="text-[10px] font-mono text-slate-500 mt-0.5">{opt.example}</div>
-                            </div>
-                          </label>
-                        ))}
-                      </div>
+                    <div className="p-3 bg-slate-950 border border-slate-800 rounded-xl space-y-2">
+                      <h4 className="text-xs font-mono font-bold text-slate-300 mb-2">Rule Modifiers</h4>
+                      {[
+                        { id: "appendNum", label: "Append numbers (0-999)" },
+                        { id: "prependWords", label: "Prepend common prefixes" },
+                        { id: "leet", label: "Leet speak variations (a→@, e→3)" },
+                        { id: "caseVar", label: "Case toggling (upper/lower)" },
+                      ].map((opt) => (
+                        <label key={opt.id} className="flex items-center gap-2 cursor-pointer text-xs text-slate-300">
+                          <input
+                            type="checkbox"
+                            checked={hybridConfig[opt.id]}
+                            onChange={() => setHybridConfig({ ...hybridConfig, [opt.id]: !hybridConfig[opt.id] })}
+                            className="rounded border-slate-700 bg-slate-900 text-red-500 focus:ring-0"
+                          />
+                          <span>{opt.label}</span>
+                        </label>
+                      ))}
                     </div>
                   </div>
                 )}
 
-                {/* 4. MASK ATTACK MODE */}
+                {/* 4. Mask Attack Tab */}
                 {activeAttackTab === "mask" && (
-                  <div className="space-y-5">
+                  <div className="space-y-4">
                     <div>
-                      <label className="block text-xs font-mono font-bold text-slate-300 mb-2 uppercase tracking-wider">
-                        Hashcat Mask Syntax Pattern
+                      <label className="block text-xs font-mono font-bold text-slate-300 mb-1.5">
+                        Hashcat Mask Pattern
                       </label>
                       <input
                         type="text"
                         value={maskConfig.mask}
                         onChange={(e) => setMaskConfig({ mask: e.target.value })}
-                        className="w-full bg-slate-950 border border-slate-800 focus:border-red-500/50 rounded-xl p-3 text-base font-mono font-bold text-red-300 text-center tracking-widest outline-none"
+                        className="w-full bg-slate-950 border border-slate-800 focus:border-red-500/50 rounded-xl p-2.5 text-sm font-mono text-red-300 text-center tracking-widest outline-none"
                       />
-                      <p className="text-center text-[11px] font-mono text-slate-500 mt-1.5">
-                        Translation: 1 Uppercase (?u), 3 Lowercase (?l?l?l), 2 Digits (?d?d) → e.g. "Pass12"
+                      <p className="text-center text-[11px] font-mono text-slate-500 mt-1">
+                        Example: "?u?l?l?l?d?d" translates to "Pass12"
                       </p>
                     </div>
 
-                    {/* Interactive Token Chips */}
-                    <div>
-                      <span className="text-[10px] font-mono text-slate-400 block mb-2 uppercase tracking-wider font-bold">
-                        Click Token to Append into Mask:
-                      </span>
-                      <div className="grid grid-cols-3 sm:grid-cols-6 gap-2">
-                        {[
-                          { code: "?l", label: "Lower (a-z)" },
-                          { code: "?u", label: "Upper (A-Z)" },
-                          { code: "?d", label: "Digits (0-9)" },
-                          { code: "?s", label: "Symbols (!@#)" },
-                          { code: "?a", label: "All Chars" },
-                          { code: "?b", label: "Binary (0-255)" },
-                        ].map((w) => (
-                          <button
-                            key={w.code}
-                            type="button"
-                            onClick={() => setMaskConfig({ mask: maskConfig.mask + w.code })}
-                            className="bg-slate-950 border border-slate-800 hover:border-red-500/40 rounded-xl p-2.5 text-center transition-all group shadow-sm active:scale-95"
-                          >
-                            <span className="font-mono text-red-400 font-bold text-xs block group-hover:text-red-300">
-                              {w.code}
-                            </span>
-                            <span className="text-[10px] font-mono text-slate-500 block mt-0.5">
-                              {w.label}
-                            </span>
-                          </button>
-                        ))}
-                      </div>
+                    <div className="grid grid-cols-3 sm:grid-cols-6 gap-1.5">
+                      {[
+                        { code: "?l", desc: "Lower" },
+                        { code: "?u", desc: "Upper" },
+                        { code: "?d", desc: "Digit" },
+                        { code: "?s", desc: "Special" },
+                        { code: "?a", desc: "All" },
+                        { code: "?b", desc: "Binary" },
+                      ].map((w) => (
+                        <button
+                          key={w.code}
+                          type="button"
+                          onClick={() => setMaskConfig({ mask: maskConfig.mask + w.code })}
+                          className="bg-slate-950 border border-slate-800 hover:border-slate-700 rounded-lg p-1.5 text-center transition-colors"
+                        >
+                          <span className="font-mono text-red-400 font-bold text-xs block">{w.code}</span>
+                          <span className="text-[10px] text-slate-500">{w.desc}</span>
+                        </button>
+                      ))}
                     </div>
                   </div>
                 )}
 
-                {/* 5. RAINBOW TABLE MODE */}
+                {/* 5. Rainbow Table Tab */}
                 {activeAttackTab === "rainbow" && (
                   <div className="space-y-4">
-                    <div className="p-3.5 bg-amber-500/10 border border-amber-500/30 rounded-xl flex items-start gap-3 text-xs font-mono">
-                      <AlertTriangle className="w-5 h-5 text-amber-500 shrink-0 mt-0.5" />
+                    <div className="p-3 bg-amber-500/10 border border-amber-500/30 rounded-xl flex items-start gap-2.5 text-xs">
+                      <AlertTriangle className="w-4 h-4 text-amber-500 shrink-0 mt-0.5" />
                       <div>
-                        <h4 className="font-bold text-amber-400">Precomputed Time-Memory Tradeoff</h4>
-                        <p className="text-amber-400/80 text-[11px] mt-0.5 leading-relaxed">
-                          Rainbow tables provide instant O(1) decryption for unsalted hashes by pre-computing massive lookup matrices.
+                        <h4 className="font-bold text-amber-400">Precomputed Table Lookup</h4>
+                        <p className="text-amber-400/80 text-[11px] mt-0.5">
+                          Rainbow tables provide instant O(1) decryption for unsalted hashes.
                         </p>
                       </div>
                     </div>
 
-                    <div className="space-y-2.5">
-                      {[
-                        {
-                          id: "md5_loweralpha_numeric_1_8",
-                          name: "MD5 LowerAlpha + Numeric (1-8)",
-                          size: "42 GB",
-                          chains: "1,200,000 chains",
-                          coverage: "99.4%",
-                        },
-                        {
-                          id: "sha1_mixalpha_numeric_1_7",
-                          name: "SHA-1 MixAlpha + Numeric (1-7)",
-                          size: "115 GB",
-                          chains: "3,100,000 chains",
-                          coverage: "97.8%",
-                        },
-                        {
-                          id: "ntlm_all_1_8",
-                          name: "NTLM Full ASCII (1-8)",
-                          size: "89 GB",
-                          chains: "2,500,000 chains",
-                          coverage: "98.2%",
-                        },
-                      ].map((t) => {
-                        const selected = rainbowConfig.table === t.id;
-                        return (
-                          <div
-                            key={t.id}
-                            onClick={() => setRainbowConfig({ table: t.id })}
-                            className={`p-3.5 rounded-xl border cursor-pointer flex items-center justify-between transition-all ${
-                              selected
-                                ? "bg-red-500/10 border-red-500/50 shadow-sm"
-                                : "bg-slate-950 border-slate-800 hover:border-slate-700"
-                            }`}
-                          >
-                            <div>
-                              <div className="text-xs font-bold text-white font-mono flex items-center gap-2">
-                                <span className={`w-2 h-2 rounded-full ${selected ? "bg-red-500" : "bg-slate-700"}`} />
-                                {t.name}
-                              </div>
-                              <div className="text-[10px] font-mono text-slate-500 mt-0.5 pl-4">
-                                Precomputed Matrix: {t.chains} • Coverage: {t.coverage}
-                              </div>
-                            </div>
-                            <span className="text-xs font-mono font-bold text-red-400 bg-slate-900 px-2.5 py-1 rounded border border-slate-800">
-                              {t.size}
-                            </span>
-                          </div>
-                        );
-                      })}
+                    <div>
+                      <label className="block text-xs font-mono text-slate-400 mb-1.5">
+                        Select Table Chain
+                      </label>
+                      <select
+                        value={rainbowConfig.table}
+                        onChange={(e) => setRainbowConfig({ table: e.target.value })}
+                        className="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-xs text-slate-200 outline-none"
+                      >
+                        <option value="md5_loweralpha_numeric_1_8">MD5_loweralpha_numeric_1-8 (42 GB)</option>
+                        <option value="sha1_mixalpha_numeric_1_7">SHA1_mixalpha_numeric_1-7 (115 GB)</option>
+                        <option value="ntlm_all_1_8">NTLM_all_1-8 (89 GB)</option>
+                      </select>
                     </div>
                   </div>
                 )}
               </div>
 
               {/* Advanced Performance Options Drawer */}
-              <div className="mt-6 pt-5 border-t border-slate-800/80">
+              <div className="mt-5 pt-4 border-t border-slate-800/80">
                 <button
                   type="button"
                   onClick={() => setShowAdvanced(!showAdvanced)}
                   className="flex items-center gap-2 text-xs font-mono text-slate-400 hover:text-white transition-colors mb-2"
                 >
                   <Settings className="w-3.5 h-3.5 text-red-400" />
-                  <span>Advanced Engine & Compute Options</span>
+                  <span>Advanced Engine Options</span>
                   <motion.div animate={{ rotate: showAdvanced ? 180 : 0 }}>
                     <ChevronDown className="w-3.5 h-3.5" />
                   </motion.div>
@@ -1780,12 +1632,12 @@ export default function PasswordCracker() {
                       exit={{ height: 0, opacity: 0 }}
                       className="overflow-hidden"
                     >
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 bg-slate-950 border border-slate-800 rounded-xl mt-2 font-mono text-xs">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 bg-slate-950 border border-slate-800 rounded-xl mt-2">
                         <div className="space-y-3">
                           <div>
-                            <div className="flex justify-between text-slate-400 mb-1">
+                            <div className="flex justify-between text-xs font-mono text-slate-400 mb-1">
                               <span>Worker Threads:</span>
-                              <span className="text-red-400 font-bold">{advConfig.threads} Cores</span>
+                              <span className="text-red-400 font-bold">{advConfig.threads}</span>
                             </div>
                             <input
                               type="range"
@@ -1797,8 +1649,8 @@ export default function PasswordCracker() {
                             />
                           </div>
                           <div>
-                            <div className="flex justify-between text-slate-400 mb-1">
-                              <span>RAM Buffer Allocation:</span>
+                            <div className="flex justify-between text-xs font-mono text-slate-400 mb-1">
+                              <span>RAM Limit:</span>
                               <span className="text-red-400 font-bold">{advConfig.ram} MB</span>
                             </div>
                             <input
@@ -1821,17 +1673,17 @@ export default function PasswordCracker() {
                               onChange={() => setAdvConfig({ ...advConfig, caseSensitive: !advConfig.caseSensitive })}
                               className="rounded border-slate-700 bg-slate-900 text-red-500 focus:ring-0"
                             />
-                            <span className="text-slate-300">Case-insensitive hash matching</span>
+                            <span className="text-xs text-slate-300 font-mono">Case-insensitive matching</span>
                           </label>
 
                           <div>
-                            <label className="block text-slate-400 mb-1">Manual Salt Parameter (Optional)</label>
+                            <label className="block text-xs font-mono text-slate-400 mb-1">Manual Salt (Optional)</label>
                             <input
                               type="text"
                               placeholder="Auto-detect if empty"
                               value={advConfig.salt}
                               onChange={(e) => setAdvConfig({ ...advConfig, salt: e.target.value })}
-                              className="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-slate-200 outline-none"
+                              className="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-xs font-mono text-slate-200 outline-none"
                             />
                           </div>
                         </div>

@@ -26,13 +26,13 @@ export function DashboardLayout({ children }) {
       <div className="flex flex-1 overflow-hidden relative">
         <Sidebar collapsed={collapsed} setCollapsed={setCollapsed} />
         <main
-          className="h-full overflow-y-auto overflow-x-hidden transition-all duration-500 ease-in-out pt-[4.5rem] relative z-10 custom-scrollbar overscroll-behavior-none"
+          className="h-full overflow-y-auto overflow-x-hidden transition-all duration-300 ease-in-out pt-[4.5rem] relative z-10 custom-scrollbar overscroll-behavior-none min-w-0 flex-1"
           style={{ 
             marginLeft: collapsed ? "96px" : "296px",
             width: `calc(100% - ${collapsed ? "96px" : "296px"})`
           }}
         >
-          <div className="min-h-full">
+          <div className="min-h-full min-w-0 w-full max-w-full">
             {children}
           </div>
         </main>
